@@ -4,6 +4,7 @@
     "package": "moe.seikimo.mwhrd.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
+        "ItemEntityMixin",
         "ItemStackMixin",
         "TrialSpawnerLogicMixin",
         "VaultBlockEntityMixin",
