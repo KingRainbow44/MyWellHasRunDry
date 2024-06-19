@@ -1,0 +1,30 @@
+{
+    "schemaVersion": 1,
+    "id": "mwhrd",
+    "version": "${version}",
+    "name": "My Well Has Run Dry",
+    "description": "Trial Chambers & QoL",
+    "authors": [
+        "KingRainbow44"
+    ],
+    "contact": {
+        "repo": "https://github.com/KingRainbow44/mwhrd"
+    },
+    "license": "All-Rights-Reserved",
+    "icon": "assets/mwhrd/icon.png",
+    "environment": "server",
+    "entrypoints": {
+        "server": [
+            "moe.seikimo.mwhrd.MyWellHasRunDry"
+        ]
+    },
+    "accessWidener": "mwhrd.accesswidener",
+    "mixins": [
+        "mwhrd.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${loader_version}",
+        "fabric": "*",
+        "minecraft": "${minecraft_version}"
+    }
+}
