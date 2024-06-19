@@ -203,6 +203,7 @@ public final class TrialChamberLootGui extends SimpleGui {
                         loot.remove(item);
 
                         // Re-draw the player's loot.
+                        this.drawButtons(player);
                         this.drawPlayerLoot(player);
                     })
                     .build());

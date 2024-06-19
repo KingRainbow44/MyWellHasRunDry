@@ -1,3 +1,10 @@
 accessWidener v2 named
 
 accessible field net/minecraft/block/spawner/TrialSpawnerData players Ljava/util/Set;
+
+accessible method net/minecraft/block/vault/VaultServerData setItemsToEject (Ljava/util/List;)V
+accessible method net/minecraft/block/vault/VaultServerData getItemToDisplay ()Lnet/minecraft/item/ItemStack;
+accessible method net/minecraft/block/vault/VaultServerData setStateUpdatingResumeTime (J)V
+accessible method net/minecraft/block/entity/VaultBlockEntity$Server changeVaultState (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/block/BlockState;Lnet/minecraft/block/vault/VaultConfig;Lnet/minecraft/block/vault/VaultSharedData;)V
+accessible method net/minecraft/block/entity/VaultBlockEntity$Server generateLoot (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/block/vault/VaultConfig;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/player/PlayerEntity;)Ljava/util/List;
+accessible method net/minecraft/block/vault/VaultSharedData updateConnectedPlayers (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/vault/VaultServerData;Lnet/minecraft/block/vault/VaultConfig;D)V

@@ -1,7 +1,7 @@
 package moe.seikimo.mwhrd.mixin;
 
 import moe.seikimo.mwhrd.TrialChamberLoot;
-import moe.seikimo.mwhrd.interfaces.TrialSpawnerUtils;
+import moe.seikimo.mwhrd.interfaces.ITrialSpawnerUtils;
 import net.minecraft.block.spawner.TrialSpawnerData;
 import net.minecraft.block.spawner.TrialSpawnerLogic;
 import net.minecraft.loot.LootTable;
@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Mixin(TrialSpawnerLogic.class)
-public abstract class TrialSpawnerLogicMixin implements TrialSpawnerUtils {
+public abstract class TrialSpawnerLogicMixin implements ITrialSpawnerUtils {
     @Final @Shadow private TrialSpawnerData data;
 
     @Override
@@ -34,11 +34,8 @@ public abstract class TrialSpawnerLogicMixin implements TrialSpawnerUtils {
 
     @Inject(method = "ejectLootTable", at = @At("HEAD"), cancellable = true)
     public void addToPlayerLoot(ServerWorld world, BlockPos pos, RegistryKey<LootTable> lootTable, CallbackInfo ci) {
-        // Check if there are multiple players.
-        var players = this.mwhrd$getSpawnerPlayers();
-        // if (players.size() <= 1) return;
-
         // Get the player to give the loot to.
+        var players = this.mwhrd$getSpawnerPlayers();
         var player = players.iterator().next();
 
         // Determine the loot.
@@ -51,14 +48,14 @@ public abstract class TrialSpawnerLogicMixin implements TrialSpawnerUtils {
             // Add the item to the player's loot.
             TrialChamberLoot.addLoot(player, itemStack);
 
-            // We need to create a fake item to show what each player received.
+            // We need to create a fake item to show what the player received.
             var itemEntity = TrialChamberLoot.spawnItem(
                 world, itemStack, 2, Direction.UP,
                 Vec3d.ofBottomCenter(pos).offset(Direction.UP, 1.2));
             itemEntity.setPickupDelayInfinite();
 
-            // Delete the entity after 15 seconds.
-            TrialChamberLoot.scheduleForDespawn(itemEntity, 5e3);
+            // Delete the entity after 8s seconds.
+            TrialChamberLoot.scheduleForDespawn(itemEntity, 8e3);
         }
         world.syncWorldEvent(WorldEvents.TRIAL_SPAWNER_EJECTS_ITEM, pos, 0);
 
