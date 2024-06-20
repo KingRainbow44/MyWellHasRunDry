@@ -8,3 +8,5 @@ accessible method net/minecraft/block/vault/VaultServerData setStateUpdatingResu
 accessible method net/minecraft/block/entity/VaultBlockEntity$Server changeVaultState (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/block/BlockState;Lnet/minecraft/block/vault/VaultConfig;Lnet/minecraft/block/vault/VaultSharedData;)V
 accessible method net/minecraft/block/entity/VaultBlockEntity$Server generateLoot (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/block/vault/VaultConfig;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/player/PlayerEntity;)Ljava/util/List;
 accessible method net/minecraft/block/vault/VaultSharedData updateConnectedPlayers (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/vault/VaultServerData;Lnet/minecraft/block/vault/VaultConfig;D)V
+
+accessible method net/minecraft/server/network/ServerPlayerEntity onScreenHandlerOpened (Lnet/minecraft/screen/ScreenHandler;)V
