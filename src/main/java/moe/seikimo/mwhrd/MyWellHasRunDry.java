@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd;
 
 import lombok.Getter;
 import moe.seikimo.mwhrd.commands.LootCommand;
+import moe.seikimo.mwhrd.commands.PartyCommand;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -45,6 +46,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         // Register commands.
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, env) -> {
             LootCommand.register(dispatcher);
+            PartyCommand.register(dispatcher);
         });
 
         // Wait for the server to start.

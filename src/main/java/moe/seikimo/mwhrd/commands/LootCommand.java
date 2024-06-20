@@ -15,7 +15,7 @@ public final class LootCommand {
      * Registers the command with the dispatcher.
      */
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("loot")
+        dispatcher.register(literal("dungeonloot")
             .executes(LootCommand::openGui));
     }
 
