@@ -1,6 +1,7 @@
 package moe.seikimo.mwhrd;
 
 import lombok.Getter;
+import moe.seikimo.mwhrd.commands.DebugCommand;
 import moe.seikimo.mwhrd.commands.LootCommand;
 import moe.seikimo.mwhrd.commands.PartyCommand;
 import moe.seikimo.mwhrd.commands.ReturnCommand;
@@ -101,6 +102,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         // Register commands.
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, env) -> {
             LootCommand.register(dispatcher);
+            DebugCommand.register(dispatcher);
             PartyCommand.register(dispatcher);
             ReturnCommand.register(dispatcher);
         });

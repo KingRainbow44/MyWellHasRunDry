@@ -1,5 +1,6 @@
 package moe.seikimo.mwhrd.mixin;
 
+import moe.seikimo.mwhrd.Debug;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.interfaces.IItemStackReference;
 import net.minecraft.block.BlockState;
@@ -46,7 +47,8 @@ public abstract class VaultBlockEntityMixin {
         VaultBlockEntityMixin.unlock(world, state, pos, config, serverData, sharedData, list, player);
 
         // Mark the vault as rewarded.
-        if (MyWellHasRunDry.getRandom().nextInt(0, 2) != 0) {
+        if (MyWellHasRunDry.getRandom().nextInt(0, 2) == 0 &&
+            !Debug.alwaysResetVault) {
             serverData.markPlayerAsRewarded(player);
         } else {
             player.sendMessage(Text.literal("Wow! ")
