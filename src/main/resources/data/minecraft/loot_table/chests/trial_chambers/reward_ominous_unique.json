@@ -33,8 +33,14 @@
             "rolls": 1.0
         },
         {
-            "type": "minecraft:loot_table",
-            "value": "mwhrd:beacon_rewards"
+            "bonus_rolls": 0.2,
+            "entries": [
+                {
+                    "type": "minecraft:loot_table",
+                    "value": "mwhrd:beacon_rewards"
+                }
+            ],
+            "rolls": 1
         }
     ],
     "random_sequence": "minecraft:chests/trial_chambers/reward_ominous_unique"
