@@ -7,6 +7,7 @@ import dev.morphia.Datastore;
 import dev.morphia.Morphia;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.commands.DebugCommand;
 import moe.seikimo.mwhrd.commands.LootCommand;
 import moe.seikimo.mwhrd.commands.PartyCommand;
@@ -213,6 +214,19 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                 // Apply Bedrock player buff.
                 DebuffManager.applyBedrockBuff(player);
             }
+
+            // Remove all beacon effects on join.
+            Arrays.stream(BeaconEffect.values())
+                .forEach(e -> e.getRemoveCallback()
+                    .removeEffects(player.getWorld(), player));
+        });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, sender) -> {
+            var player = handler.getPlayer();
+
+            // Remove all beacon effects on join.
+            Arrays.stream(BeaconEffect.values())
+                .forEach(e -> e.getRemoveCallback()
+                    .removeEffects(player.getWorld(), player));
         });
     }
 

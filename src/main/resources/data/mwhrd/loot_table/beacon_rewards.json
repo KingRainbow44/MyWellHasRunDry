@@ -197,7 +197,7 @@
                     "chance": {
                         "type": "mwhrd:player_vault",
                         "base": 0.005,
-                        "max": 0.05,
+                        "max": 0.01,
                         "scale": 5
                     }
                 }
