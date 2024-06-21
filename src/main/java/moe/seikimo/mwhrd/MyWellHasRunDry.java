@@ -47,6 +47,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, env) -> {
             LootCommand.register(dispatcher);
             PartyCommand.register(dispatcher);
+            ReturnCommand.register(dispatcher);
         });
 
         // Wait for the server to start.
