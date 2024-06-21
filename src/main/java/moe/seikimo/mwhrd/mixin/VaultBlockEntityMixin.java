@@ -1,5 +1,6 @@
 package moe.seikimo.mwhrd.mixin;
 
+import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.interfaces.IItemStackReference;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.VaultBlock;
@@ -11,6 +12,8 @@ import net.minecraft.block.vault.VaultSharedData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,10 +21,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.awt.*;
 import java.util.List;
 
 @Mixin(VaultBlockEntity.Server.class)
 public abstract class VaultBlockEntityMixin {
+    @SuppressWarnings("DataFlowIssue")
     @Inject(method = "tryUnlock", at = @At(
         value = "INVOKE",
         target = "Lnet/minecraft/block/entity/VaultBlockEntity$Server;unlock(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/vault/VaultConfig;Lnet/minecraft/block/vault/VaultServerData;Lnet/minecraft/block/vault/VaultSharedData;Ljava/util/List;)V"
@@ -41,7 +46,14 @@ public abstract class VaultBlockEntityMixin {
         VaultBlockEntityMixin.unlock(world, state, pos, config, serverData, sharedData, list, player);
 
         // Mark the vault as rewarded.
-        serverData.markPlayerAsRewarded(player);
+        if (MyWellHasRunDry.getRandom().nextInt(0, 2) != 0) {
+            serverData.markPlayerAsRewarded(player);
+        } else {
+            player.sendMessage(Text.literal("Wow! ")
+                .withColor(Formatting.YELLOW.getColorValue())
+                .append(Text.literal("This vault will reward you again!")
+                    .withColor(Formatting.AQUA.getColorValue())));
+        }
         sharedData.updateConnectedPlayers(world, pos, serverData, config, config.deactivationRange());
 
         ci.cancel();
@@ -68,6 +80,6 @@ public abstract class VaultBlockEntityMixin {
         serverData.setItemsToEject(itemsToEject);
         sharedData.setDisplayItem(serverData.getItemToDisplay());
         serverData.setStateUpdatingResumeTime(world.getTime() + 14L);
-        VaultBlockEntity.Server.changeVaultState(world, pos, state, (BlockState)state.with(VaultBlock.VAULT_STATE, VaultState.UNLOCKING), config, sharedData);
+        VaultBlockEntity.Server.changeVaultState(world, pos, state, state.with(VaultBlock.VAULT_STATE, VaultState.UNLOCKING), config, sharedData);
     }
 }
