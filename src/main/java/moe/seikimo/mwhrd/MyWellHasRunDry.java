@@ -170,14 +170,19 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     private static void setAdventureMode(
         ServerPlayerEntity player
     ) {
+        var condPlayer = (IPlayerConditions) player;
+
         var interactionManager = player.interactionManager;
-        if (!interactionManager.isSurvivalLike()) return;
+        if (!interactionManager.isSurvivalLike()) {
+            condPlayer.mwhrd$setOminous(false);
+            condPlayer.mwhrd$setInTrialChamber(false);
+            return;
+        }
 
         var passed = MyWellHasRunDry.trialChamberPredicate.test(
             player.getServerWorld(), player.getX(),
             player.getY(), player.getZ());
 
-        var condPlayer = (IPlayerConditions) player;
         condPlayer.mwhrd$setInTrialChamber(passed);
         if (!passed) {
             condPlayer.mwhrd$setOminous(false);
