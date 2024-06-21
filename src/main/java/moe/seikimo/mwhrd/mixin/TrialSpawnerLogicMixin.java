@@ -40,6 +40,7 @@ import java.util.UUID;
 public abstract class TrialSpawnerLogicMixin implements ITrialSpawnerUtils {
     @Unique private static final Set<Class<? extends MobEntity>> BLACKLIST = Set.of(
         CaveSpiderEntity.class,
+        SpiderEntity.class,
         BreezeEntity.class
     );
 
