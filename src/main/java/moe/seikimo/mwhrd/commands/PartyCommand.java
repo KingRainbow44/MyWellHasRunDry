@@ -214,6 +214,12 @@ public final class PartyCommand {
             return 1;
         }
 
+        // Check the party size.
+        if (party.size() < 2) {
+            context.getSource().sendError(Text.literal("The party must have at least 2 players."));
+            return 1;
+        }
+
         // Check if the player is the leader.
         var leader = PartyManager.findLeader(party);
         if (!leader.equals(player.getUuid())) {
