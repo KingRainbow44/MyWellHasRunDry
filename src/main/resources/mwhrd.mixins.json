@@ -6,7 +6,9 @@
     "mixins": [
         "ItemEntityMixin",
         "ItemStackMixin",
+        "ServerPlayerEntityMixin",
         "ServerPlayNetworkHandlerMixin",
+        "TrialSpawnerDataMixin",
         "TrialSpawnerLogicMixin",
         "VaultBlockEntityMixin",
         "VaultStateMixin"
