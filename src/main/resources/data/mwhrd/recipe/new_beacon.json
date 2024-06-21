@@ -1,0 +1,39 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "SCS",
+        "SBS",
+        "DED"
+    ],
+    "key": {
+        "S": {
+            "item": "minecraft:netherite_scrap"
+        },
+        "C": {
+            "item": "minecraft:heavy_core"
+        },
+        "B": {
+            "item": "minecraft:spawner"
+        },
+        "D": {
+            "item": "minecraft:diamond_block"
+        },
+        "E": {
+            "item": "minecraft:beacon"
+        }
+    },
+    "result": {
+        "count": 1,
+        "id": "minecraft:beacon",
+        "components": {
+            "minecraft:custom_model_data": 1,
+            "minecraft:item_name": "{\"text\":\"Beacon\",\"color\":\"light_purple\",\"italic\":false}",
+            "minecraft:lore": [
+                "{\"text\":\"This beacon emits special radiation!\",\"color\":\"aqua\",\"italic\":false}"
+            ],
+            "minecraft:custom_data": {
+                "advanced_beacon": 1
+            }
+        }
+    }
+}

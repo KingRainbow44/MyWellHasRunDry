@@ -10,3 +10,5 @@ accessible method net/minecraft/block/entity/VaultBlockEntity$Server generateLoo
 accessible method net/minecraft/block/vault/VaultSharedData updateConnectedPlayers (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/vault/VaultServerData;Lnet/minecraft/block/vault/VaultConfig;D)V
 
 accessible method net/minecraft/server/network/ServerPlayerEntity onScreenHandlerOpened (Lnet/minecraft/screen/ScreenHandler;)V
+
+accessible method net/minecraft/block/entity/BeaconBlockEntity applyPlayerEffects (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/registry/entry/RegistryEntry;Lnet/minecraft/registry/entry/RegistryEntry;)V
