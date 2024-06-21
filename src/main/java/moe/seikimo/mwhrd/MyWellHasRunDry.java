@@ -1,6 +1,12 @@
 package moe.seikimo.mwhrd;
 
+import com.mongodb.client.MongoClients;
+import de.bwaldvogel.mongo.MongoServer;
+import de.bwaldvogel.mongo.backend.h2.H2Backend;
+import dev.morphia.Datastore;
+import dev.morphia.Morphia;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.commands.DebugCommand;
 import moe.seikimo.mwhrd.commands.LootCommand;
 import moe.seikimo.mwhrd.commands.PartyCommand;
@@ -37,9 +43,12 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.gen.structure.StructureKeys;
 import org.geysermc.geyser.api.GeyserApi;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     // TODO: Add database system and keep track of if player has seen changelog.
     private static final List<Text> CHANGELOG = List.of(
@@ -71,6 +80,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     @Getter private static final Random random = new Random();
 
     @Getter private static MinecraftServer server;
+    @Getter private static MongoServer mongoServer;
+    @Getter private static Datastore playerStore;
+
     @Getter private static LocationPredicate trialChamberPredicate;
     @Getter private static Registry<Enchantment> enchantmentRegistry;
 
@@ -111,11 +123,29 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         // Register the item despawn thread.
         TrialChamberLoot.ItemThread.initialize();
 
+        try {
+            // Create the mod configuration directory.
+            Files.createDirectories(Path.of("config/mwhrd"));
+        } catch (Exception ignored) {
+            log.debug("Unable to create configuration directory.");
+        }
+
+        // Initialize MongoDB.
+        MyWellHasRunDry.mongoServer = new MongoServer(new H2Backend("config/mwhrd/database.mv"));
+        MyWellHasRunDry.mongoServer.bind();
+
+        // Initialize Morphia.
+        MyWellHasRunDry.playerStore = Morphia.createDatastore(MongoClients.create(), "mwhrd");
+
+        // Register the item despawn thread.
+        TrialChamberLoot.ItemThread.initialize();
+
         // Register registry entries.
         MyWellHasRunDry.PLAYER_VAULT = Registry.register(
             Registries.LOOT_NUMBER_PROVIDER_TYPE,
             Identifier.of("mwhrd", "player_vault"),
             new LootNumberProviderType(PlayerVaultNumberProvider.CODEC));
+
         // Register commands.
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, env) -> {
             LootCommand.register(dispatcher);

@@ -33,6 +33,10 @@ dependencies {
     compileOnly "org.geysermc.geyser:api:${project.geyser_version}"
     modImplementation "eu.pb4:sgui:${project.sgui_version}"
 
+    implementation "dev.morphia.morphia:morphia-core:${project.morphia_version}"
+    implementation "de.bwaldvogel:mongo-java-server:${project.mongo_version}"
+    implementation "de.bwaldvogel:mongo-java-server-h2-backend:${project.mongo_version}"
+
     compileOnly "org.projectlombok:lombok:${project.lombok_version}"
     annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
 }
