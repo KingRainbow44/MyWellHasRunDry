@@ -6,6 +6,7 @@ import moe.seikimo.mwhrd.commands.LootCommand;
 import moe.seikimo.mwhrd.commands.PartyCommand;
 import moe.seikimo.mwhrd.commands.ReturnCommand;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
+import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -18,9 +19,11 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.predicate.LightPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -29,6 +32,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.gen.structure.StructureKeys;
 
@@ -55,6 +59,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         Text.literal(" - Standing near heavy-armored players causes debuff")
             .formatted(Formatting.DARK_GRAY)
     );
+
+    public static LootNumberProviderType PLAYER_VAULT;
 
     @Getter private static final Random random = new Random();
 
@@ -99,6 +105,11 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         // Register the item despawn thread.
         TrialChamberLoot.ItemThread.initialize();
 
+        // Register registry entries.
+        MyWellHasRunDry.PLAYER_VAULT = Registry.register(
+            Registries.LOOT_NUMBER_PROVIDER_TYPE,
+            Identifier.of("mwhrd", "player_vault"),
+            new LootNumberProviderType(PlayerVaultNumberProvider.CODEC));
         // Register commands.
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, env) -> {
             LootCommand.register(dispatcher);
