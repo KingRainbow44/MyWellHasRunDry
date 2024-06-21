@@ -35,6 +35,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.gen.structure.StructureKeys;
+import org.geysermc.geyser.api.GeyserApi;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,6 +47,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             .formatted(Formatting.BOLD, Formatting.AQUA)
             .append(Text.literal("v" + BuildConfig.VERSION)
                 .formatted(Formatting.YELLOW)),
+        Text.literal("Minecraft: Luck and Luxury")
+            .formatted(Formatting.ITALIC, Formatting.GOLD),
+        Text.empty(),
         Text.literal(" - Overhauled ominous trial chambers")
             .formatted(Formatting.DARK_GRAY),
         Text.literal(" - Adventure mode is enforced in trial chambers")
@@ -57,6 +61,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         Text.literal(" - Vaults have a 50% chance to double-reward")
             .formatted(Formatting.DARK_GRAY),
         Text.literal(" - Standing near heavy-armored players causes debuff")
+            .formatted(Formatting.DARK_GRAY),
+        Text.literal(" - Removed Bedrock player attack cooldown")
             .formatted(Formatting.DARK_GRAY)
     );
 
@@ -145,10 +151,11 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             }
         });
 
-        // Prevent blocks from being placed.
+        // Prevent blocks from being broken/placed.
         UseBlockCallback.EVENT.register(DebuffManager::blockPlaceCheck);
         PlayerBlockBreakEvents.BEFORE.register(DebuffManager::blockBreakCheck);
 
+        // Prevent certain blacklisted items from being used.
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             var item = player.getStackInHand(hand);
 
@@ -167,9 +174,15 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                 TypedActionResult.pass(item);
         });
 
+        // Wait for players to join.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             var player = handler.getPlayer();
-            CHANGELOG.forEach(player::sendMessage);
+            if (!GeyserApi.api().isBedrockPlayer(player.getUuid())) {
+                CHANGELOG.forEach(player::sendMessage);
+            } else {
+                // Apply Bedrock player buff.
+                DebuffManager.applyBedrockBuff(player);
+            }
         });
     }
 

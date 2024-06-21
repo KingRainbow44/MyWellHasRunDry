@@ -31,6 +31,7 @@ public final class DebuffManager {
         Blocks.WAXED_OXIDIZED_COPPER_GRATE
     );
 
+    private static final Identifier BEDROCK_BUFF = Identifier.of("mwhrd", "bedrock_buff");
     private static final Identifier DEBUFF_1_ID = Identifier.of("mwhrd", "debuff_1");
     private static final Identifier DEBUFF_2_ID = Identifier.of("mwhrd", "debuff_2");
 
@@ -96,6 +97,20 @@ public final class DebuffManager {
 
         maxHealth.addTemporaryModifier(new EntityAttributeModifier(
             debuffId, debuffValue, EntityAttributeModifier.Operation.ADD_VALUE
+        ));
+    }
+
+    /**
+     * Applies buffs to the Bedrock player.
+     *
+     * @param player The Bedrock player to apply buffs to.
+     */
+    public static void applyBedrockBuff(ServerPlayerEntity player) {
+        var attackSpeed = player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED);
+        if (attackSpeed == null) return;
+
+        attackSpeed.addTemporaryModifier(new EntityAttributeModifier(
+            BEDROCK_BUFF, 20f, EntityAttributeModifier.Operation.ADD_VALUE
         ));
     }
 

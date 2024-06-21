@@ -18,6 +18,7 @@ repositories {
     // for more information about repositories.
 
     maven { url "https://maven.nucleoid.xyz" }
+    maven { url "https://repo.opencollab.dev/main/" }
 }
 
 dependencies {
@@ -29,6 +30,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+    compileOnly "org.geysermc.geyser:api:${project.geyser_version}"
     modImplementation "eu.pb4:sgui:${project.sgui_version}"
 
     compileOnly "org.projectlombok:lombok:${project.lombok_version}"
