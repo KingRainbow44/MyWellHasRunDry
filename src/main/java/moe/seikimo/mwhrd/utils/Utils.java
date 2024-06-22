@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd;
+package moe.seikimo.mwhrd.utils;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;

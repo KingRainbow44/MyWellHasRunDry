@@ -1,6 +1,6 @@
 package moe.seikimo.mwhrd.mixin;
 
-import moe.seikimo.mwhrd.Debug;
+import moe.seikimo.mwhrd.utils.Debug;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.interfaces.IItemStackReference;
 import net.minecraft.block.BlockState;

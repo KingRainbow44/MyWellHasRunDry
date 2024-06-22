@@ -1,7 +1,8 @@
-package moe.seikimo.mwhrd;
+package moe.seikimo.mwhrd.managers;
 
 import moe.seikimo.mwhrd.enums.ArmorEnum;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
+import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;

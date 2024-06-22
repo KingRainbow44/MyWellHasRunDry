@@ -7,13 +7,17 @@ import dev.morphia.Datastore;
 import dev.morphia.Morphia;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
+import moe.seikimo.mwhrd.beacon.BeaconManager;
 import moe.seikimo.mwhrd.commands.DebugCommand;
 import moe.seikimo.mwhrd.commands.LootCommand;
 import moe.seikimo.mwhrd.commands.PartyCommand;
 import moe.seikimo.mwhrd.commands.ReturnCommand;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
+import moe.seikimo.mwhrd.managers.DebuffManager;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
+import moe.seikimo.mwhrd.utils.TrialChamberLoot;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -82,7 +86,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
     @Getter private static MinecraftServer server;
     @Getter private static MongoServer mongoServer;
-    @Getter private static Datastore playerStore;
+    @Getter private static Datastore datastore;
 
     @Getter private static LocationPredicate trialChamberPredicate;
     @Getter private static Registry<Enchantment> enchantmentRegistry;
@@ -136,7 +140,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         MyWellHasRunDry.mongoServer.bind();
 
         // Initialize Morphia.
-        MyWellHasRunDry.playerStore = Morphia.createDatastore(MongoClients.create(), "mwhrd");
+        MyWellHasRunDry.datastore = Morphia.createDatastore(MongoClients.create(), "mwhrd");
+        DatabaseUtils.DATASTORE.set(MyWellHasRunDry.datastore);
 
         // Register the item despawn thread.
         TrialChamberLoot.ItemThread.initialize();
@@ -217,16 +222,14 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
             // Remove all beacon effects on join.
             Arrays.stream(BeaconEffect.values())
-                .forEach(e -> e.getRemoveCallback()
-                    .removeEffects(player.getWorld(), player));
+                .forEach(e -> e.remove(player.getWorld(), player));
         });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, sender) -> {
             var player = handler.getPlayer();
 
-            // Remove all beacon effects on join.
+            // Remove all beacon effects on disconnect.
             Arrays.stream(BeaconEffect.values())
-                .forEach(e -> e.getRemoveCallback()
-                    .removeEffects(player.getWorld(), player));
+                .forEach(e -> e.remove(player.getWorld(), player));
         });
     }
 

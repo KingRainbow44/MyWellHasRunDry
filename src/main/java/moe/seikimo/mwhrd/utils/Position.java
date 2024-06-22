@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd;
+package moe.seikimo.mwhrd.utils;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

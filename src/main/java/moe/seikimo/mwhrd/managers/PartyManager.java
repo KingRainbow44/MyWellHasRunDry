@@ -1,6 +1,8 @@
-package moe.seikimo.mwhrd;
+package moe.seikimo.mwhrd.managers;
 
 import lombok.extern.slf4j.Slf4j;
+import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.utils.Position;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;

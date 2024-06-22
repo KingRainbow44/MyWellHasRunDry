@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.extern.slf4j.Slf4j;
-import moe.seikimo.mwhrd.PartyManager;
+import moe.seikimo.mwhrd.managers.PartyManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 

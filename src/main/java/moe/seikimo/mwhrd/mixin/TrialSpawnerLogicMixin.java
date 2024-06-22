@@ -1,9 +1,9 @@
 package moe.seikimo.mwhrd.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import moe.seikimo.mwhrd.MobGear;
+import moe.seikimo.mwhrd.utils.MobGear;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
-import moe.seikimo.mwhrd.TrialChamberLoot;
+import moe.seikimo.mwhrd.utils.TrialChamberLoot;
 import moe.seikimo.mwhrd.interfaces.ITrialSpawnerUtils;
 import net.minecraft.block.spawner.TrialSpawnerData;
 import net.minecraft.block.spawner.TrialSpawnerLogic;

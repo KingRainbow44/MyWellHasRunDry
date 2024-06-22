@@ -17,6 +17,8 @@ repositories {
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
 
+    mavenLocal()
+
     maven { url "https://maven.nucleoid.xyz" }
     maven { url "https://repo.opencollab.dev/main/" }
 }
@@ -36,6 +38,11 @@ dependencies {
     implementation "dev.morphia.morphia:morphia-core:${project.morphia_version}"
     implementation "de.bwaldvogel:mongo-java-server:${project.mongo_version}"
     implementation "de.bwaldvogel:mongo-java-server-h2-backend:${project.mongo_version}"
+
+    implementation ("moe.seikimo:magix-common:1.0-SNAPSHOT") {
+        exclude group: "org.slf4j", module: "slf4j-api"
+    }
+    implementation "moe.seikimo:magix-data:1.0-SNAPSHOT"
 
     compileOnly "org.projectlombok:lombok:${project.lombok_version}"
     annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"

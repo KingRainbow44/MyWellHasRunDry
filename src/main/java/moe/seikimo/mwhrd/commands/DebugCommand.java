@@ -3,7 +3,7 @@ package moe.seikimo.mwhrd.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import moe.seikimo.mwhrd.Debug;
+import moe.seikimo.mwhrd.utils.Debug;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 

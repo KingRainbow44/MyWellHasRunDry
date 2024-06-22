@@ -1,6 +1,6 @@
 package moe.seikimo.mwhrd.mixin;
 
-import moe.seikimo.mwhrd.TrialChamberLoot;
+import moe.seikimo.mwhrd.utils.TrialChamberLoot;
 import moe.seikimo.mwhrd.interfaces.IItemStackReference;
 import net.minecraft.block.enums.VaultState;
 import net.minecraft.item.ItemStack;

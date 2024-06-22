@@ -4,7 +4,7 @@ import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import moe.seikimo.mwhrd.CustomItems;
+import moe.seikimo.mwhrd.utils.CustomItems;
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconFuel;
 import moe.seikimo.mwhrd.beacon.BeaconLevel;
@@ -176,7 +176,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
                 .formatted(Formatting.GRAY))
             .setCallback(this::removeBeacon));
 
-        var upgrades = this.beacon.mwhrd$getEffects();
+        var upgrades = this.beacon.mwhrd$getEffectList();
         for (var i = 0; i < 3; i++) {
             var index = UPGRADES[i];
             if (i >= upgrades.size()) {
@@ -195,10 +195,9 @@ public final class AdvancedBeaconGui extends SimpleGui {
                         .formatted(Formatting.RED))
                     .setCallback((_i, type, action) -> {
                         if (type == ClickType.MOUSE_RIGHT) {
-                            upgrades.remove(upgrade);
-                            this.beacon.mwhrd$setEffects(upgrades);
+                            this.beacon.mwhrd$getEffectMap().remove(upgrade);
                         } else {
-
+                            // TODO: Show menu.
                         }
 
                         this.drawButtons();
@@ -230,7 +229,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
         }
 
         // Check if the upgrade is already applied.
-        var upgrades = this.beacon.mwhrd$getEffects();
+        var upgrades = this.beacon.mwhrd$getEffectList();
         if (upgrades.contains(upgrade)) {
             this.player.sendMessage(Text.literal("Upgrade already applied!"), true);
             return;
@@ -243,8 +242,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
         }
 
         // Add the upgrade to the beacon.
-        upgrades.add(upgrade);
-        this.beacon.mwhrd$setEffects(upgrades);
+        this.beacon.mwhrd$addEffect(upgrade);
 
         // Decrement the stack.
         cursorItem.decrement(1);
@@ -271,7 +269,8 @@ public final class AdvancedBeaconGui extends SimpleGui {
 
         // Write the beacon's data to the item.
         var item = CustomItems.ADVANCED_BEACON.copy();
-        item.set(DataComponentTypes.CUSTOM_DATA, this.beacon.mwhrd$serialize());
+        item.set(DataComponentTypes.CUSTOM_DATA,
+            this.beacon.mwhrd$serializeComponent());
 
         // Drop the item and remove the block.
         var pos = this.vanillaBeacon.getPos();

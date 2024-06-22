@@ -1,6 +1,5 @@
-package moe.seikimo.mwhrd;
+package moe.seikimo.mwhrd.beacon;
 
-import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -9,9 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.world.World;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public final class BeaconManager {
     public static ActionResult handleBeacon(
@@ -35,17 +31,10 @@ public final class BeaconManager {
             return ActionResult.FAIL;
         }
 
-        // Update the block from the item's state.
-        var nbt = customData.copyNbt();
-        var effects = Arrays.stream(nbt.getIntArray("effects"))
-            .mapToObj(i -> BeaconEffect.values()[i])
-            .toList();
-        var fuel = nbt.getInt("fuel");
-
+        // Update the beacon block from the item.
         var beacon = (IAdvancedBeacon) blockEntity;
-        beacon.mwhrd$setEffects(new ArrayList<>(effects));
-        beacon.mwhrd$setFuel(fuel);
-        beacon.mwhrd$setAdvanced(true);
+        beacon.mwhrd$deserialize(customData.copyNbt());
+
         stack.decrement(1);
 
         return ActionResult.SUCCESS;

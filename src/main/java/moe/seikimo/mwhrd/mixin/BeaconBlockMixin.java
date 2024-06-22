@@ -1,7 +1,7 @@
 package moe.seikimo.mwhrd.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import moe.seikimo.mwhrd.CustomItems;
+import moe.seikimo.mwhrd.utils.CustomItems;
 import moe.seikimo.mwhrd.gui.AdvancedBeaconGui;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import net.minecraft.block.BeaconBlock;
@@ -55,12 +55,12 @@ public abstract class BeaconBlockMixin extends BlockWithEntity {
         var blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof IAdvancedBeacon beacon) {
             var item = CustomItems.ADVANCED_BEACON.copy();
-            item.set(DataComponentTypes.CUSTOM_DATA, beacon.mwhrd$serialize());
+            item.set(DataComponentTypes.CUSTOM_DATA, beacon.mwhrd$serializeComponent());
 
             var itemEntity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, item);
             itemEntity.setToDefaultPickupDelay();
             world.spawnEntity(itemEntity);
-            
+
             // Disable beacon effects on players.
             beacon.mwhrd$destroy();
         }

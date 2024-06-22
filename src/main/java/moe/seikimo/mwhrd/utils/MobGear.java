@@ -1,5 +1,6 @@
-package moe.seikimo.mwhrd;
+package moe.seikimo.mwhrd.utils;
 
+import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.Enchantment;

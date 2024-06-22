@@ -2,8 +2,12 @@ package moe.seikimo.mwhrd.beacon;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import moe.seikimo.mwhrd.beacon.powers.FlightPower;
+import moe.seikimo.mwhrd.beacon.powers.TeleportationPower;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,13 +16,13 @@ import java.util.Map;
 @Getter
 @RequiredArgsConstructor
 public enum BeaconEffect {
-    DISABLE_SPAWNS("disable_spawns", "Disable Spawns", Items.TORCH, BeaconCallback.APPLY_EMPTY, BeaconCallback.REMOVE_EMPTY),
-    UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", Items.EXPERIENCE_BOTTLE, BeaconCallback.APPLY_EMPTY, BeaconCallback.REMOVE_EMPTY),
-    PLOT_PURGER("plot_purger", "Plot Purger", Items.WITHER_SKELETON_SKULL, BeaconCallback.APPLY_EMPTY, BeaconCallback.REMOVE_EMPTY),
-    PIXEL_PRINTER("pixel_printer", "Pixel Printer", Items.CRAFTER, BeaconCallback.APPLY_EMPTY, BeaconCallback.REMOVE_EMPTY),
-    FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", Items.ELYTRA, FlightCrystalBuff::apply, FlightCrystalBuff::remove),
-    EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", Items.ENDER_EYE, BeaconCallback.APPLY_EMPTY, BeaconCallback.REMOVE_EMPTY),
-    WORLDEDIT("worldedit", "Builder's Grace", Items.WOODEN_AXE, BeaconCallback.APPLY_EMPTY, BeaconCallback.REMOVE_EMPTY)
+    DISABLE_SPAWNS("disable_spawns", "Disable Spawns", Items.TORCH, BeaconPower.Empty::new),
+    UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", Items.EXPERIENCE_BOTTLE, BeaconPower.Empty::new),
+    PLOT_PURGER("plot_purger", "Plot Purger", Items.WITHER_SKELETON_SKULL, BeaconPower.Empty::new),
+    PIXEL_PRINTER("pixel_printer", "Pixel Printer", Items.CRAFTER, BeaconPower.Empty::new),
+    FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", Items.ELYTRA, FlightPower::new),
+    EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", Items.ENDER_EYE, TeleportationPower::new),
+    WORLDEDIT("worldedit", "Builder's Grace", Items.WOODEN_AXE, BeaconPower.Empty::new)
     ;
 
     private static final Map<String, BeaconEffect> idMap = new HashMap<>();
@@ -38,6 +42,34 @@ public enum BeaconEffect {
     final String id;
     final String displayName;
     final Item displayItem;
-    final BeaconCallback.Apply applyCallback;
-    final BeaconCallback.Remove removeCallback;
+    final BeaconPower.Initializer callbacks;
+
+    /**
+     * @return A new instance of the BeaconPower.
+     */
+    public BeaconPower create() {
+        return callbacks.create();
+    }
+
+    /**
+     * Method for blankly applying the effect to a player.
+     *
+     * @param world The world the player is in.
+     * @param player The player to apply the effect to.
+     */
+    public void apply(World world, PlayerEntity player) {
+        var power = callbacks.create();
+        power.apply(world, 0, player);
+    }
+
+    /**
+     * Method for blankly removing the effect from a player.
+     *
+     * @param world The world the player is in.
+     * @param player The player to remove the effect from.
+     */
+    public void remove(World world, PlayerEntity player) {
+        var power = callbacks.create();
+        power.remove(world, player);
+    }
 }
