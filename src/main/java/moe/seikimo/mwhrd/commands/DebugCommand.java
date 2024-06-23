@@ -3,6 +3,8 @@ package moe.seikimo.mwhrd.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import moe.seikimo.mwhrd.interfaces.IDBObject;
+import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.utils.Debug;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -20,6 +22,8 @@ public final class DebugCommand {
             .then(argument("property", StringArgumentType.word())
                 .then(argument("value", StringArgumentType.word())
                     .executes(DebugCommand::set)))
+            .then(literal("hardcore")
+                .executes(DebugCommand::unsetHardcore))
             .executes(DebugCommand::usage));
     }
 
@@ -58,6 +62,28 @@ public final class DebugCommand {
         } catch (Exception exception) {
             context.getSource().sendError(Text.literal(
                 "Unknown property: " + property
+            ));
+            return 1;
+        }
+
+        return 1;
+    }
+
+    private static int unsetHardcore(CommandContext<ServerCommandSource> context) {
+        var player = context.getSource().getPlayer();
+        if (!(player instanceof IDBObject<?> dbObject)) {
+            context.getSource().sendError(Text.literal(
+                "Player is not an IDBObject"
+            ));
+            return 1;
+        }
+
+        var data = dbObject.mwhrd$getData();
+        if (data instanceof PlayerModel model) {
+            model.unsetHardcore(true);
+        } else {
+            context.getSource().sendError(Text.literal(
+                "Player data is not a PlayerModel"
             ));
             return 1;
         }

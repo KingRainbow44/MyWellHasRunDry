@@ -10,7 +10,8 @@
                         "type": "mwhrd:player_vault",
                         "base": 0.09,
                         "max": 0.18,
-                        "scale": 5
+                        "scale": 5,
+                        "hardcore": false
                     }
                 }
             ],
@@ -44,7 +45,8 @@
                         "type": "mwhrd:player_vault",
                         "base": 0.07,
                         "max": 0.14,
-                        "scale": 5
+                        "scale": 5,
+                        "hardcore": false
                     }
                 }
             ],
@@ -82,7 +84,8 @@
                         "type": "mwhrd:player_vault",
                         "base": 0.07,
                         "max": 0.14,
-                        "scale": 5
+                        "scale": 5,
+                        "hardcore": false
                     }
                 }
             ],
@@ -120,7 +123,8 @@
                         "type": "mwhrd:player_vault",
                         "base": 0.04,
                         "max": 0.09,
-                        "scale": 5
+                        "scale": 5,
+                        "hardcore": false
                     }
                 }
             ],
@@ -159,7 +163,8 @@
                         "type": "mwhrd:player_vault",
                         "base": 0.04,
                         "max": 0.09,
-                        "scale": 5
+                        "scale": 5,
+                        "hardcore": false
                     }
                 }
             ],
@@ -198,7 +203,8 @@
                         "type": "mwhrd:player_vault",
                         "base": 0.005,
                         "max": 0.01,
-                        "scale": 5
+                        "scale": 5,
+                        "hardcore": true
                     }
                 }
             ],

@@ -9,4 +9,6 @@ public interface IPlayerConditions {
 
     void mwhrd$setClosedCooldown(long until);
     long mwhrd$getClosedCooldown();
+
+    boolean mwhrd$isHardcore();
 }

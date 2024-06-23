@@ -45,6 +45,14 @@ public final class DebuffManager {
         var maxHealth = player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
         if (maxHealth == null) return;
 
+        // Check if the player is hardcore.
+        var condPlayer = (IPlayerConditions) player;
+        if (condPlayer.mwhrd$isHardcore()) {
+            maxHealth.removeModifier(DEBUFF_1_ID);
+            maxHealth.removeModifier(DEBUFF_2_ID);
+            return;
+        }
+
         // Check if the player is nearby others.
         var nearbyPlayers = Utils.getNearbyPlayers(player, 15);
         if (nearbyPlayers.size() <= 1) {

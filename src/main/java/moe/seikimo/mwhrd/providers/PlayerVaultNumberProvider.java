@@ -10,12 +10,13 @@ import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderType;
 import org.joml.Math;
 
-public record PlayerVaultNumberProvider(float baseValue, float maxValue, float scale) implements LootNumberProvider {
-    public static final MapCodec<PlayerVaultNumberProvider> CODEC =RecordCodecBuilder.mapCodec(
+public record PlayerVaultNumberProvider(float baseValue, float maxValue, float scale, boolean hardcore) implements LootNumberProvider {
+    public static final MapCodec<PlayerVaultNumberProvider> CODEC = RecordCodecBuilder.mapCodec(
         instance -> instance.group(
             Codec.FLOAT.fieldOf("base").forGetter(PlayerVaultNumberProvider::baseValue),
                 Codec.FLOAT.fieldOf("max").forGetter(PlayerVaultNumberProvider::maxValue),
-                Codec.FLOAT.fieldOf("scale").forGetter(PlayerVaultNumberProvider::scale))
+                Codec.FLOAT.fieldOf("scale").forGetter(PlayerVaultNumberProvider::scale),
+                Codec.BOOL.fieldOf("hardcore").forGetter(PlayerVaultNumberProvider::hardcore))
             .apply(instance, PlayerVaultNumberProvider::new));
 
     @Override
@@ -25,7 +26,13 @@ public record PlayerVaultNumberProvider(float baseValue, float maxValue, float s
         var trialPlayers = 0;
         for (var player : world.getPlayers()) {
             var condPlayer = (IPlayerConditions) player;
-            if (condPlayer.mwhrd$isInTrialChamber()) trialPlayers++;
+            if (condPlayer.mwhrd$isInTrialChamber()) {
+                if (this.hardcore && !condPlayer.mwhrd$isHardcore()) {
+                    return 0f; // Completely disable the drop if the player is not in hardcore mode.
+                }
+
+                trialPlayers++;
+            }
         }
 
         return Math.lerp(this.baseValue, this.maxValue,

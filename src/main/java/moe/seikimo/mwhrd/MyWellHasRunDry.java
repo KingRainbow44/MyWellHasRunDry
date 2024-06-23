@@ -11,6 +11,7 @@ import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconManager;
 import moe.seikimo.mwhrd.commands.*;
+import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.DebuffManager;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
@@ -42,6 +43,8 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureKeys;
 import org.geysermc.geyser.api.GeyserApi;
 
@@ -71,6 +74,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         Text.literal("  - Standing near heavy-armored players causes debuff")
             .formatted(Formatting.DARK_GRAY),
         Text.literal("  - Removed Bedrock player attack cooldown")
+            .formatted(Formatting.DARK_GRAY),
+        Text.literal("  - Hardcode mode (read /hardcore for info)")
             .formatted(Formatting.DARK_GRAY)
     );
 
@@ -82,6 +87,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     @Getter private static MongoServer mongoServer;
     @Getter private static Datastore datastore;
 
+    @Getter private static BlockPos defaultSpawn;
     @Getter private static LocationPredicate trialChamberPredicate;
     @Getter private static Registry<Enchantment> enchantmentRegistry;
 
@@ -134,8 +140,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         MyWellHasRunDry.mongoServer.bind();
 
         // Initialize Morphia.
-        MyWellHasRunDry.datastore = Morphia.createDatastore(MongoClients.create(), "mwhrd");
-        DatabaseUtils.DATASTORE.set(MyWellHasRunDry.datastore);
+        var store = MyWellHasRunDry.datastore =
+            Morphia.createDatastore(MongoClients.create(), "mwhrd");
+        DatabaseUtils.DATASTORE.set(store);
 
         // Register the item despawn thread.
         TrialChamberLoot.ItemThread.initialize();
@@ -152,6 +159,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             DebugCommand.register(dispatcher);
             PartyCommand.register(dispatcher);
             ReturnCommand.register(dispatcher);
+            HardcoreCommand.register(dispatcher);
             ChangelogCommand.register(dispatcher);
         });
 
@@ -172,6 +180,12 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                     .light(NumberRange.IntRange.atLeast(1)))
                 .structure(RegistryEntryList.of(trialChamber))
                 .build();
+
+            var overworld = server.getWorld(World.OVERWORLD);
+            if (overworld == null) {
+                throw new IllegalStateException("Overworld is null.");
+            }
+            MyWellHasRunDry.defaultSpawn = overworld.getSpawnPos();
         });
 
         // Wait for server ticks.
@@ -209,6 +223,10 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         // Wait for players to join.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             var player = handler.getPlayer();
+            if (player instanceof IDBObject<?> model) {
+                model.mwhrd$loadData();
+            }
+
             if (!GeyserApi.api().isBedrockPlayer(player.getUuid())) {
                 CHANGELOG.forEach(player::sendMessage);
             } else {
@@ -229,6 +247,11 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, sender) -> {
             var player = handler.getPlayer();
+
+            // Save the player's data.
+            if (player instanceof IDBObject<?> model) {
+                model.mwhrd$getData().save();
+            }
 
             // Remove all beacon effects on disconnect.
             Arrays.stream(BeaconEffect.values())
