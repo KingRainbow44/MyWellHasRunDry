@@ -4,18 +4,18 @@
     "package": "moe.seikimo.mwhrd.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-        "BeaconBlockEntityMixin",
-        "BeaconBlockMixin",
-        "ItemEntityMixin",
+        "beacon.BeaconBlockEntityMixin",
+        "beacon.BeaconBlockMixin",
+        "trial.ItemEntityMixin",
         "ItemStackMixin",
-        "PotionItemMixin",
+        "balance.PotionItemMixin",
         "ServerPlayerEntityMixin",
         "ServerPlayNetworkHandlerMixin",
-        "SplashPotionItemMixin",
-        "TrialSpawnerDataMixin",
-        "TrialSpawnerLogicMixin",
-        "VaultBlockEntityMixin",
-        "VaultStateMixin"
+        "balance.SplashPotionItemMixin",
+        "trial.TrialSpawnerDataMixin",
+        "trial.TrialSpawnerLogicMixin",
+        "trial.VaultBlockEntityMixin",
+        "trial.VaultStateMixin"
     ],
     "injectors": {
         "defaultRequire": 1

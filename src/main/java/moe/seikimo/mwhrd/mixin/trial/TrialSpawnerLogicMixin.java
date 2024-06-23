@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.mixin;
+package moe.seikimo.mwhrd.mixin.trial;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import moe.seikimo.mwhrd.utils.MobGear;

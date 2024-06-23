@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.mixin;
+package moe.seikimo.mwhrd.mixin.trial;
 
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import net.minecraft.block.spawner.TrialSpawnerData;

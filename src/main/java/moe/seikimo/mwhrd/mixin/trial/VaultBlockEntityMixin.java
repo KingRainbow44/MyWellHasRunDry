@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.mixin;
+package moe.seikimo.mwhrd.mixin.trial;
 
 import moe.seikimo.mwhrd.utils.Debug;
 import moe.seikimo.mwhrd.MyWellHasRunDry;

@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.mixin;
+package moe.seikimo.mwhrd.mixin.balance;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.PotionItem;
