@@ -59,18 +59,27 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
         BeaconBlockEntity blockEntity, CallbackInfo ci,
         @Local(ordinal = 0) int level
     ) {
-        if (level != 0) return;
+        if (!(blockEntity instanceof IAdvancedBeacon beacon)) return;
+        var level = blockEntity.level;
+
+        // Call update if the entity hasn't been initialized.
+        if (!beacon.mwhrd$hasInitialized()) {
+            beacon.mwhrd$setInitialized(true);
+
+            beacon.mwhrd$getEffectMap().forEach(
+                (effect, power) -> power.init(beacon, world));
+        }
 
         // Remove effects from nearby players.
-        var beacon = (IAdvancedBeacon) blockEntity;
-        for (var playerUuid : new ArrayList<>(beacon.mwhrd$getLastPlayers())) {
-            var player = world.getPlayerByUuid(playerUuid);
-            if (player instanceof ServerPlayerEntity serverPlayer) {
-                beacon.mwhrd$getEffectMap().forEach((effect, power) ->
-                    power.remove(world, serverPlayer));
+        if (level == 0) {
+            for (var playerUuid : new ArrayList<>(beacon.mwhrd$getLastPlayers())) {
+                var player = world.getPlayerByUuid(playerUuid);
+                if (player instanceof ServerPlayerEntity serverPlayer) {
+                    beacon.mwhrd$getEffectMap().forEach((effect, power) ->
+                        power.remove(world, serverPlayer));
+                }
             }
         }
-    }
 
     @Unique
     private static void applySpecialEffects(
@@ -113,7 +122,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
     @Unique private final List<UUID> lastPlayers = new ArrayList<>();
 
     @Unique private int fuel = 0;
-    @Unique private boolean advanced = false;
+    @Unique private boolean advanced = false, initialized = false;
 
     @Unique private final Map<BeaconEffect, BeaconPower> powers = new HashMap<>();
 
@@ -125,7 +134,10 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
 
     @Inject(method = "writeNbt", at = @At("RETURN"))
     public void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
-        nbt.copyFrom(this.mwhrd$serialize());
+        var data = this.mwhrd$serialize();
+        for (var key : data.getKeys()) {
+            nbt.put(key, data.get(key));
+        }
     }
 
     @Inject(method = "readNbt", at = @At("RETURN"))
@@ -137,10 +149,21 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
 
     /// <editor-fold desc="IAdvancedBeacon">
 
+    @Override
+    public boolean mwhrd$hasInitialized() {
+        return this.initialized;
+    }
+
+    @Override
+    public void mwhrd$setInitialized(boolean initialized) {
+        this.initialized = initialized;
+    }
 
     @Override
     public void mwhrd$addEffect(BeaconEffect effect) {
-        var instance = effect.create();
+        var instance = effect.create(this.getPos());
+        instance.add(this.getWorld());
+
         this.powers.put(effect, instance);
     }
 
@@ -152,7 +175,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
 
         // Serialize powers.
         var powers = new NbtCompound();
-        for (var entry : this.powers.entrySet()) {
+        for (var entry : this.mwhrd$getEffectMap().entrySet()) {
             var id = entry.getKey().getId();
             var power = entry.getValue();
 
@@ -170,21 +193,35 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
 
     @Override
     public void mwhrd$deserialize(NbtCompound nbt) {
+        var advanced = nbt.contains("advanced_beacon");
         var fuel = nbt.getInt("fuel");
 
-        this.mwhrd$setAdvanced(true);
+        this.mwhrd$setAdvanced(advanced);
         this.mwhrd$setFuel(fuel);
 
         // Apply powers.
         var powers = nbt.getCompound("powers");
         for (var key : powers.getKeys()) {
             var effect = BeaconEffect.getById(key);
-            if (effect == null) continue;
+            if (effect == null) {
+                continue;
+            }
 
-            var power = effect.create();
+            var power = effect.create(this.getPos());
             power.read(this.getWorld(), powers.getCompound(key));
 
             this.powers.put(effect, power);
+        }
+    }
+
+    @Override
+    public void mwhrd$save() {
+        var world = this.getWorld();
+        if (world == null) return;
+
+        var chunk = world.getChunk(this.getPos());
+        if (chunk != null) {
+            chunk.setNeedsSaving(true);
         }
     }
 
