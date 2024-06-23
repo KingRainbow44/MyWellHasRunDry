@@ -61,9 +61,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             .append(Text.literal("v" + BuildConfig.VERSION)
                 .formatted(Formatting.YELLOW)),
         Text.literal(" Minecraft: Luck and Luxury")
-            .formatted(Formatting.ITALIC, Formatting.GOLD),
-        Text.literal(" ALPHA: CHANGES ARE NOT FINAL")
-            .formatted(Formatting.UNDERLINE, Formatting.LIGHT_PURPLE),
+            .formatted(Formatting.GOLD),
         Text.empty(),
         Text.literal("  - Overhauled ominous trial chambers")
             .formatted(Formatting.DARK_GRAY),
