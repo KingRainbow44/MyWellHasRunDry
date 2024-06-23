@@ -40,7 +40,7 @@ dependencies {
     implementation "de.bwaldvogel:mongo-java-server-h2-backend:${project.mongo_version}"
 
     implementation ("moe.seikimo:magix-common:1.0-SNAPSHOT") {
-        exclude group: "org.slf4j", module: "slf4j-api"
+        exclude group: "ch.qos.logback", module: "logback-classic"
     }
     implementation "moe.seikimo:magix-data:1.0-SNAPSHOT"
 

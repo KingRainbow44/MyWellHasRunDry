@@ -4,6 +4,7 @@ import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -17,15 +18,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static moe.seikimo.mwhrd.utils.GUI.BORDER;
+
 public final class TrialChamberLootGui extends SimpleGui {
     private static final Set<Item> BLACKLIST = Set.of(
         Items.OMINOUS_TRIAL_KEY, Items.TRIAL_KEY
     );
-
-    private static final GuiElement BORDER =
-        new GuiElementBuilder(Items.GRAY_STAINED_GLASS_PANE)
-            .setName(Text.empty())
-            .build();
 
     private static final List<Text> DETAILS = List.of(
         Text.literal("Trial Chamber Loot Details:")
@@ -181,7 +179,7 @@ public final class TrialChamberLootGui extends SimpleGui {
 
         var slotIndex = 0;
         for (var i = 0; i < 28; i++) {
-            var slot = TrialChamberLootGui.indexToSlot(slotIndex++);
+            var slot = GUI.indexToSlot(slotIndex++);
             if (i >= loot.size()) {
                 this.setSlot(slot, ItemStack.EMPTY);
             } else {
@@ -209,25 +207,6 @@ public final class TrialChamberLootGui extends SimpleGui {
                     .build());
             }
         }
-    }
-
-    /**
-     * Converts an index to an inventory slot.
-     * This avoids the border slots.
-     *
-     * @param index The index to convert.
-     * @return The slot in the inventory.
-     */
-    public static int indexToSlot(int index) {
-        // Each row has 7 available slots.
-        // There are a total of 4 available rows.
-        // The first usable slot is at index 10.
-        // The last usable slot is at index 43.
-
-        var rows = index / 7;
-        var columns = index % 7;
-
-        return 10 + rows * 9 + columns;
     }
 
     /**
