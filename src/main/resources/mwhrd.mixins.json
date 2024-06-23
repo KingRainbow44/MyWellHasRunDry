@@ -11,6 +11,7 @@
         "PotionItemMixin",
         "ServerPlayerEntityMixin",
         "ServerPlayNetworkHandlerMixin",
+        "SplashPotionItemMixin",
         "TrialSpawnerDataMixin",
         "TrialSpawnerLogicMixin",
         "VaultBlockEntityMixin",
