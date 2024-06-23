@@ -25,7 +25,7 @@ public final class MobGear {
         enchant(SWORD, Enchantments.KNOCKBACK, 1);
 
         BOW = new ItemStack(Items.BOW);
-        enchant(BOW, Enchantments.POWER, 6);
+        enchant(BOW, Enchantments.POWER, 8);
         enchant(BOW, Enchantments.PUNCH, 1);
 
         ARROWS = new ItemStack(Items.TIPPED_ARROW);

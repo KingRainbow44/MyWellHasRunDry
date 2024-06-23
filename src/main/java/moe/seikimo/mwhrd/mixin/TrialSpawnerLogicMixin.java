@@ -99,15 +99,15 @@ public abstract class TrialSpawnerLogicMixin implements ITrialSpawnerUtils {
             mob.equipStack(EquipmentSlot.CHEST, MobGear.CHESTPLATE.copy());
             mob.equipStack(EquipmentSlot.LEGS, MobGear.LEGGINGS.copy());
             mob.equipStack(EquipmentSlot.FEET, MobGear.BOOTS.copy());
-
-            // Apply mob effects.
-            mob.addStatusEffect(new StatusEffectInstance(
-                StatusEffects.STRENGTH, Integer.MAX_VALUE
-            ));
-            mob.addStatusEffect(new StatusEffectInstance(
-                StatusEffects.SPEED, Integer.MAX_VALUE, 1
-            ));
         }
+
+        // Apply mob effects.
+        mob.addStatusEffect(new StatusEffectInstance(
+            StatusEffects.STRENGTH, Integer.MAX_VALUE
+        ));
+        mob.addStatusEffect(new StatusEffectInstance(
+            StatusEffects.SPEED, Integer.MAX_VALUE, 1
+        ));
 
         if (mob instanceof AbstractSkeletonEntity) {
             mob.equipStack(EquipmentSlot.MAINHAND, MobGear.BOW.copy());
