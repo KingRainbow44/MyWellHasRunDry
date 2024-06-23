@@ -7,6 +7,7 @@ import moe.seikimo.mwhrd.beacon.powers.TeleportationPower;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -47,8 +48,8 @@ public enum BeaconEffect {
     /**
      * @return A new instance of the BeaconPower.
      */
-    public BeaconPower create() {
-        return callbacks.create();
+    public BeaconPower create(BlockPos blockPos) {
+        return callbacks.create(blockPos);
     }
 
     /**
@@ -58,7 +59,7 @@ public enum BeaconEffect {
      * @param player The player to apply the effect to.
      */
     public void apply(World world, PlayerEntity player) {
-        var power = callbacks.create();
+        var power = this.create(BlockPos.ORIGIN);
         power.apply(world, 0, player);
     }
 
@@ -69,7 +70,7 @@ public enum BeaconEffect {
      * @param player The player to remove the effect from.
      */
     public void remove(World world, PlayerEntity player) {
-        var power = callbacks.create();
+        var power = this.create(BlockPos.ORIGIN);
         power.remove(world, player);
     }
 }

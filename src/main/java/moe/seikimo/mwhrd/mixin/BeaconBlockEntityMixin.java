@@ -31,6 +31,8 @@ import java.util.*;
 
 @Mixin(BeaconBlockEntity.class)
 public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdvancedBeacon {
+    @Unique private static final long FUEL_TIME = 20L * 60L * 60L; // 20 ticks * 60 seconds * 60 minutes
+
     @Shadow
     protected abstract void addComponents(ComponentMap.Builder componentMapBuilder);
 
@@ -56,8 +58,7 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
     @Inject(method = "tick", at = @At("RETURN"))
     private static void tick(
         World world, BlockPos pos, BlockState state,
-        BeaconBlockEntity blockEntity, CallbackInfo ci,
-        @Local(ordinal = 0) int level
+        BeaconBlockEntity blockEntity, CallbackInfo ci
     ) {
         if (!(blockEntity instanceof IAdvancedBeacon beacon)) return;
         var level = blockEntity.level;
@@ -80,6 +81,29 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
                 }
             }
         }
+
+        // Update the beacon's fuel.
+        if (world.getTime() % FUEL_TIME == 0) {
+            // Decrement fuel.
+            var fuel = beacon.mwhrd$getFuel();
+            if (fuel == 0) {
+                return;
+            }
+
+            if (level < 0 || level > 4) return;
+            var beaconTier = BeaconLevel.valueOf("TIER_" + level);
+            var fuelCost = beaconTier.getFuelCost();
+
+            if (fuel <= fuelCost) {
+                beacon.mwhrd$setFuel(0);
+            } else {
+                beacon.mwhrd$setFuel(fuel - fuelCost);
+            }
+
+            beacon.mwhrd$getEffectMap().forEach((effect, power) ->
+                power.fuelTick(beacon.mwhrd$getFuel()));
+        }
+    }
 
     @Unique
     private static void applySpecialEffects(

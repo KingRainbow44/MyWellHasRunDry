@@ -1,12 +1,29 @@
 package moe.seikimo.mwhrd.beacon.powers;
 
+import moe.seikimo.mwhrd.beacon.BeaconFuel;
 import moe.seikimo.mwhrd.beacon.BeaconPower;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public final class FlightPower extends BeaconPower {
+    public FlightPower(BlockPos blockPos) {
+        super(blockPos);
+    }
+
+    @Override
+    public void fuelTick(int fuel) {
+        if (!BeaconFuel.LOW.compare(BeaconFuel.getFuel(fuel))) {
+            this.handle.mwhrd$getPlayers().forEach(player ->
+                this.remove(this.world, player));
+        }
+    }
+
     @Override
     public void apply(World world, int level, PlayerEntity player) {
+        var fuel = this.handle.mwhrd$getFuel();
+        if (!BeaconFuel.LOW.compare(BeaconFuel.getFuel(fuel))) return;
+
         player.getAbilities().allowFlying = true;
         player.sendAbilitiesUpdate();
     }

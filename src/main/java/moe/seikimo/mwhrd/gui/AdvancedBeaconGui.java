@@ -13,6 +13,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.SlotActionType;
@@ -24,12 +25,9 @@ import org.joml.Math;
 
 import java.util.List;
 
-public final class AdvancedBeaconGui extends SimpleGui {
-    private static final GuiElement BORDER =
-        new GuiElementBuilder(Items.GRAY_STAINED_GLASS_PANE)
-            .setName(Text.empty())
-            .build();
+import static moe.seikimo.mwhrd.utils.GUI.BORDER;
 
+public final class AdvancedBeaconGui extends SimpleGui {
     private static final int DESTROY = 4;
     private static final int ICON = 22;
     private static final int[] UPGRADES = {30, 31, 32};
@@ -52,7 +50,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
             .setName(Text.literal("Empty Upgrade")
                 .formatted(Formatting.GRAY))
             .addLoreLine(Text.empty())
-            .addLoreLine(Text.literal("Drag an upgrade here to apply it!")
+            .addLoreLine(Text.literal("Drop an upgrade here to apply it!")
                 .setStyle(Style.EMPTY.withItalic(false))
                 .formatted(Formatting.AQUA))
             .setCallback(this::beaconInput)
@@ -80,6 +78,27 @@ public final class AdvancedBeaconGui extends SimpleGui {
         this.drawLevel();
         this.drawFuel();
         this.drawButtons();
+    }
+
+    @Override
+    public boolean onAnyClick(int index, ClickType type, SlotActionType action) {
+        if (type != ClickType.MOUSE_LEFT_SHIFT ||
+            action != SlotActionType.QUICK_MOVE) return false;
+
+        // Get the clicked slot.
+        var stack = this.player
+            .currentScreenHandler
+            .getSlot(index)
+            .getStack();
+        if (stack == null || stack.isEmpty()) return false;
+
+        // Check if the stack is blaze powder.
+        if (stack.getItem() == Items.BLAZE_POWDER) {
+            this.inputFuel(stack);
+            return false;
+        }
+
+        return false;
     }
 
     /**
@@ -126,26 +145,31 @@ public final class AdvancedBeaconGui extends SimpleGui {
         })
             .setName(Text.literal("Fuel Status: " + fuelLevel.getName())
                 .setStyle(Style.EMPTY.withItalic(false))
-                .formatted(fuelLevel.getColor()))
-            .setLore(List.of(
+                .formatted(fuelLevel.getColor()));
+
+        if (this.beacon.mwhrd$getFuel() < BeaconFuel.HIGH.getHighBound()) {
+            fuelItem.addLoreLine(
                 Text.literal("Use Blaze Powder to refuel the beacon!")
                     .setStyle(Style.EMPTY.withItalic(false))
-                    .formatted(Formatting.AQUA),
-                Text.empty(),
-                Text.literal("Fuel Remaining")
-                    .setStyle(Style.EMPTY.withItalic(false))
-                    .formatted(Formatting.GRAY),
-                Text.literal(" " + this.beacon.mwhrd$getFuel() + " fuel")
-                    .setStyle(Style.EMPTY.withItalic(false))
-                    .formatted(Formatting.BLUE),
-                Text.literal("Hours Remaining")
-                    .setStyle(Style.EMPTY.withItalic(false))
-                    .formatted(Formatting.GRAY),
-                Text.literal(" " + fuelDuration + " hour(s)")
-                    .setStyle(Style.EMPTY.withItalic(false))
-                    .formatted(fuelLevel.getColor())
-            ))
-            .build();
+                    .formatted(Formatting.AQUA)
+            );
+        }
+
+        List.of(
+            Text.empty(),
+            Text.literal("Fuel Remaining")
+                .setStyle(Style.EMPTY.withItalic(false))
+                .formatted(Formatting.GRAY),
+            Text.literal(" " + this.beacon.mwhrd$getFuel() + " fuel")
+                .setStyle(Style.EMPTY.withItalic(false))
+                .formatted(Formatting.BLUE),
+            Text.literal("Hours Remaining")
+                .setStyle(Style.EMPTY.withItalic(false))
+                .formatted(Formatting.GRAY),
+            Text.literal(" " + fuelDuration + " hour(s)")
+                .setStyle(Style.EMPTY.withItalic(false))
+                .formatted(fuelLevel.getColor())
+        ).forEach(fuelItem::addLoreLine);
 
         for (var slot : FUEL) {
             this.setSlot(slot, fuelItem);
@@ -157,9 +181,9 @@ public final class AdvancedBeaconGui extends SimpleGui {
      */
     private void drawButtons() {
         this.setSlot(ICON, new GuiElementBuilder(Items.BEACON)
-            .setName(Text.literal("Upgrade Beacon")
+            .setName(Text.literal("Advanced Beacon")
                 .formatted(Formatting.YELLOW))
-            .addLoreLine(Text.literal("Drag an upgrade here to apply it!")
+            .addLoreLine(Text.literal("Drop an upgrade/item here to apply/use it!")
                 .setStyle(Style.EMPTY.withItalic(false))
                 .formatted(Formatting.GRAY))
             .setCallback(this::beaconInput));
@@ -195,9 +219,18 @@ public final class AdvancedBeaconGui extends SimpleGui {
                         .formatted(Formatting.RED))
                     .setCallback((_i, type, action) -> {
                         if (type == ClickType.MOUSE_RIGHT) {
-                            this.beacon.mwhrd$getEffectMap().remove(upgrade);
+                            var power = this.beacon
+                                .mwhrd$getEffectMap()
+                                .remove(upgrade);
+                            if (power != null) {
+                                power.delete();
+                                this.beacon.mwhrd$save();
+                            }
                         } else {
-                            // TODO: Show menu.
+                            var power = this.beacon.mwhrd$getEffectMap().get(upgrade);
+                            if (power != null) {
+                                power.showGui(this.vanillaBeacon.getWorld(), this.getPlayer());
+                            }
                         }
 
                         this.drawButtons();
@@ -216,6 +249,12 @@ public final class AdvancedBeaconGui extends SimpleGui {
 
         var cursorItem = this.player.currentScreenHandler.getCursorStack();
         if (cursorItem.isEmpty()) return;
+
+        // Check if the item is fuel.
+        if (cursorItem.getItem() == Items.BLAZE_POWDER) {
+            this.inputFuel(cursorItem);
+            return;
+        }
 
         // Check if the item is an upgrade.
         var data = cursorItem.get(DataComponentTypes.CUSTOM_DATA);
@@ -243,11 +282,50 @@ public final class AdvancedBeaconGui extends SimpleGui {
 
         // Add the upgrade to the beacon.
         this.beacon.mwhrd$addEffect(upgrade);
+        this.beacon.mwhrd$save();
 
         // Decrement the stack.
         cursorItem.decrement(1);
 
         this.drawButtons();
+    }
+
+    /**
+     * Helper method to update the fuel of the beacon.
+     */
+    private void inputFuel(ItemStack fuel) {
+        if (fuel.getItem() != Items.BLAZE_POWDER) return;
+
+        var fuelLevel = this.beacon.mwhrd$getFuel();
+        var maxFuel = BeaconFuel.HIGH.getHighBound();
+
+        if (fuelLevel >= maxFuel) {
+            this.getPlayer().sendMessage(Text.literal("Beacon is already full on fuel!")
+                .formatted(Formatting.RED));
+            return;
+        }
+
+        var added = 0;
+        while (fuel.getCount() > 0) {
+            // Decrement the fuel stack.
+            fuel.decrement(1);
+
+            // Add the fuel to the beacon.
+            added += 2;
+            this.beacon.mwhrd$setFuel(Math.min(maxFuel,
+                fuelLevel = fuelLevel + 2));
+
+            if (fuelLevel >= maxFuel) {
+                break;
+            }
+        }
+
+        this.beacon.mwhrd$save();
+        this.drawFuel();
+
+        this.getPlayer().sendMessage(Text.literal("Added %s fuel to the beacon!"
+            .formatted(added))
+            .formatted(Formatting.GREEN));
     }
 
     /**

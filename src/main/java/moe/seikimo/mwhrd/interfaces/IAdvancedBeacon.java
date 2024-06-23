@@ -4,10 +4,14 @@ import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconPower;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.World;
 
 import java.util.*;
 
 public interface IAdvancedBeacon {
+    World getWorld();
+
     NbtCompound mwhrd$serialize();
 
     /**
@@ -15,6 +19,10 @@ public interface IAdvancedBeacon {
      */
     void mwhrd$deserialize(NbtCompound nbt);
 
+    boolean mwhrd$hasInitialized();
+    void mwhrd$setInitialized(boolean initialized);
+
+    void mwhrd$save();
     void mwhrd$destroy();
 
     void mwhrd$setAdvanced(boolean advanced);
@@ -48,5 +56,17 @@ public interface IAdvancedBeacon {
      */
     default NbtComponent mwhrd$serializeComponent() {
         return NbtComponent.of(this.mwhrd$serialize());
+    }
+
+    /**
+     * @return The players that were last seen in range of the beacon.
+     */
+    default List<ServerPlayerEntity> mwhrd$getPlayers() {
+        var server = this.getWorld().getServer();
+        if (server == null) return Collections.emptyList();
+
+        return this.mwhrd$getLastPlayers().stream()
+            .map(server.getPlayerManager()::getPlayer)
+            .toList();
     }
 }
