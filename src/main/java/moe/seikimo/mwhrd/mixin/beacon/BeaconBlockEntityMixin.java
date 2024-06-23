@@ -1,6 +1,9 @@
 package moe.seikimo.mwhrd.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import moe.seikimo.data.DatabaseUtils;
+import moe.seikimo.mwhrd.interfaces.IDBObject;
+import moe.seikimo.mwhrd.models.BeaconModel;
 import moe.seikimo.mwhrd.utils.Utils;
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconLevel;
@@ -30,7 +33,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.*;
 
 @Mixin(BeaconBlockEntity.class)
-public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdvancedBeacon {
+public abstract class BeaconBlockEntityMixin
+    extends BlockEntity
+    implements IAdvancedBeacon, IDBObject<BeaconModel> {
     @Unique private static final long FUEL_TIME = 20L * 60L * 60L; // 20 ticks * 60 seconds * 60 minutes
 
     @Shadow
@@ -62,6 +67,13 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
     ) {
         if (!(blockEntity instanceof IAdvancedBeacon beacon)) return;
         var level = blockEntity.level;
+
+        // Load the beacon's data.
+        if (blockEntity instanceof IDBObject<?> dbObj) {
+            if (dbObj.mwhrd$getData() == null) {
+                dbObj.mwhrd$loadData();
+            }
+        }
 
         // Call update if the entity hasn't been initialized.
         if (!beacon.mwhrd$hasInitialized()) {
@@ -150,6 +162,8 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
 
     @Unique private final Map<BeaconEffect, BeaconPower> powers = new HashMap<>();
 
+    @Unique private BeaconModel model;
+
     public BeaconBlockEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
@@ -167,6 +181,27 @@ public abstract class BeaconBlockEntityMixin extends BlockEntity implements IAdv
     @Inject(method = "readNbt", at = @At("RETURN"))
     public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup, CallbackInfo ci) {
         this.mwhrd$deserialize(nbt);
+    }
+
+    /// </editor-fold>
+
+    /// <editor-fold desc="IDBObject">
+
+    @Override
+    public void mwhrd$loadData() {
+        this.model = DatabaseUtils.fetch(
+            BeaconModel.class, "_id", this.getPos().asLong());
+        if (this.model == null) {
+            this.model = new BeaconModel();
+            this.model.setBlockPos(this.getPos().asLong());
+        }
+
+        this.model.setHandle((BeaconBlockEntity) (Object) this);
+    }
+
+    @Override
+    public BeaconModel mwhrd$getData() {
+        return this.model;
     }
 
     /// </editor-fold>
