@@ -6,4 +6,7 @@ public interface IPlayerConditions {
 
     void mwhrd$setInTrialChamber(boolean inTrialChamber);
     boolean mwhrd$isInTrialChamber();
+
+    void mwhrd$setClosedCooldown(long until);
+    long mwhrd$getClosedCooldown();
 }

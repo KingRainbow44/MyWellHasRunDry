@@ -179,6 +179,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             for (var player : server.getPlayerManager().getPlayerList()) {
                 MyWellHasRunDry.setAdventureMode(player);
                 DebuffManager.applyDebuffs(player);
+                BeaconManager.openBeaconMenu(player);
             }
         });
 

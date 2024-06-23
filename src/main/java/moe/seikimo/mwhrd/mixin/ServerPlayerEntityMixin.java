@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IPlayerConditions {
     @Unique private boolean trialChamber = false, ominous = false;
+    @Unique private long closedCooldown = 0;
 
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
@@ -40,5 +41,15 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
     @Override
     public boolean mwhrd$isInTrialChamber() {
         return this.trialChamber;
+    }
+
+    @Override
+    public void mwhrd$setClosedCooldown(long until) {
+        this.closedCooldown = until;
+    }
+
+    @Override
+    public long mwhrd$getClosedCooldown() {
+        return this.closedCooldown;
     }
 }
