@@ -33,8 +33,7 @@ public final class DebuffManager {
     );
 
     private static final Identifier BEDROCK_BUFF = Identifier.of("mwhrd", "bedrock_buff");
-    private static final Identifier DEBUFF_1_ID = Identifier.of("mwhrd", "debuff_1");
-    private static final Identifier DEBUFF_2_ID = Identifier.of("mwhrd", "debuff_2");
+    private static final Identifier DEBUFF = Identifier.of("mwhrd", "debuff");
 
     /**
      * Apply debuffs to the player.
@@ -48,8 +47,7 @@ public final class DebuffManager {
         // Check if the player is hardcore.
         var condPlayer = (IPlayerConditions) player;
         if (condPlayer.mwhrd$isHardcore()) {
-            maxHealth.removeModifier(DEBUFF_1_ID);
-            maxHealth.removeModifier(DEBUFF_2_ID);
+            maxHealth.removeModifier(DEBUFF);
             return;
         }
 
@@ -57,8 +55,7 @@ public final class DebuffManager {
         var nearbyPlayers = Utils.getNearbyPlayers(player, 15);
         if (nearbyPlayers.size() <= 1) {
             // Remove all debuffs.
-            maxHealth.removeModifier(DEBUFF_1_ID);
-            maxHealth.removeModifier(DEBUFF_2_ID);
+            maxHealth.removeModifier(DEBUFF);
             return;
         }
 
@@ -69,8 +66,7 @@ public final class DebuffManager {
         var playerArmor = ArmorEnum.identify(player.getArmorItems());
         if (playerArmor == ArmorEnum.NONE) {
             // Remove all debuffs.
-            maxHealth.removeModifier(DEBUFF_1_ID);
-            maxHealth.removeModifier(DEBUFF_2_ID);
+            maxHealth.removeModifier(DEBUFF);
             return;
         }
 
@@ -80,20 +76,12 @@ public final class DebuffManager {
             var nearbyArmor = ArmorEnum.identify(nearby.getArmorItems());
             if (nearbyArmor == ArmorEnum.NONE) continue;
 
-            if (playerArmor == ArmorEnum.NETHERITE &&
-                nearbyArmor == ArmorEnum.NETHERITE) {
-                debuffId = DEBUFF_1_ID;
-                debuffValue = -4.0f;
-                break;
-            } else {
-                debuffId = DEBUFF_2_ID;
-                debuffValue = -2.0f;
-            }
+            debuffId = DEBUFF;
+            debuffValue = -2.0f;
         }
 
         if (debuffId == null) {
-            maxHealth.removeModifier(DEBUFF_1_ID);
-            maxHealth.removeModifier(DEBUFF_2_ID);
+            maxHealth.removeModifier(DEBUFF);
             return;
         }
 
@@ -101,8 +89,7 @@ public final class DebuffManager {
         if (maxHealth.hasModifier(debuffId)) {
             return;
         }
-        maxHealth.removeModifier(DEBUFF_1_ID);
-        maxHealth.removeModifier(DEBUFF_2_ID);
+        maxHealth.removeModifier(DEBUFF);
 
         maxHealth.addTemporaryModifier(new EntityAttributeModifier(
             debuffId, debuffValue, EntityAttributeModifier.Operation.ADD_VALUE
