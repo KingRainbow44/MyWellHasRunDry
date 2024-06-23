@@ -70,7 +70,8 @@ public abstract class ServerPlayerEntityMixin
     ) {
         if (this.mwhrd$isHardcore() &&
             !(source.getAttacker() instanceof PlayerEntity)) {
-            return super.damage(source, amount * 3f);
+            return super.damage(source, amount *
+                (this.mwhrd$isInTrialChamber() ? 2 : 3));
         }
 
         return super.damage(source, amount);
