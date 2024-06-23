@@ -6,10 +6,7 @@ import eu.pb4.sgui.api.gui.SignGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import lombok.Getter;
 import lombok.Setter;
-import moe.seikimo.mwhrd.beacon.BeaconEntry;
-import moe.seikimo.mwhrd.beacon.BeaconFuel;
-import moe.seikimo.mwhrd.beacon.BeaconManager;
-import moe.seikimo.mwhrd.beacon.BeaconPower;
+import moe.seikimo.mwhrd.beacon.*;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -46,7 +43,7 @@ public final class TeleportationPower extends BeaconPower {
 
     @Override
     public void fuelTick(int fuel) {
-        if (BeaconFuel.MEDIUM.compare(BeaconFuel.getFuel(fuel))) {
+        if (this.minimumFuel().compare(BeaconFuel.getFuel(fuel))) {
             this.setForceDisabled(false);
             return;
         }
@@ -54,6 +51,11 @@ public final class TeleportationPower extends BeaconPower {
         this.setForceDisabled(true);
         this.setEnabled(false);
         this.update(this.world);
+    }
+
+    @Override
+    public BeaconFuel minimumFuel() {
+        return BeaconFuel.MEDIUM;
     }
 
     @Override

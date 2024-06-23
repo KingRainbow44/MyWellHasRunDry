@@ -31,6 +31,13 @@ public abstract class BeaconPower {
     public void fuelTick(int fuel) {}
 
     /**
+     * @return The minimum fuel required to activate this beacon power.
+     */
+    public BeaconFuel minimumFuel() {
+        return BeaconFuel.UNSTABLE;
+    }
+
+    /**
      * Invoked when the power is added for the first time.
      */
     public void add(World world) {}

@@ -13,16 +13,21 @@ public final class FlightPower extends BeaconPower {
 
     @Override
     public void fuelTick(int fuel) {
-        if (!BeaconFuel.LOW.compare(BeaconFuel.getFuel(fuel))) {
+        if (!this.minimumFuel().compare(BeaconFuel.getFuel(fuel))) {
             this.handle.mwhrd$getPlayers().forEach(player ->
                 this.remove(this.world, player));
         }
     }
 
     @Override
+    public BeaconFuel minimumFuel() {
+        return BeaconFuel.LOW;
+    }
+
+    @Override
     public void apply(World world, int level, PlayerEntity player) {
         var fuel = this.handle.mwhrd$getFuel();
-        if (!BeaconFuel.LOW.compare(BeaconFuel.getFuel(fuel))) return;
+        if (!this.minimumFuel().compare(BeaconFuel.getFuel(fuel))) return;
 
         player.getAbilities().allowFlying = true;
         player.sendAbilitiesUpdate();
