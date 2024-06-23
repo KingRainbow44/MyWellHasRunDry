@@ -83,7 +83,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
     @Override
     public boolean onAnyClick(int index, ClickType type, SlotActionType action) {
         if (type != ClickType.MOUSE_LEFT_SHIFT ||
-            action != SlotActionType.QUICK_MOVE) return false;
+            action != SlotActionType.QUICK_MOVE) return true;
 
         // Get the clicked slot.
         var stack = this.player
@@ -98,7 +98,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
             return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
