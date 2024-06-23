@@ -17,13 +17,13 @@ import java.util.Map;
 @Getter
 @RequiredArgsConstructor
 public enum BeaconEffect {
-    DISABLE_SPAWNS("disable_spawns", "Disable Spawns", Items.TORCH, BeaconPower.Empty::new),
-    UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", Items.EXPERIENCE_BOTTLE, BeaconPower.Empty::new),
-    PLOT_PURGER("plot_purger", "Plot Purger", Items.WITHER_SKELETON_SKULL, BeaconPower.Empty::new),
-    PIXEL_PRINTER("pixel_printer", "Pixel Printer", Items.CRAFTER, BeaconPower.Empty::new),
-    FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", Items.ELYTRA, FlightPower::new),
-    EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", Items.ENDER_EYE, TeleportationPower::new),
-    WORLDEDIT("worldedit", "Builder's Grace", Items.WOODEN_AXE, BeaconPower.Empty::new)
+    DISABLE_SPAWNS("disable_spawns", "Disable Spawns", BeaconLevel.TIER_1, Items.TORCH, BeaconPower.Empty::new),
+    UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", BeaconLevel.TIER_2, Items.EXPERIENCE_BOTTLE, BeaconPower.Empty::new),
+    PLOT_PURGER("plot_purger", "Plot Purger", BeaconLevel.TIER_4, Items.WITHER_SKELETON_SKULL, BeaconPower.Empty::new),
+    PIXEL_PRINTER("pixel_printer", "Pixel Printer", BeaconLevel.TIER_1, Items.CRAFTER, BeaconPower.Empty::new),
+    FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", BeaconLevel.TIER_3, Items.ELYTRA, FlightPower::new),
+    EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", BeaconLevel.TIER_2, Items.ENDER_EYE, TeleportationPower::new),
+    WORLDEDIT("worldedit", "Builder's Grace", BeaconLevel.TIER_4, Items.WOODEN_AXE, BeaconPower.Empty::new)
     ;
 
     private static final Map<String, BeaconEffect> idMap = new HashMap<>();
@@ -42,6 +42,7 @@ public enum BeaconEffect {
 
     final String id;
     final String displayName;
+    final BeaconLevel minLevel;
     final Item displayItem;
     final BeaconPower.Initializer callbacks;
 

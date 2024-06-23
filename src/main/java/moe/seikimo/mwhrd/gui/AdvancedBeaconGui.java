@@ -270,13 +270,19 @@ public final class AdvancedBeaconGui extends SimpleGui {
         // Check if the upgrade is already applied.
         var upgrades = this.beacon.mwhrd$getEffectList();
         if (upgrades.contains(upgrade)) {
-            this.player.sendMessage(Text.literal("Upgrade already applied!"), true);
+            this.player.sendMessage(Text.literal("Upgrade already applied!"));
             return;
         }
 
         // Check if the upgrades are all full.
         if (upgrades.size() >= 3) {
-            this.player.sendMessage(Text.literal("All upgrade slots are full!"), true);
+            this.player.sendMessage(Text.literal("All upgrade slots are full!"));
+            return;
+        }
+
+        // Check if the beacon is at the required level.
+        if (this.vanillaBeacon.level < upgrade.getMinLevel().ordinal()) {
+            this.player.sendMessage(Text.literal("Beacon is not at the required level!"));
             return;
         }
 
