@@ -10,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconManager;
-import moe.seikimo.mwhrd.commands.DebugCommand;
-import moe.seikimo.mwhrd.commands.LootCommand;
-import moe.seikimo.mwhrd.commands.PartyCommand;
-import moe.seikimo.mwhrd.commands.ReturnCommand;
+import moe.seikimo.mwhrd.commands.*;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.DebuffManager;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
@@ -55,28 +52,25 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public final class MyWellHasRunDry implements DedicatedServerModInitializer {
-    // TODO: Add database system and keep track of if player has seen changelog.
-    private static final List<Text> CHANGELOG = List.of(
-        Text.literal("My Well Has Run Dry: ")
+    public static final List<Text> CHANGELOG = List.of(
+        Text.literal(" My Well Has Run Dry: ")
             .formatted(Formatting.BOLD, Formatting.AQUA)
             .append(Text.literal("v" + BuildConfig.VERSION)
                 .formatted(Formatting.YELLOW)),
-        Text.literal("Minecraft: Luck and Luxury")
+        Text.literal(" Minecraft: Luck and Luxury")
             .formatted(Formatting.ITALIC, Formatting.GOLD),
         Text.empty(),
-        Text.literal(" - Overhauled ominous trial chambers")
+        Text.literal("  - Overhauled ominous trial chambers")
             .formatted(Formatting.DARK_GRAY),
-        Text.literal(" - Adventure mode is enforced in trial chambers")
+        Text.literal("  - Adventure mode is enforced in trial chambers")
             .formatted(Formatting.DARK_GRAY),
-        Text.literal(" - New powerful beacons have been added")
+        Text.literal("  - New powerful beacons have been added")
             .formatted(Formatting.DARK_GRAY),
-        Text.literal("   -> Materials can be found from trial chambers")
+        Text.literal("  - Vaults have a 50% chance to double-reward")
             .formatted(Formatting.DARK_GRAY),
-        Text.literal(" - Vaults have a 50% chance to double-reward")
+        Text.literal("  - Standing near heavy-armored players causes debuff")
             .formatted(Formatting.DARK_GRAY),
-        Text.literal(" - Standing near heavy-armored players causes debuff")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal(" - Removed Bedrock player attack cooldown")
+        Text.literal("  - Removed Bedrock player attack cooldown")
             .formatted(Formatting.DARK_GRAY)
     );
 
@@ -158,6 +152,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             DebugCommand.register(dispatcher);
             PartyCommand.register(dispatcher);
             ReturnCommand.register(dispatcher);
+            ChangelogCommand.register(dispatcher);
         });
 
         // Wait for the server to start.
@@ -216,6 +211,13 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             if (!GeyserApi.api().isBedrockPlayer(player.getUuid())) {
                 CHANGELOG.forEach(player::sendMessage);
             } else {
+                // Send version message.
+                for (var i = 0; i < 2; i++) {
+                    player.sendMessage(CHANGELOG.get(i));
+                }
+                player.sendMessage(Text.literal("Run /changelog for all changes.")
+                    .formatted(Formatting.DARK_GRAY));
+
                 // Apply Bedrock player buff.
                 DebuffManager.applyBedrockBuff(player);
             }
