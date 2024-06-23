@@ -24,6 +24,8 @@ public final class DebugCommand {
                     .executes(DebugCommand::set)))
             .then(literal("hardcore")
                 .executes(DebugCommand::unsetHardcore))
+            .then(literal("unban")
+                .executes(DebugCommand::unban))
             .executes(DebugCommand::usage));
     }
 
@@ -81,6 +83,28 @@ public final class DebugCommand {
         var data = dbObject.mwhrd$getData();
         if (data instanceof PlayerModel model) {
             model.unsetHardcore(true);
+        } else {
+            context.getSource().sendError(Text.literal(
+                "Player data is not a PlayerModel"
+            ));
+            return 1;
+        }
+
+        return 1;
+    }
+
+    private static int unban(CommandContext<ServerCommandSource> context) {
+        var player = context.getSource().getPlayer();
+        if (!(player instanceof IDBObject<?> dbObject)) {
+            context.getSource().sendError(Text.literal(
+                "Player is not an IDBObject"
+            ));
+            return 1;
+        }
+
+        var data = dbObject.mwhrd$getData();
+        if (data instanceof PlayerModel model) {
+            model.unbanPlayer();
         } else {
             context.getSource().sendError(Text.literal(
                 "Player data is not a PlayerModel"

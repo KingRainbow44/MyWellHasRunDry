@@ -102,8 +102,13 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
                 try {
                     Thread.sleep((long) 1e3);
                 } catch (InterruptedException ignored) { }
+
+                var world = this.handle.getServerWorld();
+                var pos = world.getSpawnPos();
+                this.handle.teleport(world, pos.getX(), pos.getY(), pos.getZ(), 0.0F, 0.0F);
+
                 this.handle.interactionManager.changeGameMode(GameMode.SURVIVAL);
-            });
+            }).start();
         }
     }
 
