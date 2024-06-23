@@ -139,11 +139,11 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
         // Initialize MongoDB.
         MyWellHasRunDry.mongoServer = new MongoServer(new H2Backend("config/mwhrd/database.mv"));
-        MyWellHasRunDry.mongoServer.bind();
+        MyWellHasRunDry.mongoServer.bind("0.0.0.0", 8018);
 
         // Initialize Morphia.
         var store = MyWellHasRunDry.datastore =
-            Morphia.createDatastore(MongoClients.create(), "mwhrd");
+            Morphia.createDatastore(MongoClients.create("mongodb://localhost:8018"), "mwhrd");
         DatabaseUtils.DATASTORE.set(store);
 
         // Register the item despawn thread.

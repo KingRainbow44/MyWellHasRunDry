@@ -26,5 +26,10 @@
         "fabricloader": ">=${loader_version}",
         "fabric": "*",
         "minecraft": "${minecraft_version}"
-    }
+    },
+    "jars": [
+        {
+            "file": "META-INF/deps.jar"
+        }
+    ]
 }
