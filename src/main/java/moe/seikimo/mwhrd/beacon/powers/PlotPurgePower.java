@@ -4,6 +4,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.beacon.BeaconFuel;
+import moe.seikimo.mwhrd.beacon.BeaconLevel;
 import moe.seikimo.mwhrd.beacon.BeaconPower;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.ISelectionPlayer;
@@ -13,6 +14,7 @@ import moe.seikimo.mwhrd.utils.Utils;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
@@ -30,6 +32,7 @@ import static moe.seikimo.mwhrd.utils.GUI.BORDER;
 
 @Slf4j
 public final class PlotPurgePower extends BeaconPower {
+    private static final int FUEL_COST = 4; // The cost in fuel per hour.
     private static final Set<Block> BLACKLISTED = Set.of();
 
     public PlotPurgePower(BlockPos blockPos) {
@@ -74,9 +77,6 @@ public final class PlotPurgePower extends BeaconPower {
                         .filter(state -> state.getBlock().getLootTableKey() != LootTables.EMPTY)
                         .map(state -> state.getBlock().asItem().getDefaultStack())
                         .forEach(item -> data.getItemStorage().offer(item));
-                    data.save(() -> player.sendMessage(
-                        Text.literal("Added blocks to the storage.")
-                            .formatted(Formatting.GREEN)));
                 } else {
                     player.sendMessage(Text.literal("Failed to add blocks to the storage.")
                         .formatted(Formatting.RED));
@@ -194,11 +194,35 @@ public final class PlotPurgePower extends BeaconPower {
          * Invokes the power to remove blocks.
          */
         private void removeBlocks() {
-            this.handle.removeBlocks(
-                this.player,
-                this.select.mwhrd$getPos1(),
-                this.select.mwhrd$getPos2()
-            );
+            var pos1 = this.select.mwhrd$getPos1();
+            var pos2 = this.select.mwhrd$getPos2();
+
+            // Check if the rectangle falls out of the beacon's range.
+            var advBeacon = this.handle.handle;
+            var blockEntity = (BeaconBlockEntity) advBeacon;
+
+            var level = BeaconLevel.of(blockEntity.level);
+            if (level == null) return;
+            var range = level.getRange();
+
+            var pos = blockEntity.getPos();
+            if (!pos.isWithinDistance(pos1.toCenterPos(), range) ||
+                !pos.isWithinDistance(pos2.toCenterPos(), range)) {
+                this.player.sendMessage(Text.literal("The selection is out of range!")
+                    .formatted(Formatting.RED));
+                return;
+            }
+
+            // Check if the beacon has enough fuel.
+            var fuelCost = level.getFuelCost() * FUEL_COST;
+            if (advBeacon.mwhrd$getFuel() < fuelCost) {
+                this.player.sendMessage(Text.literal("The beacon does not have enough fuel!")
+                    .formatted(Formatting.RED));
+                return;
+            }
+            advBeacon.mwhrd$setFuel(advBeacon.mwhrd$getFuel() - fuelCost);
+
+            this.handle.removeBlocks(this.player, pos1, pos2);
         }
     }
 }

@@ -19,4 +19,19 @@ public enum BeaconLevel {
     final int range;
     final int fuelCost; // This is fuel per hour.
     final Item item;
+
+    /**
+     * Get the BeaconLevel by level.
+     *
+     * @param level The level of the beacon.
+     * @return The BeaconLevel with the given level.
+     */
+    public static BeaconLevel of(int level) {
+        for (BeaconLevel beaconLevel : values()) {
+            if (beaconLevel.level == level) {
+                return beaconLevel;
+            }
+        }
+        return null;
+    }
 }
