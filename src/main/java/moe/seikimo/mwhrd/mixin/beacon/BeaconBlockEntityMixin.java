@@ -81,6 +81,7 @@ public abstract class BeaconBlockEntityMixin
 
             beacon.mwhrd$getEffectMap().forEach(
                 (effect, power) -> power.init(beacon, world));
+            beacon.mwhrd$getEffectMap().putAll(beacon.mwhrd$default());
         }
 
         // Remove effects from nearby players.
@@ -221,6 +222,7 @@ public abstract class BeaconBlockEntityMixin
     @Override
     public void mwhrd$addEffect(BeaconEffect effect) {
         var instance = effect.create(this.getPos());
+        instance.init(this, this.getWorld());
         instance.add(this.getWorld());
 
         this.powers.put(effect, instance);

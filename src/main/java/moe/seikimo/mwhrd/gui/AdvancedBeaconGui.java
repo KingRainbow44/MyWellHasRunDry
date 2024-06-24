@@ -13,6 +13,7 @@ import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -24,7 +25,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.joml.Math;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static moe.seikimo.mwhrd.utils.GUI.BORDER;
 
@@ -32,6 +35,10 @@ public final class AdvancedBeaconGui extends SimpleGui {
     private static final int DESTROY = 4;
     private static final int ICON = 22;
     private static final int STORAGE = 49;
+
+    private static final int EFFECTS = 29;
+    private static final int SETTINGS = 33;
+
     private static final int[] UPGRADES = {30, 31, 32};
 
     private static final int[] LEVELS = {36, 27, 18, 9};
@@ -202,7 +209,9 @@ public final class AdvancedBeaconGui extends SimpleGui {
                 .formatted(Formatting.GRAY))
             .setCallback(this::removeBeacon));
 
-        var upgrades = this.beacon.mwhrd$getEffectList();
+        var upgrades = this.beacon.mwhrd$getEffectList().stream()
+            .filter(BeaconEffect::isDraw)
+            .toList();
         for (var i = 0; i < 3; i++) {
             var index = UPGRADES[i];
             if (i >= upgrades.size()) {
@@ -254,6 +263,32 @@ public final class AdvancedBeaconGui extends SimpleGui {
                 .setStyle(GUI.CLEAR)
                 .formatted(Formatting.YELLOW))
             .setCallback(() -> BeaconStorageGui.open(this.beacon, this.getPlayer())));
+
+        this.setSlot(EFFECTS, new GuiElementBuilder(Items.POTION)
+            .setComponent(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(
+                Optional.empty(), Optional.of(0xFFA148), Collections.emptyList()))
+            .hideDefaultTooltip()
+            .setName(Text.literal("Potion Effects")
+                .formatted(Formatting.GREEN))
+            .addLoreLine(Text.literal("View and manage the beacon's potion effects.")
+                .setStyle(GUI.CLEAR)
+                .formatted(Formatting.GRAY))
+            .addLoreLine(Text.empty())
+            .addLoreLine(Text.literal("Click to change settings!")
+                .setStyle(GUI.CLEAR)
+                .formatted(Formatting.YELLOW))
+            .setCallback(() -> BeaconEffectsGui.open(this.beacon, this.getPlayer())));
+
+        this.setSlot(SETTINGS, new GuiElementBuilder(Items.COMPARATOR)
+            .setName(Text.literal("Beacon Settings")
+                .formatted(Formatting.GREEN))
+            .addLoreLine(Text.literal("Change the beacon's settings.")
+                .setStyle(GUI.CLEAR)
+                .formatted(Formatting.GRAY))
+            .addLoreLine(Text.empty())
+            .addLoreLine(Text.literal("Click to change settings!")
+                .setStyle(GUI.CLEAR)
+                .formatted(Formatting.YELLOW)));
     }
 
     /// <editor-fold desc="Button Callbacks">

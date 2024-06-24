@@ -2,18 +2,27 @@ package moe.seikimo.mwhrd.interfaces;
 
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconPower;
+import moe.seikimo.mwhrd.beacon.powers.EffectsPower;
 import moe.seikimo.mwhrd.models.BeaconModel;
 import moe.seikimo.mwhrd.utils.ItemStorage;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public interface IAdvancedBeacon {
+    Map<BeaconEffect, BeaconPower.Initializer> DEFAULT_POWERS = new HashMap<>() {{
+        this.put(BeaconEffect.EFFECTS, EffectsPower::new);
+        this.put(BeaconEffect.DISABLE_SPAWNS, BeaconPower.Empty::new);
+        this.put(BeaconEffect.UNBREAKING_TOOLS, BeaconPower.Empty::new);
+    }};
+
     World getWorld();
+    BlockPos getPos();
 
     NbtCompound mwhrd$serialize();
 
@@ -59,6 +68,18 @@ public interface IAdvancedBeacon {
      */
     default NbtComponent mwhrd$serializeComponent() {
         return NbtComponent.of(this.mwhrd$serialize());
+    }
+
+    /**
+     * @return The default powers for the beacon.
+     */
+    default Map<BeaconEffect, BeaconPower> mwhrd$default() {
+        var map = new HashMap<BeaconEffect, BeaconPower>();
+        for (var entry : DEFAULT_POWERS.entrySet()) {
+            map.put(entry.getKey(), entry.getValue().create(this.getPos()));
+        }
+
+        return map;
     }
 
     /**

@@ -18,13 +18,17 @@ import java.util.Map;
 @Getter
 @RequiredArgsConstructor
 public enum BeaconEffect {
-    DISABLE_SPAWNS("disable_spawns", "Disable Spawns", BeaconLevel.TIER_1, Items.TORCH, BeaconPower.Empty::new),
-    UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", BeaconLevel.TIER_2, Items.EXPERIENCE_BOTTLE, BeaconPower.Empty::new),
-    PLOT_PURGER("plot_purger", "Plot Purger", BeaconLevel.TIER_4, Items.WITHER_SKELETON_SKULL, PlotPurgePower::new),
-    PIXEL_PRINTER("pixel_printer", "Pixel Printer", BeaconLevel.TIER_1, Items.CRAFTER, BeaconPower.Empty::new),
-    FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", BeaconLevel.TIER_3, Items.ELYTRA, FlightPower::new),
-    EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", BeaconLevel.TIER_2, Items.ENDER_EYE, TeleportationPower::new),
-    WORLDEDIT("worldedit", "Builder's Grace", BeaconLevel.TIER_4, Items.WOODEN_AXE, BeaconPower.Empty::new)
+    // These are all effects which are applied but not displayed as a 'primary power'.
+    DISABLE_SPAWNS("disable_spawns", "Disable Spawns", BeaconLevel.TIER_1, Items.TORCH, BeaconPower.Empty::new, false),
+    UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", BeaconLevel.TIER_2, Items.EXPERIENCE_BOTTLE, BeaconPower.Empty::new, false),
+    EFFECTS("effects", "Effects", BeaconLevel.TIER_1, Items.POTION, BeaconPower.Empty::new, false),
+
+    // These are all effects which are displayed as a 'primary power'.
+    PLOT_PURGER("plot_purger", "Plot Purger", BeaconLevel.TIER_4, Items.WITHER_SKELETON_SKULL, PlotPurgePower::new, true),
+    PIXEL_PRINTER("pixel_printer", "Pixel Printer", BeaconLevel.TIER_1, Items.CRAFTER, BeaconPower.Empty::new, true),
+    FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", BeaconLevel.TIER_3, Items.ELYTRA, FlightPower::new, true),
+    EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", BeaconLevel.TIER_2, Items.ENDER_EYE, TeleportationPower::new, true),
+    WORLDEDIT("worldedit", "Builder's Grace", BeaconLevel.TIER_4, Items.WOODEN_AXE, BeaconPower.Empty::new, true)
     ;
 
     private static final Map<String, BeaconEffect> idMap = new HashMap<>();
@@ -46,6 +50,7 @@ public enum BeaconEffect {
     final BeaconLevel minLevel;
     final Item displayItem;
     final BeaconPower.Initializer callbacks;
+    final boolean draw;
 
     /**
      * @return A new instance of the BeaconPower.
