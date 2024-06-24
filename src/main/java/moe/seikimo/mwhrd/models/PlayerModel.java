@@ -61,11 +61,12 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
             maxHealth.setBaseValue(40);
         }
 
+        var interactionManager = handle.interactionManager;
         if (this.isBanned()) {
-            handle.interactionManager.changeGameMode(GameMode.SPECTATOR);
+            interactionManager.changeGameMode(GameMode.SPECTATOR);
             this.reset();
-        } else {
-            handle.interactionManager.changeGameMode(GameMode.SURVIVAL);
+        } else if (interactionManager.getGameMode() != GameMode.CREATIVE) {
+            interactionManager.changeGameMode(GameMode.SURVIVAL);
         }
     }
 
