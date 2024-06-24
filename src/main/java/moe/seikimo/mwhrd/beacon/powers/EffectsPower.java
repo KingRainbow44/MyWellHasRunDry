@@ -25,7 +25,7 @@ public final class EffectsPower extends BeaconPower {
     private static final List<RegistryEntry<StatusEffect>> DEFAULT_EFFECTS = List.of(
         StatusEffects.HASTE, StatusEffects.SPEED, StatusEffects.JUMP_BOOST,
         StatusEffects.STRENGTH, StatusEffects.RESISTANCE, StatusEffects.REGENERATION,
-        StatusEffects.LUCK, StatusEffects.NIGHT_VISION
+        StatusEffects.LUCK, StatusEffects.NIGHT_VISION, StatusEffects.ABSORPTION
     );
 
     private final Map<RegistryEntry<StatusEffect>, Integer> effects = new HashMap<>();
