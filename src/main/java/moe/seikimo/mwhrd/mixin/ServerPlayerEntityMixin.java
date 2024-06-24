@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
+import moe.seikimo.mwhrd.interfaces.ISelectionPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,11 +23,15 @@ import java.time.Duration;
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin
     extends PlayerEntity
-    implements IPlayerConditions, IDBObject<PlayerModel> {
+    implements IPlayerConditions,
+    IDBObject<PlayerModel>,
+    ISelectionPlayer {
     @Unique private boolean trialChamber = false, ominous = false;
     @Unique private long closedCooldown = 0;
 
     @Unique private PlayerModel model;
+
+    @Unique private BlockPos pos1, pos2;
 
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
@@ -94,6 +99,30 @@ public abstract class ServerPlayerEntityMixin
         }
 
         this.model.setHandle((ServerPlayerEntity) (Object) this);
+    }
+
+    /// </editor-fold>
+
+    /// <editor-fold desc="Selection Player">
+
+    @Override
+    public BlockPos mwhrd$getPos1() {
+        return this.pos1;
+    }
+
+    @Override
+    public BlockPos mwhrd$getPos2() {
+        return this.pos2;
+    }
+
+    @Override
+    public void mwhrd$setPos1(BlockPos pos1) {
+        this.pos1 = pos1;
+    }
+
+    @Override
+    public void mwhrd$setPos2(BlockPos pos) {
+        this.pos2 = pos;
     }
 
     /// </editor-fold>

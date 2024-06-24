@@ -3,6 +3,7 @@ package moe.seikimo.mwhrd.beacon;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import moe.seikimo.mwhrd.beacon.powers.FlightPower;
+import moe.seikimo.mwhrd.beacon.powers.PlotPurgePower;
 import moe.seikimo.mwhrd.beacon.powers.TeleportationPower;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -19,7 +20,7 @@ import java.util.Map;
 public enum BeaconEffect {
     DISABLE_SPAWNS("disable_spawns", "Disable Spawns", BeaconLevel.TIER_1, Items.TORCH, BeaconPower.Empty::new),
     UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", BeaconLevel.TIER_2, Items.EXPERIENCE_BOTTLE, BeaconPower.Empty::new),
-    PLOT_PURGER("plot_purger", "Plot Purger", BeaconLevel.TIER_4, Items.WITHER_SKELETON_SKULL, BeaconPower.Empty::new),
+    PLOT_PURGER("plot_purger", "Plot Purger", BeaconLevel.TIER_4, Items.WITHER_SKELETON_SKULL, PlotPurgePower::new),
     PIXEL_PRINTER("pixel_printer", "Pixel Printer", BeaconLevel.TIER_1, Items.CRAFTER, BeaconPower.Empty::new),
     FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", BeaconLevel.TIER_3, Items.ELYTRA, FlightPower::new),
     EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", BeaconLevel.TIER_2, Items.ENDER_EYE, TeleportationPower::new),

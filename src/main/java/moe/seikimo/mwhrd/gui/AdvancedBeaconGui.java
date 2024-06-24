@@ -9,6 +9,7 @@ import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconFuel;
 import moe.seikimo.mwhrd.beacon.BeaconLevel;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
+import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.component.DataComponentTypes;
@@ -30,6 +31,7 @@ import static moe.seikimo.mwhrd.utils.GUI.BORDER;
 public final class AdvancedBeaconGui extends SimpleGui {
     private static final int DESTROY = 4;
     private static final int ICON = 22;
+    private static final int STORAGE = 49;
     private static final int[] UPGRADES = {30, 31, 32};
 
     private static final int[] LEVELS = {36, 27, 18, 9};
@@ -237,6 +239,21 @@ public final class AdvancedBeaconGui extends SimpleGui {
                     }));
             }
         }
+
+        this.setSlot(STORAGE, new GuiElementBuilder(Items.ENDER_CHEST)
+            .setName(Text.literal("Beacon Storage")
+                .formatted(Formatting.GREEN))
+            .addLoreLine(Text.literal("A magical storage with infinite space!")
+                .setStyle(GUI.CLEAR)
+                .formatted(Formatting.GRAY))
+            .addLoreLine(Text.literal("Contains all building blocks for world manipulation.")
+                .setStyle(GUI.CLEAR)
+                .formatted(Formatting.GRAY))
+            .addLoreLine(Text.empty())
+            .addLoreLine(Text.literal("Click to access it!")
+                .setStyle(GUI.CLEAR)
+                .formatted(Formatting.YELLOW))
+            .setCallback(() -> BeaconStorageGui.open(this.beacon, this.getPlayer())));
     }
 
     /// <editor-fold desc="Button Callbacks">

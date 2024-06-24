@@ -16,6 +16,7 @@ import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.DebuffManager;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
 import moe.seikimo.mwhrd.utils.TrialChamberLoot;
+import moe.seikimo.mwhrd.worldedit.AsyncPool;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -146,6 +147,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
         // Register the item despawn thread.
         TrialChamberLoot.ItemThread.initialize();
+        // Create the async pool.
+        AsyncPool.initialize();
 
         // Register registry entries.
         MyWellHasRunDry.PLAYER_VAULT = Registry.register(
@@ -161,6 +164,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             ReturnCommand.register(dispatcher);
             HardcoreCommand.register(dispatcher);
             ChangelogCommand.register(dispatcher);
+
+            SelectionCommands.register(dispatcher);
         });
 
         // Wait for the server to start.

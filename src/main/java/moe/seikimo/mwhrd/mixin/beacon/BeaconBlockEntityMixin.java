@@ -275,6 +275,10 @@ public abstract class BeaconBlockEntityMixin
 
     @Override
     public void mwhrd$save() {
+        if (this.mwhrd$getData() != null) {
+            this.mwhrd$getData().save();
+        }
+
         var world = this.getWorld();
         if (world == null) return;
 

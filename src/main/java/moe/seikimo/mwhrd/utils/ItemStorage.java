@@ -5,6 +5,7 @@ import com.mojang.serialization.JsonOps;
 import moe.seikimo.general.EncodingUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,41 @@ import java.util.stream.IntStream;
 public final class ItemStorage {
     private final List<ItemStack> backing
         = Collections.synchronizedList(new ArrayList<>());
+
+    /**
+     * @return The size of the storage.
+     */
+    public int size() {
+        return this.backing.size();
+    }
+
+    /**
+     * Clears the storage.
+     */
+    public void clear() {
+        this.backing.clear();
+    }
+
+    /**
+     * Fetches an item from the storage.
+     *
+     * @param index The index of the item.
+     * @return The item at the index.
+     */
+    @Nullable
+    public ItemStack get(int index) {
+        return this.backing.get(index);
+    }
+
+    /**
+     * Removes an item from the storage.
+     *
+     * @param index The index of the item.
+     * @return The removed item.
+     */
+    public ItemStack remove(int index) {
+        return this.backing.remove(index);
+    }
 
     /**
      * Counts the quantity of a specific item in the storage.
@@ -37,6 +73,7 @@ public final class ItemStorage {
      * @param stack The item to add.
      */
     public void offer(ItemStack stack) {
+        // TODO: Try to add all items to existing stacks.
         this.backing.add(stack);
     }
 

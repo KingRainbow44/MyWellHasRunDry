@@ -2,10 +2,13 @@ package moe.seikimo.mwhrd.interfaces;
 
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconPower;
+import moe.seikimo.mwhrd.models.BeaconModel;
+import moe.seikimo.mwhrd.utils.ItemStorage;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -68,5 +71,31 @@ public interface IAdvancedBeacon {
         return this.mwhrd$getLastPlayers().stream()
             .map(server.getPlayerManager()::getPlayer)
             .toList();
+    }
+
+    /**
+     * Fetches the instance of a power from the beacon.
+     *
+     * @param power The class of the power to fetch.
+     * @return The power instance, or null if not present.
+     */
+    @Nullable
+    @SuppressWarnings("unchecked")
+    default <T> T mwhrd$getPower(Class<T> power) {
+        return (T) this.mwhrd$getEffectMap().values().stream()
+            .filter(power::isInstance)
+            .findFirst()
+            .orElse(null);
+    }
+
+    /**
+     * @return The storage of the beacon.
+     */
+    default ItemStorage mwhrd$getStorage() {
+        if (!(this instanceof IDBObject<?> dbObj))
+            throw new RuntimeException("what are you doing.");
+        if (!(dbObj.mwhrd$getData() instanceof BeaconModel model))
+            throw new RuntimeException("why are you doing.");
+        return model.getItemStorage();
     }
 }
