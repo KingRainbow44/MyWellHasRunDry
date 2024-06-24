@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "EAE",
+        "GCG",
+        " G "
+    ],
+    "key": {
+        "G": {
+            "item": "minecraft:gold_block"
+        },
+        "E": {
+            "tag": "minecraft:emerald_block"
+        },
+        "C": {
+            "item": "minecraft:end_crystal"
+        },
+        "A": {
+            "item": "minecraft:enchanted_golden_apple"
+        }
+    },
+    "result": {
+        "count": 1,
+        "id": "minecraft:totem_of_undying",
+        "components": {
+            "minecraft:max_stack_size": 64
+        }
+    }
+}

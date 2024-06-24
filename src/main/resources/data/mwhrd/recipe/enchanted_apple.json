@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "GTG",
+        "GAG",
+        "GGG"
+    ],
+    "key": {
+        "G": {
+            "item": "minecraft:gold_block"
+        },
+        "T": {
+            "tag": "minecraft:trim_templates"
+        },
+        "A": {
+            "item": "minecraft:apple"
+        }
+    },
+    "result": {
+        "count": 1,
+        "id": "minecraft:enchanted_golden_apple"
+    }
+}
