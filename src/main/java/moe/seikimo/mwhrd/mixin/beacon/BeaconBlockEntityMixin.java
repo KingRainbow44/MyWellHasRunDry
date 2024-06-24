@@ -79,9 +79,9 @@ public abstract class BeaconBlockEntityMixin
         if (!beacon.mwhrd$hasInitialized()) {
             beacon.mwhrd$setInitialized(true);
 
+            beacon.mwhrd$getEffectMap().putAll(beacon.mwhrd$default());
             beacon.mwhrd$getEffectMap().forEach(
                 (effect, power) -> power.init(beacon, world));
-            beacon.mwhrd$getEffectMap().putAll(beacon.mwhrd$default());
         }
 
         // Remove effects from nearby players.
