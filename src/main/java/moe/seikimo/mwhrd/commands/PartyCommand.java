@@ -19,7 +19,7 @@ public final class PartyCommand {
      * Registers the command with the dispatcher.
      */
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("party")
+        var party = dispatcher.register(literal("party")
             .requires(ServerCommandSource::isExecutedByPlayer)
             .then(literal("create")
                 .executes(PartyCommand::createParty))
@@ -42,6 +42,7 @@ public final class PartyCommand {
             .then(argument("username", StringArgumentType.word())
                 .executes(PartyCommand::invitePlayer))
             .executes(PartyCommand::usage));
+        dispatcher.register(literal("p").redirect(party));
     }
 
     private static int usage(CommandContext<ServerCommandSource> context) {

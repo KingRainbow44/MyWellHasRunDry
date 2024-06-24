@@ -15,8 +15,9 @@ public final class LootCommand {
      * Registers the command with the dispatcher.
      */
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("dungeonloot")
+        var loot = dispatcher.register(literal("dungeonloot")
             .executes(LootCommand::openGui));
+        dispatcher.register(literal("trialloot").redirect(loot));
     }
 
     private static int openGui(CommandContext<ServerCommandSource> context) {
