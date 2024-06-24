@@ -320,7 +320,9 @@ public final class AdvancedBeaconGui extends SimpleGui {
         }
 
         // Check if the upgrade is already applied.
-        var upgrades = this.beacon.mwhrd$getEffectList();
+        var upgrades = this.beacon.mwhrd$getEffectList().stream()
+            .filter(BeaconEffect::isDraw)
+            .toList();
         if (upgrades.contains(upgrade)) {
             this.player.sendMessage(Text.literal("Upgrade already applied!"));
             return;
