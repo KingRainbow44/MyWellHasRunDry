@@ -60,27 +60,10 @@ public final class TrialChamberLootGui extends SimpleGui {
     public TrialChamberLootGui(ServerPlayerEntity player) {
         super(ScreenHandlerType.GENERIC_9X6, player, false);
 
-        this.drawBorders();
+        GUI.drawBorders(this);
         this.drawButtons(player);
         this.drawPlayerLoot(player);
         this.setTitle(Text.literal("Trial Chamber Loot"));
-    }
-
-    /**
-     * Draws a light-gray glass pane border around the GUI.
-     */
-    private void drawBorders() {
-        // This draws the top & bottom border.
-        for (var i = 0; i < 9; i++) {
-            this.setSlot(i, BORDER);
-            this.setSlot(i + 45, BORDER);
-        }
-
-        // This draws the left & right border.
-        for (var i = 1; i < 6; i++) {
-            this.setSlot(i * 9, BORDER);
-            this.setSlot(i * 9 + 8, BORDER);
-        }
     }
 
     /**
@@ -177,36 +160,28 @@ public final class TrialChamberLootGui extends SimpleGui {
     private void drawPlayerLoot(ServerPlayerEntity player) {
         var loot = MyWellHasRunDry.getLoot(player);
 
-        var slotIndex = 0;
-        for (var i = 0; i < 28; i++) {
-            var slot = GUI.indexToSlot(slotIndex++);
-            if (i >= loot.size()) {
-                this.setSlot(slot, ItemStack.EMPTY);
-            } else {
-                var item = loot.get(i);
-                // Check if the item is blacklisted.
-                if (BLACKLIST.contains(item.getItem())) {
-                    slotIndex--;
-                    continue;
-                }
-
-                this.setSlot(slot, new GuiElementBuilder(item)
-                    .addLoreLine(Text.literal("Click to add to your inventory!")
-                        .setStyle(Style.EMPTY.withItalic(false))
-                        .withColor(Color.GREEN.getRGB()))
-                    .setCallback(() -> {
-                        // Add the item to the player's inventory.
-                        player.getInventory().offerOrDrop(item);
-                        // Remove the item from the player's loot.
-                        loot.remove(item);
-
-                        // Re-draw the player's loot.
-                        this.drawButtons(player);
-                        this.drawPlayerLoot(player);
-                    })
-                    .build());
+        GUI.drawBorderedList(this, loot, item -> {
+            // Check if the item is blacklisted.
+            if (BLACKLIST.contains(item.getItem())) {
+                return null;
             }
-        }
+
+            return new GuiElementBuilder(item)
+                .addLoreLine(Text.literal("Click to add to your inventory!")
+                    .setStyle(Style.EMPTY.withItalic(false))
+                    .withColor(Color.GREEN.getRGB()))
+                .setCallback(() -> {
+                    // Add the item to the player's inventory.
+                    player.getInventory().offerOrDrop(item);
+                    // Remove the item from the player's loot.
+                    loot.remove(item);
+
+                    // Re-draw the player's loot.
+                    this.drawButtons(player);
+                    this.drawPlayerLoot(player);
+                })
+                .build();
+        });
     }
 
     /**

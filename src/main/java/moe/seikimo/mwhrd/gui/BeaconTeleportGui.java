@@ -36,7 +36,7 @@ public final class BeaconTeleportGui extends SimpleGui {
 
         this.setTitle(Text.literal("Beacon Teleportation"));
 
-        this.drawBorders();
+        GUI.drawBorders(this);
         this.drawWaypoints();
         this.drawArrows();
     }
@@ -45,23 +45,6 @@ public final class BeaconTeleportGui extends SimpleGui {
     public void onClose() {
         var condPlayer = (IPlayerConditions) this.getPlayer();
         condPlayer.mwhrd$setClosedCooldown(System.currentTimeMillis() + 3000);
-    }
-
-    /**
-     * Draws a light-gray glass pane border around the GUI.
-     */
-    private void drawBorders() {
-        // This draws the top & bottom border.
-        for (var i = 0; i < 9; i++) {
-            this.setSlot(i, BORDER);
-            this.setSlot(i + 45, BORDER);
-        }
-
-        // This draws the left & right border.
-        for (var i = 1; i < 6; i++) {
-            this.setSlot(i * 9, BORDER);
-            this.setSlot(i * 9 + 8, BORDER);
-        }
     }
 
     /**
