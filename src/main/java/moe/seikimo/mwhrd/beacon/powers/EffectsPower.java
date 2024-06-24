@@ -42,13 +42,16 @@ public final class EffectsPower extends BeaconPower {
 
     @Override
     public void read(World world, NbtCompound tag) {
-        this.effects.clear();
-
         if (tag.contains("effects")) {
-            var effects = tag.getCompound("effects");
-            for (var key : effects.getKeys()) {
-                var effect = Registries.STATUS_EFFECT.getEntry(Identifier.tryParse(effects.getString(key)));
-                effect.ifPresent(e -> this.effects.put(e, effects.getInt(key)));
+            this.effects.clear();
+            var effects = tag.getList("effects", NbtElement.COMPOUND_TYPE);
+            for (var element : effects) {
+                var effect = (NbtCompound) element;
+                var id = Identifier.tryParse(effect.getString("id"));
+                var potency = effect.getInt("potency");
+
+                var entry = Registries.STATUS_EFFECT.getEntry(id);
+                entry.ifPresent(e -> this.effects.put(e, potency));
             }
         }
 
@@ -63,11 +66,13 @@ public final class EffectsPower extends BeaconPower {
 
     @Override
     public void write(World world, NbtCompound tag) {
-        var effects = new NbtCompound();
+        var effects = new NbtList();
         for (var entry : this.effects.entrySet()) {
             var effect = new NbtCompound();
-            effect.putString("id", entry.getKey().toString());
-            effect.putString("potency", entry.getValue().toString());
+            effect.putString("id", entry.getKey().getIdAsString());
+            effect.putInt("potency", entry.getValue());
+
+            effects.add(effect);
         }
         tag.put("effects", effects);
 

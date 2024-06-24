@@ -74,8 +74,10 @@ public interface IAdvancedBeacon {
      * @return The default powers for the beacon.
      */
     default Map<BeaconEffect, BeaconPower> mwhrd$default() {
+        var existing = this.mwhrd$getEffectMap();
         var map = new HashMap<BeaconEffect, BeaconPower>();
         for (var entry : DEFAULT_POWERS.entrySet()) {
+            if (existing.containsKey(entry.getKey())) continue;
             map.put(entry.getKey(), entry.getValue().create(this.getPos()));
         }
 
