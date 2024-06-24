@@ -85,7 +85,8 @@ public final class EffectsPower extends BeaconPower {
 
     @Override
     public void apply(World world, int level, PlayerEntity player) {
-        if (level <= 0) return;
+        if (level <= 0 || !this.minimumFuel().compare(
+            this.handle.mwhrd$fuel())) return;
 
         var duration = switch (level) {
             case 1 -> 10;
@@ -150,15 +151,6 @@ public final class EffectsPower extends BeaconPower {
         }
 
         this.effects.put(effect, potency - 1);
-    }
-
-    /**
-     * Removes an effect from the beacon.
-     *
-     * @param effect The effect to remove.
-     */
-    public void removeEffect(RegistryEntry<StatusEffect> effect) {
-        this.effects.remove(effect);
     }
 
     /**
