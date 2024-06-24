@@ -8,6 +8,7 @@ import moe.seikimo.mwhrd.beacon.BeaconPower;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandlerType;
@@ -18,7 +19,23 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Set;
+
 public final class PixelPrinterPower extends BeaconPower {
+    private static final Set<Item> BLACKLISTED = Set.of(
+        Items.BEACON, Items.SPAWNER, Items.NETHERITE_BLOCK,
+        Items.DIAMOND_BLOCK, Items.EMERALD_BLOCK, Items.IRON_BLOCK,
+        Items.GOLD_BLOCK, Items.LAPIS_BLOCK, Items.REDSTONE_BLOCK,
+        Items.ANCIENT_DEBRIS, Items.DRAGON_EGG, Items.BEDROCK,
+        Items.COAL_ORE, Items.DEEPSLATE_COAL_ORE, Items.IRON_ORE, Items.DEEPSLATE_IRON_ORE,
+        Items.COPPER_ORE, Items.DEEPSLATE_COPPER_ORE, Items.GOLD_ORE, Items.DEEPSLATE_GOLD_ORE,
+        Items.REDSTONE_ORE, Items.DEEPSLATE_REDSTONE_ORE, Items.LAPIS_ORE, Items.DEEPSLATE_LAPIS_ORE,
+        Items.DIAMOND_ORE, Items.DEEPSLATE_DIAMOND_ORE, Items.EMERALD_ORE, Items.DEEPSLATE_EMERALD_ORE,
+        Items.NETHER_GOLD_ORE, Items.NETHER_QUARTZ_ORE, Items.HEAVY_CORE,
+        Items.RAW_COPPER, Items.RAW_IRON, Items.RAW_GOLD, Items.TURTLE_EGG, Items.RESPAWN_ANCHOR,
+        Items.TNT, Items.BARRIER, Items.REINFORCED_DEEPSLATE
+    );
+
     private int itemFuel = 0; // Maxes out at 640. 1 fuel per item printed.
 
     public PixelPrinterPower(BlockPos blockPos) {
@@ -119,9 +136,6 @@ public final class PixelPrinterPower extends BeaconPower {
                 this.getPlayer().sendMessage(Text.literal("Converted beacon fuel into %s item fuel!"
                     .formatted(itemFuel))
                     .formatted(Formatting.GREEN));
-
-                this.drawFuel();
-                this.drawButtons();
             } else {
                 var stack = this.getPlayer()
                     .currentScreenHandler
@@ -136,7 +150,7 @@ public final class PixelPrinterPower extends BeaconPower {
                     return;
                 }
 
-                if (!item.canBeNested() || item.getMaxCount() != 64) {
+                if (!item.canBeNested() || item.getMaxCount() != 64 || BLACKLISTED.contains(item)) {
                     this.getPlayer().sendMessage(Text.literal("This item cannot be copied!")
                         .formatted(Formatting.RED));
                     return;
@@ -165,10 +179,10 @@ public final class PixelPrinterPower extends BeaconPower {
 
                 // Add to the player's inventory.
                 this.getPlayer().getInventory().offerOrDrop(copy);
-
-                this.drawFuel();
-                this.drawButtons();
             }
+
+            this.drawFuel();
+            this.drawButtons();
         }
     }
 }
