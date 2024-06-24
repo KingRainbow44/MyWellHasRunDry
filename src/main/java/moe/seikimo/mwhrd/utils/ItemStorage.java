@@ -76,8 +76,9 @@ public final class ItemStorage {
         var item = stack.getItem();
         var remaining = stack.getCount();
 
+        var depth = 0;
         ItemStack workingStack = null;
-        while (remaining > 0) {
+        while (remaining > 0 && depth++ < 333) {
             if (workingStack == null) {
                 workingStack = this.backing.stream()
                     .filter(s -> s.getItem() == item)
