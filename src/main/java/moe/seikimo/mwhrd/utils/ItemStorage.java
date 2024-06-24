@@ -73,8 +73,34 @@ public final class ItemStorage {
      * @param stack The item to add.
      */
     public void offer(ItemStack stack) {
-        // TODO: Try to add all items to existing stacks.
-        this.backing.add(stack);
+        var item = stack.getItem();
+        var remaining = stack.getCount();
+
+        ItemStack workingStack = null;
+        while (remaining > 0) {
+            if (workingStack == null) {
+                workingStack = this.backing.stream()
+                    .filter(s -> s.getItem() == item)
+                    .filter(s -> s.getCount() < item.getMaxCount())
+                    .findFirst()
+                    .orElse(null);
+                if (workingStack == null) {
+                    break;
+                }
+            }
+
+            // Calculate how many items we can take from 'remaining'
+            // without putting the 'workingStack' over the 'getMaxCount'.
+            var toTake = Math.min(remaining, item.getMaxCount() - workingStack.getCount());
+            workingStack.setCount(workingStack.getCount() + toTake);
+            remaining -= toTake;
+        }
+
+        while (remaining > 0) {
+            var newStack = new ItemStack(item, Math.min(remaining, item.getMaxCount()));
+            this.backing.add(newStack);
+            remaining -= newStack.getCount();
+        }
     }
 
     /**
