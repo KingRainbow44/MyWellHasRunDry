@@ -1,6 +1,7 @@
 package moe.seikimo.mwhrd.interfaces;
 
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
+import moe.seikimo.mwhrd.beacon.BeaconFuel;
 import moe.seikimo.mwhrd.beacon.BeaconPower;
 import moe.seikimo.mwhrd.beacon.powers.EffectsPower;
 import moe.seikimo.mwhrd.models.BeaconModel;
@@ -62,6 +63,13 @@ public interface IAdvancedBeacon {
 
     void mwhrd$setFuel(int fuel);
     int mwhrd$getFuel();
+
+    /**
+     * @return The beacon's fuel status.
+     */
+    default BeaconFuel mwhrd$fuel() {
+        return BeaconFuel.getFuel(this.mwhrd$getFuel());
+    }
 
     /**
      * @return Serializes the beacon to an NBT component.

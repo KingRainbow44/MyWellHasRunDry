@@ -38,6 +38,17 @@ public interface GUI {
     }
 
     /**
+     * Draws a border across the entire UI.
+     *
+     * @param gui The GUI to draw the border on.
+     */
+    static void drawBorderFull(SimpleGui gui) {
+        for (var i = 0; i < gui.getSize(); i++) {
+            gui.setSlot(i, BORDER);
+        }
+    }
+
+    /**
      * Draws the default border for the GUI.
      */
     static void drawBorders(SimpleGui gui) {

@@ -2,10 +2,7 @@ package moe.seikimo.mwhrd.beacon;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import moe.seikimo.mwhrd.beacon.powers.EffectsPower;
-import moe.seikimo.mwhrd.beacon.powers.FlightPower;
-import moe.seikimo.mwhrd.beacon.powers.PlotPurgePower;
-import moe.seikimo.mwhrd.beacon.powers.TeleportationPower;
+import moe.seikimo.mwhrd.beacon.powers.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -26,7 +23,7 @@ public enum BeaconEffect {
 
     // These are all effects which are displayed as a 'primary power'.
     PLOT_PURGER("plot_purger", "Plot Purger", BeaconLevel.TIER_4, Items.WITHER_SKELETON_SKULL, PlotPurgePower::new, true),
-    PIXEL_PRINTER("pixel_printer", "Pixel Printer", BeaconLevel.TIER_1, Items.CRAFTER, BeaconPower.Empty::new, true),
+    PIXEL_PRINTER("pixel_printer", "Pixel Printer", BeaconLevel.TIER_1, Items.CRAFTER, PixelPrinterPower::new, true),
     FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", BeaconLevel.TIER_3, Items.ELYTRA, FlightPower::new, true),
     EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", BeaconLevel.TIER_2, Items.ENDER_EYE, TeleportationPower::new, true),
     WORLDEDIT("worldedit", "Builder's Grace", BeaconLevel.TIER_4, Items.WOODEN_AXE, BeaconPower.Empty::new, true)
