@@ -53,7 +53,8 @@ public abstract class BeaconBlockMixin extends BlockWithEntity {
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         var blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof IAdvancedBeacon beacon) {
+        if (blockEntity instanceof IAdvancedBeacon beacon &&
+            beacon.mwhrd$isAdvanced()) {
             var item = CustomItems.ADVANCED_BEACON.copy();
             item.set(DataComponentTypes.CUSTOM_DATA, beacon.mwhrd$serializeComponent());
 
