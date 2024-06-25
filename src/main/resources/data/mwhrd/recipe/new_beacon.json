@@ -32,7 +32,7 @@
                 "{\"text\":\"This beacon emits special radiation!\",\"color\":\"aqua\",\"italic\":false}"
             ],
             "minecraft:custom_data": {
-                "advanced_beacon": 1
+                "adv_beacon": 1
             }
         }
     }

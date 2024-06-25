@@ -167,7 +167,7 @@ public final class BeaconManager {
         if (customData == null) {
             return ActionResult.PASS;
         }
-        if (!customData.contains("advanced_beacon")) {
+        if (!customData.contains("adv_beacon")) {
             return ActionResult.PASS;
         }
 
@@ -183,6 +183,7 @@ public final class BeaconManager {
         // Update the beacon block from the item.
         var beacon = (IAdvancedBeacon) blockEntity;
         beacon.mwhrd$deserialize(customData.copyNbt());
+        beacon.mwhrd$setAdvanced(true);
 
         stack.decrement(1);
 
