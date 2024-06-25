@@ -17,8 +17,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public enum BeaconEffect {
     // These are all effects which are applied but not displayed as a 'primary power'.
-    DISABLE_SPAWNS("disable_spawns", "Disable Spawns", BeaconLevel.TIER_1, Items.TORCH, BeaconPower.Empty::new, false),
-    UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", BeaconLevel.TIER_2, Items.EXPERIENCE_BOTTLE, BeaconPower.Empty::new, false),
+    DISABLE_SPAWNS("disable_spawns", "Disable Spawns", BeaconLevel.TIER_1, Items.ZOMBIE_SPAWN_EGG, SpawnControlPower::new, false),
+    UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", BeaconLevel.TIER_2, Items.EXPERIENCE_BOTTLE, UnbreakableToolsPower::new, false),
     EFFECTS("effects", "Effects", BeaconLevel.TIER_1, Items.POTION, EffectsPower::new, false),
 
     // These are all effects which are displayed as a 'primary power'.
