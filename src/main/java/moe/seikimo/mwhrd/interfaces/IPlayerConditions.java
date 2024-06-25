@@ -10,5 +10,8 @@ public interface IPlayerConditions {
     void mwhrd$setClosedCooldown(long until);
     long mwhrd$getClosedCooldown();
 
+    void mwhrd$setUnbreakable(boolean unbreakable);
+    boolean mwhrd$isUnbreakable();
+
     boolean mwhrd$isHardcore();
 }

@@ -33,6 +33,8 @@ public abstract class ServerPlayerEntityMixin
 
     @Unique private BlockPos pos1, pos2;
 
+    @Unique private boolean unbreakable = false;
+
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
     }
@@ -157,6 +159,16 @@ public abstract class ServerPlayerEntityMixin
     @Override
     public long mwhrd$getClosedCooldown() {
         return this.closedCooldown;
+    }
+
+    @Override
+    public void mwhrd$setUnbreakable(boolean unbreakable) {
+        this.unbreakable = unbreakable;
+    }
+
+    @Override
+    public boolean mwhrd$isUnbreakable() {
+        return this.unbreakable;
     }
 
     @Override

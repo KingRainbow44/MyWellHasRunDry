@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.beacon;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import lombok.Getter;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
@@ -14,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public abstract class ToggleablePower extends BeaconPower {
-    protected boolean enabled = true;
+    @Getter protected boolean enabled = true;
 
     public ToggleablePower(BlockPos blockPos) {
         super(blockPos);
