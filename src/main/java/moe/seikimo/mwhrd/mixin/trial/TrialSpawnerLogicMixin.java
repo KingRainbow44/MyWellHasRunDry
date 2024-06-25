@@ -78,7 +78,7 @@ public abstract class TrialSpawnerLogicMixin implements ITrialSpawnerUtils {
             itemEntity.setPickupDelayInfinite();
 
             // Delete the entity after 8s seconds.
-            TrialChamberLoot.scheduleForDespawn(itemEntity, 8e3);
+            itemEntity.itemAge = 5840;
         }
         world.syncWorldEvent(WorldEvents.TRIAL_SPAWNER_EJECTS_ITEM, pos, 0);
 

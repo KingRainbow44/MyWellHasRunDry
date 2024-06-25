@@ -36,6 +36,6 @@ public abstract class VaultStateMixin {
         itemEntity.setPickupDelayInfinite();
 
         // Delete the entity after 8s seconds.
-        TrialChamberLoot.scheduleForDespawn(itemEntity, 8e3);
+        itemEntity.itemAge = 5840;
     }
 }

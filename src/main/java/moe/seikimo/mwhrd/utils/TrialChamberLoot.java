@@ -1,7 +1,6 @@
 package moe.seikimo.mwhrd.utils;
 
 import moe.seikimo.mwhrd.MyWellHasRunDry;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -10,15 +9,9 @@ import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 
 import java.awt.*;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 public interface TrialChamberLoot {
-    AtomicReference<Set<ItemDespawn>> ITEMS = new AtomicReference<>();
-
     /**
      * Adds loot to a player.
      *
@@ -44,17 +37,6 @@ public interface TrialChamberLoot {
     }
 
     /**
-     * Schedules an item entity for despawning.
-     *
-     * @param entity The entity to despawn.
-     * @param in The time in milliseconds to despawn the entity.
-     */
-    static void scheduleForDespawn(ItemEntity entity, double in) {
-        ITEMS.get().add(new ItemDespawn(entity,
-            System.currentTimeMillis() + (long) in));
-    }
-
-    /**
      * Spawns an item entity in the world.
      *
      * @return The entity spawned.
@@ -73,45 +55,4 @@ public interface TrialChamberLoot {
 
         return itemEntity;
     }
-
-    final class ItemThread extends Thread {
-        /**
-         * Creates a new instance of the despawn thread.
-         */
-        public static void initialize() {
-            new ItemThread().start();
-        }
-
-        private ItemThread() {
-            super("Item Despawn Thread");
-
-            ITEMS.set(Collections.synchronizedSet(new HashSet<>()));
-        }
-
-        @Override
-        public void run() {
-            while (true) {
-                var items = ITEMS.get();
-                var time = System.currentTimeMillis();
-
-                // Despawn all items that have expired.
-                for (var item : items) {
-                    if (time >= item.despawnTime()) {
-                        item.entity().remove(Entity.RemovalReason.DISCARDED);
-                    }
-                }
-
-                // Remove all despawned items.
-                items.removeIf(item -> item.despawnTime() >= time);
-
-                try {
-                    Thread.sleep(100);
-                } catch (Exception ignored) {
-                    return;
-                }
-            }
-        }
-    }
-
-    record ItemDespawn(ItemEntity entity, long despawnTime) { }
 }

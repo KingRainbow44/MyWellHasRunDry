@@ -16,7 +16,6 @@ import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.DebuffManager;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
-import moe.seikimo.mwhrd.utils.TrialChamberLoot;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -131,9 +130,6 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
-        // Register the item despawn thread.
-        TrialChamberLoot.ItemThread.initialize();
-
         try {
             // Create the mod configuration directory.
             Files.createDirectories(Path.of("config/mwhrd"));
@@ -150,8 +146,6 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             Morphia.createDatastore(MongoClients.create("mongodb://localhost:8018"), "mwhrd");
         DatabaseUtils.DATASTORE.set(store);
 
-        // Register the item despawn thread.
-        TrialChamberLoot.ItemThread.initialize();
         // Create the async pool.
         AsyncPool.initialize();
 

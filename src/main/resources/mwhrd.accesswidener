@@ -13,3 +13,5 @@ accessible method net/minecraft/server/network/ServerPlayerEntity onScreenHandle
 
 accessible method net/minecraft/block/entity/BeaconBlockEntity applyPlayerEffects (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;ILnet/minecraft/registry/entry/RegistryEntry;Lnet/minecraft/registry/entry/RegistryEntry;)V
 accessible field net/minecraft/block/entity/BeaconBlockEntity level I
+
+accessible field net/minecraft/entity/ItemEntity itemAge I

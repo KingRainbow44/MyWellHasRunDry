@@ -129,12 +129,13 @@ public final class DebuffManager {
             block instanceof ButtonBlock) {
             return ActionResult.PASS;
         }
+
+        var item = player.getStackInHand(hand);
         var blockEntity = world.getBlockEntity(hitResult.getBlockPos());
-        if (blockEntity != null) {
+        if (blockEntity != null && item.getItem() != Items.HOPPER) {
             return ActionResult.PASS;
         }
 
-        var item = player.getStackInHand(hand);
         return ITEM_WHITELIST.contains(item.getItem()) ?
             ActionResult.PASS : ActionResult.FAIL;
     }
