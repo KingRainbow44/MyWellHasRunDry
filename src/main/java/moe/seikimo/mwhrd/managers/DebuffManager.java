@@ -125,7 +125,8 @@ public final class DebuffManager {
         var block = world.getBlockState(hitResult.getBlockPos()).getBlock();
         if (block instanceof DoorBlock ||
             block instanceof BulbBlock ||
-            block instanceof TrapdoorBlock) {
+            block instanceof TrapdoorBlock ||
+            block instanceof ButtonBlock) {
             return ActionResult.PASS;
         }
         var blockEntity = world.getBlockEntity(hitResult.getBlockPos());
