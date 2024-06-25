@@ -12,6 +12,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -64,6 +65,11 @@ public abstract class BeaconBlockMixin extends BlockWithEntity {
 
             // Disable beacon effects on players.
             beacon.mwhrd$destroy();
+        } else {
+            var item = Items.BEACON.getDefaultStack();
+            var itemEntity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, item);
+            itemEntity.setToDefaultPickupDelay();
+            world.spawnEntity(itemEntity);
         }
 
         return super.onBreak(world, pos, state, player);
