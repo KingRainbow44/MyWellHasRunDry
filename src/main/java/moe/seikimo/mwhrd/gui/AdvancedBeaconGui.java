@@ -288,7 +288,8 @@ public final class AdvancedBeaconGui extends SimpleGui {
             .addLoreLine(Text.empty())
             .addLoreLine(Text.literal("Click to change settings!")
                 .setStyle(GUI.CLEAR)
-                .formatted(Formatting.YELLOW)));
+                .formatted(Formatting.YELLOW))
+            .setCallback(() -> BeaconSettingsGui.open(this.beacon, this.getPlayer())));
     }
 
     /// <editor-fold desc="Button Callbacks">
