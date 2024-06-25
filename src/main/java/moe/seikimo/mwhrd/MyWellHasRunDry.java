@@ -37,6 +37,8 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.scoreboard.ScoreboardCriterion;
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -51,6 +53,7 @@ import org.geysermc.geyser.api.GeyserApi;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -191,6 +194,19 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                 throw new IllegalStateException("Overworld is null.");
             }
             MyWellHasRunDry.defaultSpawn = overworld.getSpawnPos();
+
+            // Register the health scoreboard.
+            var scoreboard = server.getScoreboard();
+            if (scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.LIST) == null) {
+                var objective = scoreboard.addObjective(
+                    "health", ScoreboardCriterion.HEALTH,
+                    Text.literal("Health"), ScoreboardCriterion.RenderType.HEARTS,
+                    true, null
+                );
+                scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.LIST, objective);
+
+                log.info("Configured the scoreboard to show player health!");
+            }
         });
 
         // Wait for server ticks.
