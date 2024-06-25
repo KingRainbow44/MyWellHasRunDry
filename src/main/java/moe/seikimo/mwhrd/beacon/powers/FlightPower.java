@@ -1,14 +1,20 @@
 package moe.seikimo.mwhrd.beacon.powers;
 
+import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconFuel;
-import moe.seikimo.mwhrd.beacon.BeaconPower;
+import moe.seikimo.mwhrd.beacon.ToggleablePower;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public final class FlightPower extends BeaconPower {
+public final class FlightPower extends ToggleablePower {
     public FlightPower(BlockPos blockPos) {
         super(blockPos);
+    }
+
+    @Override
+    protected BeaconEffect getEffect() {
+        return BeaconEffect.FLIGHT_CRYSTAL;
     }
 
     @Override
@@ -31,7 +37,7 @@ public final class FlightPower extends BeaconPower {
         var fuel = this.handle.mwhrd$getFuel();
         if (!this.minimumFuel().compare(BeaconFuel.getFuel(fuel))) return;
 
-        player.getAbilities().allowFlying = true;
+        player.getAbilities().allowFlying = this.enabled;
         player.sendAbilitiesUpdate();
     }
 
