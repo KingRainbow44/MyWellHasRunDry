@@ -1,9 +1,11 @@
 package moe.seikimo.mwhrd.beacon.powers;
 
+import eu.pb4.sgui.api.gui.SimpleGui;
 import lombok.Getter;
 import lombok.Setter;
 import moe.seikimo.mwhrd.beacon.BeaconFuel;
 import moe.seikimo.mwhrd.beacon.BeaconPower;
+import moe.seikimo.mwhrd.gui.BeaconEffectsGui;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -14,6 +16,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -102,6 +105,11 @@ public final class EffectsPower extends BeaconPower {
                 this.getPotency(effect) - 1
             ));
         }
+    }
+
+    @Override
+    public SimpleGui getGui(World world, PlayerEntity player) {
+        return new BeaconEffectsGui(this.handle, (ServerPlayerEntity) player);
     }
 
     /**
