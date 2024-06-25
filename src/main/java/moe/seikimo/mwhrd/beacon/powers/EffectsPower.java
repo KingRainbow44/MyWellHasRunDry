@@ -102,7 +102,8 @@ public final class EffectsPower extends BeaconPower {
         for (var effect : this.getEffects()) {
             player.addStatusEffect(new StatusEffectInstance(
                 effect, 20 * duration,
-                this.getPotency(effect) - 1
+                this.getPotency(effect) - 1,
+                true, true
             ));
         }
     }
