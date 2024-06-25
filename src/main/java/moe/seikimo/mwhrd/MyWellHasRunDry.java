@@ -14,6 +14,7 @@ import moe.seikimo.mwhrd.commands.*;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.DebuffManager;
+import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
 import moe.seikimo.mwhrd.utils.TrialChamberLoot;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
@@ -26,6 +27,7 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -41,6 +43,7 @@ import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -53,7 +56,6 @@ import org.geysermc.geyser.api.GeyserApi;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.NumberFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -216,6 +218,17 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                 DebuffManager.applyDebuffs(player);
                 BeaconManager.openBeaconMenu(player);
             }
+        });
+
+        // Listen for block breaking.
+        PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, entity) -> {
+            if (!(player instanceof IDBObject<?> dbObj)) return;
+            var model = dbObj.mwhrd$getData();
+            if (!(model instanceof PlayerModel playerModel)) return;
+            if (!playerModel.isSurvivedHardcore()) return;
+
+            // Spawn an experience orb at the block's position.
+            ExperienceOrbEntity.spawn((ServerWorld) world, pos.toCenterPos(), 4);
         });
 
         // Prevent blocks from being broken/placed.

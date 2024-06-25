@@ -22,6 +22,7 @@ import java.time.Duration;
 public final class PlayerModel implements DatabaseObject<PlayerModel> {
     @Id private String playerUuid;
 
+    private boolean survivedHardcore = false;
     private boolean hardcore = false;
     private long hardcoreUntil = -1;
 
@@ -174,6 +175,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
      */
     public void unsetHardcore(boolean survived) {
         this.hardcore = false;
+        this.survivedHardcore = survived;
         this.hardcoreUntil = -1;
 
         this.save();
