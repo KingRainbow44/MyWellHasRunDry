@@ -245,7 +245,7 @@ public abstract class BeaconBlockEntityMixin
     @Override
     public NbtCompound mwhrd$serialize() {
         var serialized = new NbtCompound();
-        serialized.putInt("advanced_beacon", 1);
+        serialized.putInt("adv_beacon", this.mwhrd$isAdvanced() ? 1 : 0);
         serialized.putInt("fuel", this.fuel);
 
         // Serialize powers.
@@ -268,7 +268,7 @@ public abstract class BeaconBlockEntityMixin
 
     @Override
     public void mwhrd$deserialize(NbtCompound nbt) {
-        var advanced = nbt.contains("advanced_beacon");
+        var advanced = nbt.contains("adv_beacon");
         var fuel = nbt.getInt("fuel");
 
         this.mwhrd$setAdvanced(advanced);
