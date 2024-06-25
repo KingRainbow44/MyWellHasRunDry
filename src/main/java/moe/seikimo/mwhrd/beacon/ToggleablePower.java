@@ -74,8 +74,11 @@ public abstract class ToggleablePower extends BeaconPower {
                     this.self.enabled = !this.self.enabled;
                     this.self.handle.mwhrd$save();
 
-                    this.getPlayer().sendMessage(Text.literal("Toggled " + this.data.getDisplayName())
+                    this.getPlayer().sendMessage(Text.literal("%s \"%s\"!"
+                            .formatted(this.self.enabled ? "Enabled" : "Disabled", this.data.getDisplayName()))
                         .formatted(this.self.enabled ? Formatting.GREEN : Formatting.RED), false);
+
+                    this.drawButtons();
                 }));
         }
     }
