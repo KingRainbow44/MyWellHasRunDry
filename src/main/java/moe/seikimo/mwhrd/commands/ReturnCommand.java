@@ -15,9 +15,9 @@ public final class ReturnCommand {
      * @param dispatcher The dispatcher to register the command with.
      */
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(literal("return")
-            .requires(ServerCommandSource::isExecutedByPlayer)
+        var back = dispatcher.register(literal("back")
             .executes(ReturnCommand::returnToSpawn));
+        dispatcher.register(literal("return").redirect(back));
     }
 
     private static int returnToSpawn(CommandContext<ServerCommandSource> context) {
