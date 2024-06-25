@@ -46,9 +46,10 @@ public abstract class VaultBlockEntityMixin {
         VaultBlockEntityMixin.unlock(world, state, pos, config, serverData, sharedData, list, player);
 
         // Mark the vault as rewarded.
-        if (MyWellHasRunDry.getRandom().nextInt(0, 2) == 0 &&
-            !Debug.alwaysResetVault) {
-            serverData.markPlayerAsRewarded(player);
+        if (MyWellHasRunDry.getRandom().nextInt(0, 2) == 0) {
+            if (!Debug.alwaysResetVault) {
+                serverData.markPlayerAsRewarded(player);
+            }
         } else {
             player.sendMessage(Text.literal("Wow! ")
                 .withColor(Formatting.YELLOW.getColorValue())
