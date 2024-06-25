@@ -10,7 +10,7 @@
             "item": "minecraft:gold_block"
         },
         "E": {
-            "tag": "minecraft:emerald_block"
+            "item": "minecraft:emerald_block"
         },
         "C": {
             "item": "minecraft:end_crystal"
