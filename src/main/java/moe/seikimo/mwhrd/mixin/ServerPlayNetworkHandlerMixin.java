@@ -21,8 +21,7 @@ import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
@@ -164,5 +163,13 @@ public abstract class ServerPlayNetworkHandlerMixin {
             // If there are no empty slots, add the stack to the player's inventory.
             this.player.getInventory().offerOrDrop(itemStack);
         }
+    }
+
+    @Redirect(method = "onVehicleMove", at = @At(
+        value = "INVOKE",
+        target = "Lnet/minecraft/server/network/ServerPlayNetworkHandler;isHost()Z"
+    ))
+    public boolean changeHost(ServerPlayNetworkHandler instance) {
+        return true;
     }
 }
