@@ -22,8 +22,8 @@ public interface IAdvancedBeacon {
         this.put(BeaconEffect.UNBREAKING_TOOLS, BeaconPower.Empty::new);
     }};
 
-    World getWorld();
-    BlockPos getPos();
+    World mwhrd$getWorld();
+    BlockPos mwhrd$getPos();
 
     NbtCompound mwhrd$serialize();
 
@@ -86,7 +86,7 @@ public interface IAdvancedBeacon {
         var map = new HashMap<BeaconEffect, BeaconPower>();
         for (var entry : DEFAULT_POWERS.entrySet()) {
             if (existing.containsKey(entry.getKey())) continue;
-            map.put(entry.getKey(), entry.getValue().create(this.getPos()));
+            map.put(entry.getKey(), entry.getValue().create(this.mwhrd$getPos()));
         }
 
         return map;
@@ -96,7 +96,7 @@ public interface IAdvancedBeacon {
      * @return The players that were last seen in range of the beacon.
      */
     default List<ServerPlayerEntity> mwhrd$getPlayers() {
-        var server = this.getWorld().getServer();
+        var server = this.mwhrd$getWorld().getServer();
         if (server == null) return Collections.emptyList();
 
         return this.mwhrd$getLastPlayers().stream()

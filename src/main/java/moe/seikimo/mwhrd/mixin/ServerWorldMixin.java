@@ -40,7 +40,7 @@ public abstract class ServerWorldMixin extends World {
             })
             .filter(beacon -> {
                 var handle = (BeaconBlockEntity) beacon;
-                var pos = beacon.getPos();
+                var pos = handle.getPos();
                 var level = BeaconLevel.of(handle.level);
                 return level != null && entityPos.isWithinDistance(pos, level.getRange());
             })

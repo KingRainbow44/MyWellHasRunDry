@@ -85,7 +85,7 @@ public abstract class BeaconBlockEntityMixin
             beacon.mwhrd$getEffectMap().forEach(
                 (effect, power) -> power.init(beacon, world));
 
-            BeaconManager.getAllBeacons().put(beacon.getPos(), beacon);
+            BeaconManager.getAllBeacons().put(blockEntity.getPos(), beacon);
         }
 
         // Remove effects from nearby players.
@@ -212,6 +212,16 @@ public abstract class BeaconBlockEntityMixin
     /// </editor-fold>
 
     /// <editor-fold desc="IAdvancedBeacon">
+
+    @Override
+    public World mwhrd$getWorld() {
+        return this.world;
+    }
+
+    @Override
+    public BlockPos mwhrd$getPos() {
+        return this.getPos();
+    }
 
     @Override
     public boolean mwhrd$hasInitialized() {
