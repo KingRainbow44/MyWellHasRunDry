@@ -81,6 +81,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         Text.literal("  - Removed Bedrock player attack cooldown")
             .formatted(Formatting.DARK_GRAY),
         Text.literal("  - Hardcode mode (read /hardcore for info)")
+            .formatted(Formatting.DARK_GRAY),
+        Text.literal("  - All recipes are unlocked by default")
             .formatted(Formatting.DARK_GRAY)
     );
 
@@ -272,6 +274,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             // Remove all beacon effects on join.
             Arrays.stream(BeaconEffect.values())
                 .forEach(e -> e.remove(player.getWorld(), player));
+
+            // Give players all recipes.
+            player.unlockRecipes(server.getRecipeManager().values());
         });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, sender) -> {
             var player = handler.getPlayer();
