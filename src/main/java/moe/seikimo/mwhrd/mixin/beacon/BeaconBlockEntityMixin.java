@@ -268,7 +268,7 @@ public abstract class BeaconBlockEntityMixin
 
     @Override
     public void mwhrd$deserialize(NbtCompound nbt) {
-        var advanced = nbt.contains("adv_beacon");
+        var advanced = nbt.getBoolean("adv_beacon");
         var fuel = nbt.getInt("fuel");
 
         this.mwhrd$setAdvanced(advanced);
