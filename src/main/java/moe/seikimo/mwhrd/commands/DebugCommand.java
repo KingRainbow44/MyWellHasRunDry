@@ -1,8 +1,10 @@
 package moe.seikimo.mwhrd.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import moe.seikimo.mwhrd.beacon.BeaconManager;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.utils.Debug;
@@ -26,6 +28,9 @@ public final class DebugCommand {
                 .executes(DebugCommand::unsetHardcore))
             .then(literal("unban")
                 .executes(DebugCommand::unban))
+            .then(literal("fuel")
+                .then(argument("value", LongArgumentType.longArg(0))
+                    .executes(DebugCommand::fuel)))
             .executes(DebugCommand::usage));
     }
 
@@ -112,6 +117,14 @@ public final class DebugCommand {
             return 1;
         }
 
+        return 1;
+    }
+
+    private static int fuel(CommandContext<ServerCommandSource> context) {
+        var value = LongArgumentType.getLong(context, "value");
+        BeaconManager.FUEL_TIME = value;
+        context.getSource().sendMessage(Text.literal(
+            "Set fuel time to " + value));
         return 1;
     }
 }

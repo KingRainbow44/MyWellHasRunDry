@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.mixin.beacon;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import moe.seikimo.data.DatabaseUtils;
+import moe.seikimo.mwhrd.beacon.BeaconManager;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.models.BeaconModel;
 import moe.seikimo.mwhrd.utils.Utils;
@@ -32,11 +33,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
 
+import static moe.seikimo.mwhrd.beacon.BeaconManager.FUEL_TIME;
+
 @Mixin(BeaconBlockEntity.class)
 public abstract class BeaconBlockEntityMixin
     extends BlockEntity
     implements IAdvancedBeacon, IDBObject<BeaconModel> {
-    @Unique private static final long FUEL_TIME = 20L * 60L * 60L; // 20 ticks * 60 seconds * 60 minutes
 
     @Shadow
     protected abstract void addComponents(ComponentMap.Builder componentMapBuilder);
@@ -82,6 +84,8 @@ public abstract class BeaconBlockEntityMixin
             beacon.mwhrd$getEffectMap().putAll(beacon.mwhrd$default());
             beacon.mwhrd$getEffectMap().forEach(
                 (effect, power) -> power.init(beacon, world));
+
+            BeaconManager.getAllBeacons().put(beacon.getPos(), beacon);
         }
 
         // Remove effects from nearby players.
@@ -301,6 +305,8 @@ public abstract class BeaconBlockEntityMixin
             .map(ServerPlayerEntity.class::cast)
             .forEach(beaconPlayer -> this.powers.values().forEach(
                 power -> power.remove(world, beaconPlayer)));
+
+        BeaconManager.getAllBeacons().remove(this.getPos());
     }
 
     /// </editor-fold>

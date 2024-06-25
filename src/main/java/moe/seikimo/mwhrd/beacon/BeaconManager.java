@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class BeaconManager {
+    public static long FUEL_TIME = 20L * 60L * 60L; // 20 ticks * 60 seconds * 60 minutes
+
     @Getter private static final Map<BlockPos, IAdvancedBeacon> allBeacons = new HashMap<>();
     @Getter private static final Map<BlockPos, BeaconEntry> tpBeacons = new HashMap<>();
 
