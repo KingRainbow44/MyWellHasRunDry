@@ -135,9 +135,9 @@ public final class BeaconManager {
         }
 
         // Teleport the player.
-        var target = entry.teleportTo();
+        var target = entry.teleportTo().toCenterPos();
         player.teleport(serverWorld,
-            target.getX() + .5, target.getY() + .5, target.getZ() + .5,
+            target.getX(), target.getY(), target.getZ(),
             player.getYaw(), player.getPitch());
 
         // Remove the experience level.
