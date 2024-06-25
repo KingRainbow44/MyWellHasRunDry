@@ -23,7 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class BeaconManager {
-    @Getter private static final Map<BlockPos, BeaconEntry> beacons = new HashMap<>();
+    @Getter private static final Map<BlockPos, IAdvancedBeacon> allBeacons = new HashMap<>();
+    @Getter private static final Map<BlockPos, BeaconEntry> tpBeacons = new HashMap<>();
 
     /**
      * Opens the beacon menu for the player.
@@ -80,9 +81,9 @@ public final class BeaconManager {
      * Removes all beacons which are invalid.
      */
     public static void purge() {
-        new HashMap<>(BeaconManager.beacons).forEach((pos, entry) -> {
+        new HashMap<>(BeaconManager.tpBeacons).forEach((pos, entry) -> {
             if (!BeaconManager.beaconExists(entry.world(), pos)) {
-                BeaconManager.beacons.remove(pos);
+                BeaconManager.tpBeacons.remove(pos);
             }
         });
     }
@@ -97,7 +98,7 @@ public final class BeaconManager {
         BeaconManager.purge(); // Remove all invalid beacons.
 
         // Add the beacon to the map.
-        BeaconManager.beacons.put(entity.getPos(), entry);
+        BeaconManager.tpBeacons.put(entity.getPos(), entry);
     }
 
     /**
@@ -118,7 +119,7 @@ public final class BeaconManager {
         // Check if the beacon exists.
         BeaconManager.purge();
 
-        var entry = BeaconManager.beacons.get(key);
+        var entry = BeaconManager.tpBeacons.get(key);
         if (entry == null) {
             player.sendMessage(Text.literal("The beacon no longer exists!")
                 .formatted(Formatting.RED));

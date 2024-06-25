@@ -120,7 +120,7 @@ public final class TeleportationPower extends BeaconPower {
 
             // Register the beacon.
             if (!this.isEnabled()) {
-                BeaconManager.getBeacons().remove(blockPos);
+                BeaconManager.getTpBeacons().remove(blockPos);
             } else if (!this.isForceDisabled()) {
                 BeaconManager.register(beacon, new BeaconEntry(
                     this.getName(), world, this.getTarget()

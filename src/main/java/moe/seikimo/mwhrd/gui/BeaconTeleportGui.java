@@ -14,7 +14,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ public final class BeaconTeleportGui extends SimpleGui {
     private void drawWaypoints() {
         BeaconManager.purge();
 
-        var waypoints = BeaconManager.getBeacons();
+        var waypoints = BeaconManager.getTpBeacons();
         if (waypoints.isEmpty()) {
             this.setSlot(CENTER, new GuiElementBuilder(Items.BARRIER)
                 .setName(Text.literal("No waypoints found!")
@@ -127,7 +126,7 @@ public final class BeaconTeleportGui extends SimpleGui {
     private void drawArrows() {
         BeaconManager.purge();
 
-        var waypoints = BeaconManager.getBeacons();
+        var waypoints = BeaconManager.getTpBeacons();
         if (waypoints.isEmpty()) {
             this.setSlot(BACK, BORDER);
             this.setSlot(NEXT, BORDER);
