@@ -15,3 +15,5 @@ accessible method net/minecraft/block/entity/BeaconBlockEntity applyPlayerEffect
 accessible field net/minecraft/block/entity/BeaconBlockEntity level I
 
 accessible field net/minecraft/entity/ItemEntity itemAge I
+
+accessible field net/minecraft/block/entity/BrewingStandBlockEntity brewTime I
