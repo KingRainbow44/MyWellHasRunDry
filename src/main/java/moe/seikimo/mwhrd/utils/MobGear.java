@@ -5,6 +5,8 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potions;
@@ -22,10 +24,9 @@ public final class MobGear {
 
         SWORD = new ItemStack(Items.NETHERITE_SWORD);
         enchant(SWORD, Enchantments.SHARPNESS, 4);
-        enchant(SWORD, Enchantments.KNOCKBACK, 1);
 
         BOW = new ItemStack(Items.BOW);
-        enchant(BOW, Enchantments.POWER, 8);
+        enchant(BOW, Enchantments.POWER, 10);
         enchant(BOW, Enchantments.PUNCH, 1);
 
         ARROWS = new ItemStack(Items.TIPPED_ARROW);
@@ -36,6 +37,18 @@ public final class MobGear {
         applyArmor(CHESTPLATE);
         applyArmor(LEGGINGS);
         applyArmor(BOOTS);
+    }
+
+    /**
+     * Equips armor to the given mob.
+     *
+     * @param mob The mob to equip armor to.
+     */
+    public static void applyArmor(MobEntity mob) {
+        mob.equipStack(EquipmentSlot.HEAD, MobGear.HELMET.copy());
+        mob.equipStack(EquipmentSlot.CHEST, MobGear.CHESTPLATE.copy());
+        mob.equipStack(EquipmentSlot.LEGS, MobGear.LEGGINGS.copy());
+        mob.equipStack(EquipmentSlot.FEET, MobGear.BOOTS.copy());
     }
 
     /**

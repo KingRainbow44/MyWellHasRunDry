@@ -1,6 +1,7 @@
 package moe.seikimo.mwhrd.mixin.trial;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import moe.seikimo.mwhrd.interfaces.IEntityConditions;
 import moe.seikimo.mwhrd.utils.MobGear;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.utils.TrialChamberLoot;
@@ -92,13 +93,13 @@ public abstract class TrialSpawnerLogicMixin implements ITrialSpawnerUtils {
     ) {
         if (!this.isOminous()) return;
         if (!(spawnedEntity instanceof MobEntity mob)) return;
+        if (spawnedEntity instanceof IEntityConditions condMob) {
+            condMob.mwhrd$setTrial(true);
+        }
 
         // Apply full armor to the mob.
         if (!BLACKLIST.contains(mob.getClass())) {
-            mob.equipStack(EquipmentSlot.HEAD, MobGear.HELMET.copy());
-            mob.equipStack(EquipmentSlot.CHEST, MobGear.CHESTPLATE.copy());
-            mob.equipStack(EquipmentSlot.LEGS, MobGear.LEGGINGS.copy());
-            mob.equipStack(EquipmentSlot.FEET, MobGear.BOOTS.copy());
+            MobGear.applyArmor(mob);
         }
 
         // Apply mob effects.

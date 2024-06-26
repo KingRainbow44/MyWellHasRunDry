@@ -13,6 +13,7 @@
         "beacon.BeaconBlockEntityMixin",
         "beacon.BeaconBlockMixin",
         "trial.ItemEntityMixin",
+        "trial.MobEntityMixin",
         "trial.TrialSpawnerDataMixin",
         "trial.TrialSpawnerLogicMixin",
         "trial.VaultBlockEntityMixin",
