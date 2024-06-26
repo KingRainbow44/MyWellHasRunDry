@@ -19,13 +19,13 @@ public interface TrialChamberLoot {
      * @param item The loot to add.
      */
     static void addLoot(UUID player, ItemStack item) {
-        MyWellHasRunDry.getLoot(player).add(item);
-
         // Try and look up the player.
         var playerInstance = MyWellHasRunDry.getServer()
             .getPlayerManager()
             .getPlayer(player);
         if (playerInstance != null) {
+            MyWellHasRunDry.getLoot(playerInstance).offer(item);
+
             playerInstance.sendMessage(Text.literal("You received ")
                 .withColor(Color.GREEN.getRGB())
                 .append("x")

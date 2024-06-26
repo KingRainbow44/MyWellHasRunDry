@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.utils;
 
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
+import lombok.Getter;
 import moe.seikimo.general.EncodingUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,7 +16,14 @@ import java.util.stream.IntStream;
 /**
  * Serializable, infinite item storage.
  */
+@SuppressWarnings("LombokGetterMayBeUsed")
 public final class ItemStorage {
+    /**
+     * This is where all unidentified items go to die.
+     */
+    public static final ItemStorage EMPTY = new ItemStorage();
+
+    @Getter
     private final List<ItemStack> backing
         = Collections.synchronizedList(new ArrayList<>());
 
@@ -42,6 +50,16 @@ public final class ItemStorage {
     @Nullable
     public ItemStack get(int index) {
         return this.backing.get(index);
+    }
+
+    /**
+     * Removes an item from the storage.
+     *
+     * @param stack The item to remove.
+     * @return The removed item.
+     */
+    public ItemStack remove(ItemStack stack) {
+        return this.backing.remove(stack) ? stack : null;
     }
 
     /**
@@ -98,7 +116,8 @@ public final class ItemStorage {
         }
 
         while (remaining > 0) {
-            var newStack = new ItemStack(item, Math.min(remaining, item.getMaxCount()));
+            var newStack = stack.copy();
+            newStack.setCount(Math.min(remaining, item.getMaxCount()));
             this.backing.add(newStack);
             remaining -= newStack.getCount();
         }

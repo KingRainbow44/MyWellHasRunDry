@@ -3,24 +3,33 @@ package moe.seikimo.mwhrd.models;
 import com.google.gson.JsonObject;
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
+import dev.morphia.annotations.PostLoad;
+import dev.morphia.annotations.PrePersist;
 import lombok.Data;
 import moe.seikimo.data.DatabaseObject;
 import moe.seikimo.general.JObject;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.utils.ItemStorage;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity("players")
 public final class PlayerModel implements DatabaseObject<PlayerModel> {
     @Id private String playerUuid;
+
+    @ApiStatus.Internal
+    private List<String> lootItems = new ArrayList<>();
 
     private boolean survivedHardcore = false;
     private boolean hardcore = false;
@@ -30,10 +39,23 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     private long bannedUntil = -1;
 
     private transient ServerPlayerEntity handle;
+    private transient ItemStorage loot = new ItemStorage();
 
     @VisibleForTesting
+    @ApiStatus.Internal
     public PlayerModel() {
         // For Morphia.
+    }
+
+    @PrePersist
+    public void beforeSave() {
+        this.lootItems.clear();
+        this.lootItems.addAll(this.loot.serialize());
+    }
+
+    @PostLoad
+    public void afterLoad() {
+        this.loot.deserialize(this.lootItems);
     }
 
     /**

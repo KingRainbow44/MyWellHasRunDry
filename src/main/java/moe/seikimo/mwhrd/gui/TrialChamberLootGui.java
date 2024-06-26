@@ -1,6 +1,5 @@
 package moe.seikimo.mwhrd.gui;
 
-import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
@@ -23,19 +22,6 @@ import static moe.seikimo.mwhrd.utils.GUI.BORDER;
 public final class TrialChamberLootGui extends SimpleGui {
     private static final Set<Item> BLACKLIST = Set.of(
         Items.OMINOUS_TRIAL_KEY, Items.TRIAL_KEY
-    );
-
-    private static final List<Text> DETAILS = List.of(
-        Text.literal("Trial Chamber Loot Details:")
-            .setStyle(Style.EMPTY.withItalic(false).withUnderline(true))
-            .withColor(Color.GRAY.getRGB()),
-        Text.empty(),
-        Text.literal("  - You can withdraw items by clicking on them.")
-            .setStyle(Style.EMPTY.withItalic(false))
-            .withColor(Color.GRAY.getRGB()),
-        Text.literal("  - Items are *DELETED* when the server restarts.")
-            .setStyle(Style.EMPTY.withItalic(false))
-            .withColor(Color.GRAY.getRGB())
     );
 
     private static final int BAD_KEY_INDEX = 36;
@@ -72,13 +58,7 @@ public final class TrialChamberLootGui extends SimpleGui {
      * @param player The player to draw the buttons for.
      */
     private void drawButtons(ServerPlayerEntity player) {
-        var loot = MyWellHasRunDry.getLoot(player);
-
-        // Draw the details.
-        this.setSlot(8, new GuiElementBuilder(Items.OAK_SIGN)
-            .setName(Text.literal("Details"))
-            .setLore(DETAILS)
-            .build());
+        var loot = MyWellHasRunDry.getLoot(player).getBacking();
 
         // Count player keys.
         var badKeys = TrialChamberLootGui.countItems(loot, Items.OMINOUS_TRIAL_KEY);
@@ -136,16 +116,11 @@ public final class TrialChamberLootGui extends SimpleGui {
             .setCount(count)
             .setCallback(() -> {
                 // Remove one key from the player's loot.
-                var key = loot.stream()
-                    .filter(item -> item.getItem() == type)
-                    .findFirst()
-                    .orElse(null);
-                if (key == null) return;
+                var key = loot.take(type, 1);
+                if (!key) return;
 
-                // Remove the key from the player's loot.
-                loot.remove(key);
                 // Add the key to the player's inventory.
-                player.getInventory().offerOrDrop(key);
+                player.getInventory().offerOrDrop(type.getDefaultStack());
 
                 this.drawButtons(player);
             })
@@ -160,13 +135,14 @@ public final class TrialChamberLootGui extends SimpleGui {
     private void drawPlayerLoot(ServerPlayerEntity player) {
         var loot = MyWellHasRunDry.getLoot(player);
 
-        GUI.drawBorderedList(this, loot, item -> {
+        GUI.drawBorderedList(this, loot.getBacking(), item -> {
             // Check if the item is blacklisted.
             if (BLACKLIST.contains(item.getItem())) {
                 return null;
             }
 
             return new GuiElementBuilder(item)
+                .addLoreLine(Text.empty())
                 .addLoreLine(Text.literal("Click to add to your inventory!")
                     .setStyle(Style.EMPTY.withItalic(false))
                     .withColor(Color.GREEN.getRGB()))

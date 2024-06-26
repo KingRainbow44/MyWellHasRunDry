@@ -16,6 +16,7 @@ import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.BuffManager;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
+import moe.seikimo.mwhrd.utils.ItemStorage;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -28,7 +29,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.predicate.LightPredicate;
@@ -56,7 +56,6 @@ import org.geysermc.geyser.api.GeyserApi;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public final class MyWellHasRunDry implements DedicatedServerModInitializer {
@@ -98,8 +97,6 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     @Getter private static LocationPredicate trialChamberPredicate;
     @Getter private static Registry<Enchantment> enchantmentRegistry;
 
-    @Getter private static final Map<UUID, List<ItemStack>> playerLoot = new ConcurrentHashMap<>();
-
     private static final Set<Item> BLACKLISTED = Set.of(
         Items.SPAWNER,
         Items.ALLAY_SPAWN_EGG,
@@ -115,19 +112,11 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
      * @param player The player to get the loot for.
      * @return The loot set for the player.
      */
-    public static List<ItemStack> getLoot(ServerPlayerEntity player) {
-        return MyWellHasRunDry.getLoot(player.getUuid());
-    }
-
-    /**
-     * Gets or creates the loot set for the player.
-     *
-     * @param player The player to get the loot for.
-     * @return The loot set for the player.
-     */
-    public static List<ItemStack> getLoot(UUID player) {
-        return playerLoot.computeIfAbsent(player,
-            uuid -> Collections.synchronizedList(new ArrayList<>()));
+    public static ItemStorage getLoot(ServerPlayerEntity player) {
+        if (!(player instanceof IDBObject<?> dbObj)) return ItemStorage.EMPTY;
+        var model = dbObj.mwhrd$getData();
+        if (!(model instanceof PlayerModel data)) return ItemStorage.EMPTY;
+        return data.getLoot();
     }
 
     @Override
