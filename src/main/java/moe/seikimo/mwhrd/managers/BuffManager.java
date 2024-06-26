@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
-public final class DebuffManager {
+public final class BuffManager {
     private static final Set<Item> ITEM_WHITELIST = Set.of(
         Items.WATER_BUCKET, Items.BUCKET,
         Items.TNT, Items.FLINT_AND_STEEL
@@ -34,6 +34,8 @@ public final class DebuffManager {
 
     private static final Identifier BEDROCK_BUFF = Identifier.of("mwhrd", "bedrock_buff");
     private static final Identifier DEBUFF = Identifier.of("mwhrd", "debuff");
+
+    private static final Identifier LUCK_BUFF = Identifier.of("mwhrd", "luck_buff");
 
     /**
      * Apply debuffs to the player.
@@ -94,6 +96,23 @@ public final class DebuffManager {
         maxHealth.addTemporaryModifier(new EntityAttributeModifier(
             debuffId, debuffValue, EntityAttributeModifier.Operation.ADD_VALUE
         ));
+    }
+
+    /**
+     * Applies buffs to the player.
+     *
+     * @param player The player to apply buffs to.
+     */
+    public static void applyBuffs(ServerPlayerEntity player) {
+        var condPlayer = (IPlayerConditions) player;
+        if (condPlayer.mwhrd$finishedHardcore()) {
+            var luck = player.getAttributeInstance(EntityAttributes.GENERIC_LUCK);
+            if (luck != null) {
+                luck.addTemporaryModifier(new EntityAttributeModifier(
+                    LUCK_BUFF, 5.0f, EntityAttributeModifier.Operation.ADD_VALUE
+                ));
+            }
+        }
     }
 
     /**

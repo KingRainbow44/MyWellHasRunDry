@@ -176,5 +176,10 @@ public abstract class ServerPlayerEntityMixin
         return this.model != null && this.model.isHardcore();
     }
 
+    @Override
+    public boolean mwhrd$finishedHardcore() {
+        return this.model != null && this.model.isSurvivedHardcore();
+    }
+
     /// </editor-fold>
 }

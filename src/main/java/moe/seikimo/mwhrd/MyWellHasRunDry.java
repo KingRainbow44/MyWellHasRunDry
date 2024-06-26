@@ -13,7 +13,7 @@ import moe.seikimo.mwhrd.beacon.BeaconManager;
 import moe.seikimo.mwhrd.commands.*;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
-import moe.seikimo.mwhrd.managers.DebuffManager;
+import moe.seikimo.mwhrd.managers.BuffManager;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
@@ -211,7 +211,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             for (var player : server.getPlayerManager().getPlayerList()) {
                 MyWellHasRunDry.setAdventureMode(player);
-                DebuffManager.applyDebuffs(player);
+                BuffManager.applyDebuffs(player);
                 BeaconManager.openBeaconMenu(player);
             }
         });
@@ -228,8 +228,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         });
 
         // Prevent blocks from being broken/placed.
-        UseBlockCallback.EVENT.register(DebuffManager::blockPlaceCheck);
-        PlayerBlockBreakEvents.BEFORE.register(DebuffManager::blockBreakCheck);
+        UseBlockCallback.EVENT.register(BuffManager::blockPlaceCheck);
+        PlayerBlockBreakEvents.BEFORE.register(BuffManager::blockBreakCheck);
 
         // Prevent certain blacklisted items from being used.
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
@@ -257,6 +257,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                 model.mwhrd$loadData();
             }
 
+            // Apply luck buff.
+            BuffManager.applyBuffs(player);
+
             if (!GeyserApi.api().isBedrockPlayer(player.getUuid())) {
                 CHANGELOG.forEach(player::sendMessage);
             } else {
@@ -268,7 +271,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                     .formatted(Formatting.DARK_GRAY));
 
                 // Apply Bedrock player buff.
-                DebuffManager.applyBedrockBuff(player);
+                BuffManager.applyBedrockBuff(player);
             }
 
             // Remove all beacon effects on join.

@@ -14,4 +14,5 @@ public interface IPlayerConditions {
     boolean mwhrd$isUnbreakable();
 
     boolean mwhrd$isHardcore();
+    boolean mwhrd$finishedHardcore();
 }
