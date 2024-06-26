@@ -2,14 +2,17 @@ package moe.seikimo.mwhrd.mixin;
 
 import com.mojang.authlib.GameProfile;
 import moe.seikimo.data.DatabaseUtils;
+import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.interfaces.ISelectionPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,8 +20,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.time.Duration;
+import java.util.Arrays;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin
@@ -66,6 +71,13 @@ public abstract class ServerPlayerEntityMixin
             this.model.banPlayer(Duration.ofHours(24));
             this.model.unsetHardcore(false);
         }
+    }
+
+    @Inject(method = "teleportTo", at = @At("HEAD"))
+    public void onTeleport(TeleportTarget teleportTarget, CallbackInfoReturnable<Entity> cir) {
+        // Remove all beacon effects when a player teleports.
+        Arrays.stream(BeaconEffect.values())
+            .forEach(e -> e.remove(this.getWorld(), this));
     }
 
     @Redirect(method = "damage", at = @At(
