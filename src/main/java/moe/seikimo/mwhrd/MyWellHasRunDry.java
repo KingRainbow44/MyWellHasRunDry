@@ -82,6 +82,22 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         Text.literal("  - Hardcode mode (read /hardcore for info)")
             .formatted(Formatting.DARK_GRAY),
         Text.literal("  - All recipes are unlocked by default")
+            .formatted(Formatting.DARK_GRAY),
+        Text.empty(),
+        Text.literal("NEW")
+            .formatted(Formatting.BOLD, Formatting.AQUA),
+        Text.empty(),
+        Text.literal("  - Brewing stands instantly craft items")
+            .formatted(Formatting.DARK_GRAY),
+        Text.literal("  - Brewing stand potions are stackable")
+            .formatted(Formatting.DARK_GRAY),
+        Text.literal("  - Trial chamber monsters no longer attack each other")
+            .formatted(Formatting.DARK_GRAY),
+        Text.literal("  - Hardcore is significantly harder")
+            .formatted(Formatting.DARK_GRAY),
+        Text.literal("  - Gain permanent +5 luck when completing hardcore")
+            .formatted(Formatting.DARK_GRAY),
+        Text.literal("  - To gain beacon loot, players must defeat ### monsters")
             .formatted(Formatting.DARK_GRAY)
     );
 
@@ -250,7 +266,12 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             BuffManager.applyBuffs(player);
 
             if (!GeyserApi.api().isBedrockPlayer(player.getUuid())) {
-                CHANGELOG.forEach(player::sendMessage);
+                for (var i = 0; i < 7; i++) {
+                    player.sendMessage(CHANGELOG.get(i));
+                }
+                player.sendMessage(Text.empty());
+                player.sendMessage(Text.literal("Run /changelog for all changes.")
+                    .formatted(Formatting.DARK_GRAY));
             } else {
                 // Send version message.
                 for (var i = 0; i < 2; i++) {
