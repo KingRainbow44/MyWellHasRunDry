@@ -6,6 +6,7 @@ import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.interfaces.ISelectionPlayer;
+import moe.seikimo.mwhrd.interfaces.ITrialPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
@@ -30,7 +31,8 @@ public abstract class ServerPlayerEntityMixin
     extends PlayerEntity
     implements IPlayerConditions,
     IDBObject<PlayerModel>,
-    ISelectionPlayer {
+    ISelectionPlayer,
+    ITrialPlayer {
     @Unique private boolean trialChamber = false, ominous = false;
     @Unique private long closedCooldown = 0;
 
@@ -39,6 +41,9 @@ public abstract class ServerPlayerEntityMixin
     @Unique private BlockPos pos1, pos2;
 
     @Unique private boolean unbreakable = false;
+
+    @Unique private int mobKills = 0;
+    @Unique private long loseKills = -1;
 
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
@@ -155,6 +160,17 @@ public abstract class ServerPlayerEntityMixin
 
     @Override
     public void mwhrd$setInTrialChamber(boolean inTrialChamber) {
+        if (inTrialChamber != this.trialChamber) {
+            if (inTrialChamber && this.loseKills != -1 &&
+                System.currentTimeMillis() > this.loseKills) {
+                this.loseKills = -1;
+                this.mobKills = 0;
+            } else if (!mwhrd$isInTrialChamber()) {
+                this.loseKills = (long) (System.currentTimeMillis() + 30e3);
+            } else {
+                this.loseKills = -1;
+            }
+        }
         this.trialChamber = inTrialChamber;
     }
 
@@ -191,6 +207,20 @@ public abstract class ServerPlayerEntityMixin
     @Override
     public boolean mwhrd$finishedHardcore() {
         return this.model != null && this.model.isSurvivedHardcore();
+    }
+
+    /// </editor-fold>
+
+    /// <editor-fold desc="Trial Player">
+
+    @Override
+    public void mwhrd$addMobKill() {
+        this.mobKills++;
+    }
+
+    @Override
+    public int mwhrd$getMobKills() {
+        return this.mobKills;
     }
 
     /// </editor-fold>

@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.mixin.trial;
 
 import moe.seikimo.mwhrd.interfaces.IEntityConditions;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
+import moe.seikimo.mwhrd.interfaces.ITrialPlayer;
 import moe.seikimo.mwhrd.utils.MobGear;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -14,6 +15,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -83,6 +87,23 @@ public abstract class MobEntityMixin
                     distance.setBaseValue(2048f);
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onKilledBy(@Nullable LivingEntity adversary) {
+        if (this.mwhrd$isTrial() &&
+            adversary instanceof ITrialPlayer trialPlayer) {
+            trialPlayer.mwhrd$addMobKill();
+
+            ((ServerPlayerEntity) trialPlayer).sendMessage(
+                Text.literal("COMBO! ")
+                    .formatted(Formatting.GOLD)
+                    .append(Text.literal("You have %s mob kills!"
+                            .formatted(trialPlayer.mwhrd$getMobKills()))
+                        .formatted(Formatting.AQUA)),
+                true
+            );
         }
     }
 
