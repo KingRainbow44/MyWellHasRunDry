@@ -6,6 +6,7 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import moe.seikimo.mwhrd.beacon.BeaconFuel;
 import moe.seikimo.mwhrd.beacon.BeaconPower;
 import moe.seikimo.mwhrd.utils.GUI;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -33,7 +34,7 @@ public final class PixelPrinterPower extends BeaconPower {
         Items.DIAMOND_ORE, Items.DEEPSLATE_DIAMOND_ORE, Items.EMERALD_ORE, Items.DEEPSLATE_EMERALD_ORE,
         Items.NETHER_GOLD_ORE, Items.NETHER_QUARTZ_ORE, Items.HEAVY_CORE,
         Items.RAW_COPPER, Items.RAW_IRON, Items.RAW_GOLD, Items.TURTLE_EGG, Items.RESPAWN_ANCHOR,
-        Items.TNT, Items.BARRIER, Items.REINFORCED_DEEPSLATE
+        Items.TNT, Items.BARRIER, Items.REINFORCED_DEEPSLATE, Items.WITHER_SKELETON_SKULL
     );
 
     private int itemFuel = 0; // Maxes out at 640. 1 fuel per item printed.
@@ -144,8 +145,13 @@ public final class PixelPrinterPower extends BeaconPower {
 
                 // Validate the stack for duplication.
                 var item = stack.getItem();
-                if (!(item instanceof BlockItem)) {
+                if (!(item instanceof BlockItem blockItem)) {
                     this.getPlayer().sendMessage(Text.literal("Only blocks can be copied!")
+                        .formatted(Formatting.RED));
+                    return;
+                }
+                if (blockItem.getBlock() instanceof BlockWithEntity) {
+                    this.getPlayer().sendMessage(Text.literal("This block cannot be copied!")
                         .formatted(Formatting.RED));
                     return;
                 }
