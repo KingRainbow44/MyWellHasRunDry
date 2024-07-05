@@ -58,11 +58,12 @@ public final class TrialChamberLootGui extends SimpleGui {
      * @param player The player to draw the buttons for.
      */
     private void drawButtons(ServerPlayerEntity player) {
-        var loot = MyWellHasRunDry.getLoot(player).getBacking();
+        var storage = MyWellHasRunDry.getLoot(player);
+        var loot = storage.getBacking();
 
         // Count player keys.
-        var badKeys = TrialChamberLootGui.countItems(loot, Items.OMINOUS_TRIAL_KEY);
-        var normalKeys = TrialChamberLootGui.countItems(loot, Items.TRIAL_KEY);
+        var badKeys = (int) storage.count(Items.OMINOUS_TRIAL_KEY);
+        var normalKeys = (int) storage.count(Items.TRIAL_KEY);
 
         // Display buttons.
         if (badKeys > 0) {
