@@ -2,9 +2,11 @@ package moe.seikimo.mwhrd.utils;
 
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.TeleportTarget;
+import net.minecraft.world.World;
 
 import java.util.function.Consumer;
 
@@ -50,5 +52,16 @@ public interface Players {
 
         var target = serverPlayer.getRespawnTarget(false, TeleportTarget.NO_OP);
         player.teleportTo(target);
+    }
+
+    /**
+     * Checks if the player is in the specified world.
+     *
+     * @param world The world to check.
+     * @param player The player to check.
+     * @return Whether the player is in the world.
+     */
+    static boolean inWorld(RegistryKey<World> world, PlayerEntity player) {
+        return world.equals(player.getWorld().getRegistryKey());
     }
 }

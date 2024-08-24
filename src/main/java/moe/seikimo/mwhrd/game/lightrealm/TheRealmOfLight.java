@@ -2,12 +2,21 @@ package moe.seikimo.mwhrd.game.lightrealm;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import moe.seikimo.general.MapBuilder;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.custom.CustomWorlds;
+import moe.seikimo.mwhrd.events.BlockBreakEvent;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.utils.Players;
 import moe.seikimo.mwhrd.utils.Ticks;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -15,11 +24,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,7 +58,49 @@ public final class TheRealmOfLight {
         Text.empty()
     };
 
+    private static final Map<Block, ItemStack> BLOCK_OVERRIDES =
+        MapBuilder.<Block, ItemStack>create()
+            .put(Blocks.AZALEA_LEAVES, new ItemStack(Items.BONE_MEAL))
+            .put(Blocks.FLOWERING_AZALEA_LEAVES, new ItemStack(Items.GLOW_BERRIES, 2))
+            .put(Blocks.SHORT_GRASS, new ItemStack(Items.WHEAT_SEEDS))
+            .put(Blocks.TALL_GRASS, new ItemStack(Items.WHEAT_SEEDS, 2))
+            .put(Blocks.ROOTED_DIRT, new ItemStack(Items.DIRT))
+            .put(Blocks.OAK_LOG, new ItemStack(Items.OAK_PLANKS, 8))
+            .build();
+
     @Getter private static final TheRealmOfLight instance = new TheRealmOfLight();
+
+    static {
+        BlockBreakEvent.EVENT.register(TheRealmOfLight::onBlockBreak);
+    }
+
+    /**
+     * Invoked when a player breaks a block.
+     */
+    private static ActionResult onBlockBreak(
+        World world, PlayerEntity player,
+        BlockPos pos, BlockState state,
+        @Nullable BlockEntity blockEntity,
+        ItemStack tool
+    ) {
+        if (!Players.inWorld(CustomWorlds.REALM_OF_LIGHT, player)) return ActionResult.PASS;
+
+        // Check if the block broken has an override.
+        var override = BLOCK_OVERRIDES.get(state.getBlock());
+
+        // If the block has an override, drop the override item.
+        if (override != null) {
+            var itemEntity = new ItemEntity(
+                world, pos.getX(), pos.getY(), pos.getZ(),
+                override.copy()
+            );
+            itemEntity.setPickupDelay(10);
+            world.spawnEntity(itemEntity);
+        }
+
+        // If we dropped an item, we do not drop the block.
+        return override == null ? ActionResult.PASS : ActionResult.FAIL;
+    }
 
     /**
      * All participating players.

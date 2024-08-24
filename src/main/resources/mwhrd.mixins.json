@@ -13,6 +13,7 @@
     "balance.SplashPotionItemMixin",
     "beacon.BeaconBlockEntityMixin",
     "beacon.BeaconBlockMixin",
+    "event.BlockMixin",
     "trial.ItemEntityMixin",
     "trial.MobEntityMixin",
     "trial.TrialSpawnerDataMixin",
