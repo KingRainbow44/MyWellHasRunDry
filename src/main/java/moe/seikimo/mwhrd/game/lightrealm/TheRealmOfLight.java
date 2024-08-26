@@ -6,18 +6,20 @@ import moe.seikimo.general.MapBuilder;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.custom.CustomWorlds;
 import moe.seikimo.mwhrd.events.BlockBreakEvent;
+import moe.seikimo.mwhrd.events.EntityPreDeathEvent;
 import moe.seikimo.mwhrd.events.PlayerMoveEvent;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.utils.Players;
 import moe.seikimo.mwhrd.utils.Ticks;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -74,6 +76,7 @@ public final class TheRealmOfLight {
     static {
         BlockBreakEvent.EVENT.register(TheRealmOfLight::onBlockBreak);
         PlayerMoveEvent.EVENT.register(TheRealmOfLight::onPlayerMove);
+        EntityPreDeathEvent.EVENT.register(TheRealmOfLight::onPreDeath);
     }
 
     /**
@@ -116,18 +119,7 @@ public final class TheRealmOfLight {
 
         var y = pos.getY();
         if (y <= -70) {
-            // Teleport the player to the overworld.
-            Players.respawn(player);
-
-            // Restore the player's inventory.
-            if (player instanceof ITimeTraveler traveler) try {
-                traveler.mwhrd$restoreInventory();
-            } catch (Exception ex) {
-                Players.kickPlayer(
-                    (ServerPlayerEntity) player,
-                    Text.literal("Unable to restore your inventory. Please contact a server admin."));
-                log.error("Failed to restore player inventory.", ex);
-            }
+            TheRealmOfLight.respawn(player);
 
             // Send a message to the player.
             player.sendMessage(
@@ -135,6 +127,50 @@ public final class TheRealmOfLight {
                     .formatted(Formatting.BOLD, Formatting.RED)
                     .append(Text.translatable("text.mwhrd.dimension.rol.fall"))
             );
+        }
+    }
+
+    /**
+     * Invoked when an entity is about to die.
+     *
+     * @param entity The entity that is about to die.
+     * @param source The source of the damage.
+     * @return True to allow dying.
+     */
+    private static boolean onPreDeath(LivingEntity entity, DamageSource source) {
+        if (!(entity instanceof PlayerEntity player)) return true;
+        if (!Players.inWorld(CustomWorlds.REALM_OF_LIGHT, player)) return true;
+
+        // Respawn the player.
+        TheRealmOfLight.respawn(player);
+
+        // Send a message to the player.
+        player.sendMessage(
+            Text.literal("Oh no! ")
+                .formatted(Formatting.BOLD, Formatting.RED)
+                .append(Text.translatable("text.mwhrd.dimension.rol.death"))
+        );
+
+        return false;
+    }
+
+    /**
+     * Respawns a player in the overworld.
+     *
+     * @param player The player to respawn.
+     */
+    private static void respawn(PlayerEntity player) {
+        // Teleport the player to the overworld.
+        Players.respawn(player);
+
+        // Restore the player's inventory.
+        if (player instanceof ITimeTraveler traveler) try {
+            traveler.mwhrd$restoreInventory();
+        } catch (Exception ex) {
+            Players.kickPlayer(
+                (ServerPlayerEntity) player,
+                Text.literal("Unable to restore your inventory. Please contact a server admin."));
+            log.error("Failed to restore player inventory.", ex);
         }
     }
 

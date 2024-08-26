@@ -15,6 +15,7 @@
     "text.mwhrd.dimension.rol.ready": "The Realm of Light is ready!",
     "text.mwhrd.dimension.rol.queued": "You are queued to enter The Realm of Light.",
     "text.mwhrd.dimension.rol.fall": "You have fallen from The Realm of Light!",
+    "text.mwhrd.dimension.rol.death": "You have died in The Realm of Light!",
 
     "text.mwhrd.dimension.rol.info.1": "Welcome to The Realm of Light.",
     "text.mwhrd.dimension.rol.info.2": "Objective: Reach the top and defeat The Guardian of Light.",

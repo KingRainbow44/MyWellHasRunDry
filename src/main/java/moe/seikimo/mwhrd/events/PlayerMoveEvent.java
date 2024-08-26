@@ -15,7 +15,7 @@ public interface PlayerMoveEvent {
         (listeners) -> (
             world, newPosition, player
         ) -> {
-            for (Move listener : listeners) {
+            for (var listener : listeners) {
                 listener.onMove(world, newPosition, player);
             }
         }
