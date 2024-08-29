@@ -7,28 +7,36 @@ import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.custom.CustomWorlds;
 import moe.seikimo.mwhrd.events.BlockBreakEvent;
 import moe.seikimo.mwhrd.events.EntityPreDeathEvent;
+import moe.seikimo.mwhrd.events.PlayerCraftEvent;
 import moe.seikimo.mwhrd.events.PlayerMoveEvent;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.utils.Players;
 import moe.seikimo.mwhrd.utils.Ticks;
+import moe.seikimo.mwhrd.utils.Utils;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.ToolItem;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -64,19 +72,31 @@ public final class TheRealmOfLight {
     private static final Map<Block, ItemStack> BLOCK_OVERRIDES =
         MapBuilder.<Block, ItemStack>create()
             .put(Blocks.AZALEA_LEAVES, new ItemStack(Items.BONE_MEAL))
-            .put(Blocks.FLOWERING_AZALEA_LEAVES, new ItemStack(Items.GLOW_BERRIES, 2))
+            .put(Blocks.FLOWERING_AZALEA_LEAVES, new ItemStack(Items.GOLDEN_CARROT, 2))
             .put(Blocks.SHORT_GRASS, new ItemStack(Items.WHEAT_SEEDS))
             .put(Blocks.TALL_GRASS, new ItemStack(Items.WHEAT_SEEDS, 2))
             .put(Blocks.ROOTED_DIRT, new ItemStack(Items.DIRT))
+            .put(Blocks.MOSS_CARPET, new ItemStack(Items.COBBLESTONE))
             .put(Blocks.OAK_LOG, new ItemStack(Items.OAK_PLANKS, 8))
+            .put(Blocks.WHEAT, new ItemStack(Items.IRON_INGOT))
+            .build();
+
+    private static final Map<Pair<Integer, Integer>, Set<Block>> DISALLOWED_BLOCKS =
+        MapBuilder.<Pair<Integer, Integer>, Set<Block>>create()
+            .put(new Pair<>(-64, 0), Set.of())
+            .put(new Pair<>(1, 100), Set.of(Blocks.MOSS_BLOCK))
+            .put(new Pair<>(101, 250), Set.of(Blocks.MOSS_BLOCK, Blocks.BONE_BLOCK, Blocks.OAK_PLANKS))
+            .put(new Pair<>(251, 270), Set.of(Blocks.MOSS_BLOCK, Blocks.OAK_PLANKS, Blocks.BONE_BLOCK, Blocks.COBBLESTONE, Blocks.DIRT))
             .build();
 
     @Getter private static final TheRealmOfLight instance = new TheRealmOfLight();
 
     static {
         BlockBreakEvent.EVENT.register(TheRealmOfLight::onBlockBreak);
+        UseBlockCallback.EVENT.register(TheRealmOfLight::onBlockPlace);
         PlayerMoveEvent.EVENT.register(TheRealmOfLight::onPlayerMove);
         EntityPreDeathEvent.EVENT.register(TheRealmOfLight::onPreDeath);
+        PlayerCraftEvent.EVENT.register(TheRealmOfLight::onCraft);
     }
 
     /**
@@ -108,6 +128,55 @@ public final class TheRealmOfLight {
     }
 
     /**
+     * Invoked when a player places a block.
+     *
+     * @param player The player that placed the block.
+     * @param world The world the player is in.
+     * @param hand The hand the player used to place the block.
+     * @param hitResult The block hit result.
+     * @return The result of the block placement.
+     */
+    private static ActionResult onBlockPlace(
+        PlayerEntity player, World world,
+        Hand hand, BlockHitResult hitResult
+    ) {
+        if (world.getRegistryKey() != CustomWorlds.REALM_OF_LIGHT) return ActionResult.PASS;
+
+        var stack = player.getStackInHand(hand);
+        var item = stack.getItem();
+        var block = Block.getBlockFromItem(item);
+
+        var pos = hitResult.getBlockPos();
+        var y = pos.getY();
+
+        // Check if the block type is banned.
+        if (block instanceof StairsBlock || block instanceof SlabBlock || block instanceof FenceBlock || block instanceof FenceGateBlock) {
+            player.sendMessage(
+                Text.translatable("text.mwhrd.dimension.rol.banned")
+                    .formatted(Formatting.RED)
+            );
+            return ActionResult.FAIL;
+        }
+
+        // Check if the player is in a disallowed area.
+        for (var entry : DISALLOWED_BLOCKS.entrySet()) {
+            var range = entry.getKey();
+            if (y >= range.getLeft() && y <= range.getRight()) {
+                var disallowed = entry.getValue();
+                if (disallowed.contains(block)) {
+                    player.sendMessage(
+                        Text.translatable("text.mwhrd.dimension.rol.disallowed")
+                            .formatted(Formatting.RED)
+                    );
+                    return ActionResult.FAIL;
+                }
+            }
+        }
+
+        return ActionResult.PASS;
+    }
+
+    /**
      * Invoked when a player moves.
      *
      * @param world The world the player is in.
@@ -115,7 +184,7 @@ public final class TheRealmOfLight {
      * @param player The player that moved.
      */
     private static void onPlayerMove(World world, BlockPos pos, PlayerEntity player) {
-        if (!Players.inWorld(CustomWorlds.REALM_OF_LIGHT, player)) return;
+        if (world.getRegistryKey() != CustomWorlds.REALM_OF_LIGHT) return;
 
         var y = pos.getY();
         if (y <= -70) {
@@ -152,6 +221,26 @@ public final class TheRealmOfLight {
         );
 
         return false;
+    }
+
+    /**
+     * Invoked when a player crafts an item.
+     *
+     * @param player The player who crafted the item.
+     * @param stack The item that was crafted.
+     */
+    private static void onCraft(PlayerEntity player, ItemStack stack) {
+        if (!Players.inWorld(CustomWorlds.REALM_OF_LIGHT, player)) return;
+
+        // Check if the item is a tool.
+        var item = stack.getItem();
+        if (item instanceof ToolItem) {
+            EnchantmentHelper.apply(stack, builder -> {
+                builder.add(Utils.lookup(Enchantments.EFFICIENCY), 5);
+                builder.add(Utils.lookup(Enchantments.FORTUNE), 5);
+                builder.add(Utils.lookup(Enchantments.UNBREAKING), 3);
+            });
+        }
     }
 
     /**
@@ -307,6 +396,12 @@ public final class TheRealmOfLight {
                     spawn.getX(), spawn.getY(), spawn.getZ(), 0, 0
                 );
             } else {
+                if (entity instanceof MobEntity mob) {
+                    mob.persistent = false;
+                    mob.setHealth(0);
+                    mob.damage(mob.getWorld().getDamageSources().magic(), 1);
+                }
+
                 entity.kill();
             }
         }

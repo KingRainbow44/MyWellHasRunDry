@@ -2,9 +2,13 @@ package moe.seikimo.mwhrd.utils;
 
 import lombok.SneakyThrows;
 import moe.seikimo.general.EncodingUtils;
+import moe.seikimo.mwhrd.MyWellHasRunDry;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3i;
@@ -168,5 +172,17 @@ public interface Utils {
         var input = new ByteArrayInputStream(bytes);
         var stream = new DataInputStream(input);
         return NbtIo.readCompound(stream);
+    }
+
+    /**
+     * Looks up an enchantment by its registry key.
+     *
+     * @param key The registry key of the enchantment.
+     * @return The registry entry of the enchantment.
+     */
+    static RegistryEntry<Enchantment> lookup(RegistryKey<Enchantment> key) {
+        return MyWellHasRunDry
+            .getEnchantmentRegistry()
+            .entryOf(key);
     }
 }

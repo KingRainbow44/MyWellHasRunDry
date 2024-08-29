@@ -101,7 +101,6 @@ public final class LightTowerGenerator {
             var mob = new ZombieEntity(EntityType.ZOMBIE, this.world);
             mob.setPersistent();
             mob.setPosition(Vec3d.of(node));
-            MobGear.applyArmor(mob);
             this.world.spawnEntity(mob);
         } catch (IllegalArgumentException ex) {
             log.warn("Failed to place island at node {}", i, ex);

@@ -14,6 +14,7 @@
     "beacon.BeaconBlockEntityMixin",
     "beacon.BeaconBlockMixin",
     "event.BlockMixin",
+    "event.ItemStackMixin",
     "event.LivingEntityMixin",
     "trial.ItemEntityMixin",
     "trial.MobEntityMixin",
