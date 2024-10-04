@@ -32,6 +32,7 @@ public final class FlightPower extends ToggleablePower {
 
     @Override
     public void apply(World world, int level, PlayerEntity player) {
+        if (player.isCreative() || player.isSpectator()) return;
         if (this.handle == null) return;
 
         var fuel = this.handle.mwhrd$getFuel();
@@ -43,6 +44,8 @@ public final class FlightPower extends ToggleablePower {
 
     @Override
     public void remove(World world, PlayerEntity player) {
+        if (player.isCreative() || player.isSpectator()) return;
+
         var abilities = player.getAbilities();
         abilities.allowFlying = false;
         abilities.flying = false;
