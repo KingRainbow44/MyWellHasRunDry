@@ -11,6 +11,7 @@ import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconManager;
 import moe.seikimo.mwhrd.commands.*;
+import moe.seikimo.mwhrd.custom.CustomWorld;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.BuffManager;
@@ -113,6 +114,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     @Getter private static LocationPredicate trialChamberPredicate;
     @Getter private static Registry<Enchantment> enchantmentRegistry;
 
+    @Getter private static ServerWorld realmOfLight, ruins;
+
     private static final Set<Item> BLACKLISTED = Set.of(
         Items.SPAWNER,
         Items.ALLAY_SPAWN_EGG,
@@ -210,6 +213,10 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
                 log.info("Configured the scoreboard to show player health!");
             }
+
+            // Fetch custom dimensions.
+            MyWellHasRunDry.realmOfLight = server.getWorld(CustomWorld.REALM_OF_LIGHT);
+            MyWellHasRunDry.ruins = server.getWorld(CustomWorld.RUINS);
         });
 
         // Wait for server ticks.
