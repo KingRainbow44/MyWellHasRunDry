@@ -20,11 +20,16 @@ public final class ModItemTagProvider extends FabricTagProvider.ItemTagProvider 
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        this.getOrCreateTagBuilder(ItemTags.TRIMMABLE_ARMOR)
-            .add(CustomItems.ENLIGHTENED_DIAMOND_HELMET, CustomItems.ENLIGHTENED_DIAMOND_CHESTPLATE,
-                CustomItems.ENLIGHTENED_DIAMOND_LEGGINGS, CustomItems.ENLIGHTENED_DIAMOND_BOOTS);
+        var enlightenedArmor = CustomItems.ENLIGHTENED_DIAMOND_ARMOR.toArray(new Item[0]);
+        this.getOrCreateTagBuilder(CustomTags.ENLIGHTENED_ARMOR).add(enlightenedArmor);
 
-        this.getOrCreateTagBuilder(CustomTags.ENLIGHTENED_ARMOR)
-            .add(CustomItems.ENLIGHTENED_DIAMOND_ARMOR.toArray(new Item[0]));
+        this.getOrCreateTagBuilder(ItemTags.HEAD_ARMOR)
+            .add(CustomItems.ENLIGHTENED_DIAMOND_HELMET);
+        this.getOrCreateTagBuilder(ItemTags.CHEST_ARMOR)
+            .add(CustomItems.ENLIGHTENED_DIAMOND_CHESTPLATE);
+        this.getOrCreateTagBuilder(ItemTags.LEG_ARMOR)
+            .add(CustomItems.ENLIGHTENED_DIAMOND_LEGGINGS);
+        this.getOrCreateTagBuilder(ItemTags.FOOT_ARMOR)
+            .add(CustomItems.ENLIGHTENED_DIAMOND_BOOTS);
     }
 }
