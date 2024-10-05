@@ -1,4 +1,9 @@
 {
     "itemGroup.mwhrd": "My Well Has Run Dry",
-    "item.mwhrd.the_atlas": "The Atlas"
+    "item.mwhrd.the_atlas": "The Atlas",
+    "item.mwhrd.soul_of_light": "Soul of Light",
+    "item.mwhrd.enlightened_diamond_helmet": "Enlightened Diamond Helmet",
+    "item.mwhrd.enlightened_diamond_chestplate": "Enlightened Diamond Chestplate",
+    "item.mwhrd.enlightened_diamond_leggings": "Enlightened Diamond Leggings",
+    "item.mwhrd.enlightened_diamond_boots": "Enlightened Diamond Boots"
 }
