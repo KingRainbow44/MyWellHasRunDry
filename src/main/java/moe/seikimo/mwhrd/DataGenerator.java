@@ -1,6 +1,7 @@
 package moe.seikimo.mwhrd;
 
 import moe.seikimo.mwhrd.datagen.ModItemTagProvider;
+import moe.seikimo.mwhrd.datagen.ModRecipeProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 
@@ -10,5 +11,6 @@ public final class DataGenerator implements DataGeneratorEntrypoint {
         var pack = fabricDataGenerator.createPack();
 
         pack.addProvider(ModItemTagProvider::new);
+        pack.addProvider(ModRecipeProvider::new);
     }
 }

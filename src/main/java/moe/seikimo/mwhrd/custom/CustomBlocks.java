@@ -12,7 +12,5 @@ public interface CustomBlocks {
     /**
      * No-op method to trigger the static block.
      */
-    static void register() {
-
-    }
+    static void register() {}
 }

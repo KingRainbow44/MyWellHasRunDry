@@ -5,5 +5,7 @@
     "item.mwhrd.enlightened_diamond_helmet": "Enlightened Diamond Helmet",
     "item.mwhrd.enlightened_diamond_chestplate": "Enlightened Diamond Chestplate",
     "item.mwhrd.enlightened_diamond_leggings": "Enlightened Diamond Leggings",
-    "item.mwhrd.enlightened_diamond_boots": "Enlightened Diamond Boots"
+    "item.mwhrd.enlightened_diamond_boots": "Enlightened Diamond Boots",
+    "item.mwhrd.tier_upgrade": "You've upgraded %s to Tier %d!",
+    "item.mwhrd.max_tier": "This item is already at its max upgrade tier!"
 }

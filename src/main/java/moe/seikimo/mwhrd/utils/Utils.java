@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 public interface Utils {
     /**
@@ -77,5 +78,36 @@ public interface Utils {
         }
 
         return positions;
+    }
+
+    TreeMap<Integer, String> ROMAN = new TreeMap<>() {{
+        put(1000, "M");
+        put(900, "CM");
+        put(500, "D");
+        put(400, "CD");
+        put(100, "C");
+        put(90, "XC");
+        put(50, "L");
+        put(40, "XL");
+        put(10, "X");
+        put(9, "IX");
+        put(5, "V");
+        put(4, "IV");
+        put(1, "I");
+    }};
+
+    /**
+     * Converts a number to a roman numeral.
+     *
+     * @param number The number to convert.
+     * @return The roman numeral representation of the number.
+     */
+    static String toRoman(int number) {
+        var l = ROMAN.floorKey(number);
+        if (number == l) {
+            return ROMAN.get(number);
+        }
+
+        return ROMAN.get(l) + toRoman(number - l);
     }
 }
