@@ -5,7 +5,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-public interface CustomWorld {
+public interface CustomWorlds {
     RegistryKey<World> REALM_OF_LIGHT = RegistryKey.of(
         RegistryKeys.WORLD, Identifier.of("mwhrd", "realm_of_light")
     );

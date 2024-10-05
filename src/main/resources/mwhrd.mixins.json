@@ -1,26 +1,26 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "moe.seikimo.mwhrd.mixin",
-    "compatibilityLevel": "JAVA_21",
-    "mixins": [
-        "ItemStackMixin",
-        "ServerPlayerEntityMixin",
-        "ServerPlayNetworkHandlerMixin",
-        "ServerWorldMixin",
-        "balance.BrewingStandBlockEntityMixin",
-        "balance.PotionItemMixin",
-        "balance.SplashPotionItemMixin",
-        "beacon.BeaconBlockEntityMixin",
-        "beacon.BeaconBlockMixin",
-        "trial.ItemEntityMixin",
-        "trial.MobEntityMixin",
-        "trial.TrialSpawnerDataMixin",
-        "trial.TrialSpawnerLogicMixin",
-        "trial.VaultBlockEntityMixin",
-        "trial.VaultStateMixin"
-    ],
-    "injectors": {
-        "defaultRequire": 1
-    }
+  "required": true,
+  "minVersion": "0.8",
+  "package": "moe.seikimo.mwhrd.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ItemStackMixin",
+    "ServerPlayerEntityMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "ServerWorldMixin",
+    "balance.BrewingStandBlockEntityMixin",
+    "balance.PotionItemMixin",
+    "balance.SplashPotionItemMixin",
+    "beacon.BeaconBlockEntityMixin",
+    "beacon.BeaconBlockMixin",
+    "trial.ItemEntityMixin",
+    "trial.MobEntityMixin",
+    "trial.TrialSpawnerDataMixin",
+    "trial.TrialSpawnerLogicMixin",
+    "trial.VaultBlockEntityMixin",
+    "trial.VaultStateMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

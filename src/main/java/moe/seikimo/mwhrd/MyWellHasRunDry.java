@@ -11,7 +11,9 @@ import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconManager;
 import moe.seikimo.mwhrd.commands.*;
-import moe.seikimo.mwhrd.custom.CustomWorld;
+import moe.seikimo.mwhrd.custom.CustomBlocks;
+import moe.seikimo.mwhrd.custom.CustomItems;
+import moe.seikimo.mwhrd.custom.CustomWorlds;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.BuffManager;
@@ -140,6 +142,10 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
     @Override
     public void onInitializeServer() {
+        // Register custom content.
+        CustomBlocks.register();
+        CustomItems.register();
+
         try {
             // Create the mod configuration directory.
             Files.createDirectories(Path.of("config/mwhrd"));
@@ -215,8 +221,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             }
 
             // Fetch custom dimensions.
-            MyWellHasRunDry.realmOfLight = server.getWorld(CustomWorld.REALM_OF_LIGHT);
-            MyWellHasRunDry.ruins = server.getWorld(CustomWorld.RUINS);
+            MyWellHasRunDry.realmOfLight = server.getWorld(CustomWorlds.REALM_OF_LIGHT);
+            MyWellHasRunDry.ruins = server.getWorld(CustomWorlds.RUINS);
         });
 
         // Wait for server ticks.
