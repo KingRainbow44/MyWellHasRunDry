@@ -81,6 +81,10 @@ loom {
     accessWidenerPath = file("src/main/resources/mwhrd.accesswidener")
 }
 
+fabricApi {
+    configureDataGeneration()
+}
+
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     if (JavaVersion.current() < javaVersion) {

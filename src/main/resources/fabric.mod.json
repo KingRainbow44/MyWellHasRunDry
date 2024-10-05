@@ -16,6 +16,9 @@
     "entrypoints": {
         "server": [
             "moe.seikimo.mwhrd.MyWellHasRunDry"
+        ],
+        "fabric-datagen": [
+            "moe.seikimo.mwhrd.DataGenerator"
         ]
     },
     "accessWidener": "mwhrd.accesswidener",
