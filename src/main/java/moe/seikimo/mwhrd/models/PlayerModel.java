@@ -6,10 +6,12 @@ import dev.morphia.annotations.Id;
 import dev.morphia.annotations.PostLoad;
 import dev.morphia.annotations.PrePersist;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.data.DatabaseObject;
 import moe.seikimo.general.JObject;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.utils.ItemStorage;
+import moe.seikimo.mwhrd.utils.PlayerStorage;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -24,12 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Slf4j
 @Entity("players")
 public final class PlayerModel implements DatabaseObject<PlayerModel> {
     @Id private String playerUuid;
 
     @ApiStatus.Internal
     private List<String> lootItems = new ArrayList<>();
+
+    @ApiStatus.Internal
+    private String storedItems = null;
 
     private boolean survivedHardcore = false;
     private boolean hardcore = false;
@@ -38,8 +44,11 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     private boolean banned = false;
     private long bannedUntil = -1;
 
+    private boolean storedInventory = false;
+
     private transient ServerPlayerEntity handle;
     private transient ItemStorage loot = new ItemStorage();
+    private transient PlayerStorage storage = new PlayerStorage();
 
     @VisibleForTesting
     @ApiStatus.Internal
@@ -51,11 +60,14 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     public void beforeSave() {
         this.lootItems.clear();
         this.lootItems.addAll(this.loot.serialize());
+
+        this.storedItems = this.storage.serialize();
     }
 
     @PostLoad
     public void afterLoad() {
         this.loot.deserialize(this.lootItems);
+        this.storage.deserialize(this.storedItems);
     }
 
     /**
@@ -166,7 +178,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
         try {
             this.save();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.error("Failed to save hardcore player.", exception);
         }
 
         if (this.handle != null) {

@@ -4,20 +4,20 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import lombok.Getter;
 import moe.seikimo.general.EncodingUtils;
+import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
  * Serializable, infinite item storage.
  */
 @SuppressWarnings("LombokGetterMayBeUsed")
-public final class ItemStorage {
+public final class ItemStorage implements Iterable<ItemStack> {
     /**
      * This is where all unidentified items go to die.
      */
@@ -49,7 +49,11 @@ public final class ItemStorage {
      */
     @Nullable
     public ItemStack get(int index) {
-        return this.backing.get(index);
+        try {
+            return this.backing.get(index);
+        } catch (IndexOutOfBoundsException ignored) {
+            return ItemStack.EMPTY;
+        }
     }
 
     /**
@@ -83,6 +87,24 @@ public final class ItemStorage {
             .filter(stack -> stack.getItem() == itemType)
             .flatMapToInt(stack -> IntStream.of(stack.getCount()))
             .sum();
+    }
+
+    /**
+     * Adds multiple items to the storage.
+     *
+     * @param stack The items to add.
+     */
+    public void offer(ItemStack... stack) {
+        this.offer(Arrays.stream(stack).toList());
+    }
+
+    /**
+     * Adds multiple items to the storage.
+     *
+     * @param stack The items to add.
+     */
+    public void offer(List<ItemStack> stack) {
+        stack.forEach(this::offer);
     }
 
     /**
@@ -163,19 +185,13 @@ public final class ItemStorage {
      * @return A JSON & Base64 serialized version of this item storage.
      */
     public List<String> serialize() {
+        var registry = MyWellHasRunDry.getServer()
+            .getRegistryManager();
         var items = new ArrayList<String>();
 
         for (var stack : this.backing) {
-            var json = ItemStack.CODEC.encode(stack,
-                JsonOps.INSTANCE, JsonOps.INSTANCE.empty());
-            var encodeResult = json.result();
-
-            if (encodeResult.isEmpty()) {
-                continue;
-            }
-
-            var base64 = EncodingUtils.base64Encode(
-                encodeResult.get().toString());
+            var nbt = stack.encode(registry);
+            var base64 = Utils.base64Encode(nbt);
             items.add(base64);
         }
 
@@ -186,17 +202,34 @@ public final class ItemStorage {
      * @param serialized The Base64 & JSON-encoded item storage.
      */
     public void deserialize(List<String> serialized) {
-        for (var item : serialized) {
+        var registry = MyWellHasRunDry.getServer()
+            .getRegistryManager();
+
+        for (var item : serialized) try {
+            var nbt = Utils.base64Decode(item);
+            var data = ItemStack.fromNbt(registry, nbt);
+
+            data.ifPresent(this.backing::add);
+        } catch (Exception ignored) {
+            // This will only throw if the data is legacy JSON.
             var json = JsonParser.parseString(
                 EncodingUtils.strBase64Decode(item));
             var result = ItemStack.CODEC.decode(JsonOps.INSTANCE, json);
             var data = result.result();
 
-            if (data.isEmpty()) {
-                continue;
-            }
-
-            this.backing.add(data.get().getFirst());
+            data.ifPresent(pair -> {
+                var stack = pair.getFirst();
+                this.backing.add(stack);
+            });
         }
+    }
+
+    /**
+     * @return An iterator over the item storage.
+     */
+    @NotNull
+    @Override
+    public Iterator<ItemStack> iterator() {
+        return this.backing.iterator();
     }
 }
