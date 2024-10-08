@@ -7,5 +7,17 @@
     "item.mwhrd.enlightened_diamond_leggings": "Enlightened Diamond Leggings",
     "item.mwhrd.enlightened_diamond_boots": "Enlightened Diamond Boots",
     "item.mwhrd.tier_upgrade": "You've upgraded %s to Tier %d!",
-    "item.mwhrd.max_tier": "This item is already at its max upgrade tier!"
+    "item.mwhrd.max_tier": "This item is already at its max upgrade tier!",
+
+    "text.mwhrd.dimension.rol.ready": "The realm of light is ready!",
+    "text.mwhrd.dimension.rol.queued": "You are queued to enter The Realm of Light.",
+
+    "text.mwhrd.dimension.rol.info.1": "Welcome to The Realm of Light.",
+    "text.mwhrd.dimension.rol.info.2": "Objective: Reach the top and defeat The Guardian of Light.",
+    "text.mwhrd.dimension.rol.info.3": "All materials required to reach the top have been provided.",
+    "text.mwhrd.dimension.rol.info.4": "Your inventory has remained in the overworld.",
+
+    "text.mwhrd.inventory.stored": "You need to restore your inventory first!",
+    "text.mwhrd.inventory.not_stored": "You do not have an inventory stored.",
+    "text.mwhrd.inventory.admin_override": "In spectator mode, you can override this limitation."
 }

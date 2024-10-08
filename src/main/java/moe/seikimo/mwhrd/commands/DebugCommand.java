@@ -4,16 +4,23 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.beacon.BeaconManager;
+import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
+import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.utils.Debug;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
+import java.util.Objects;
+
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
+@Slf4j
 public final class DebugCommand {
     /**
      * Registers the command with the dispatcher.
@@ -31,6 +38,16 @@ public final class DebugCommand {
             .then(literal("fuel")
                 .then(argument("value", LongArgumentType.longArg(0))
                     .executes(DebugCommand::fuel)))
+            .then(literal("custom")
+                .then(literal("rol")
+                    .executes(DebugCommand::placeRealm))
+                .executes(DebugCommand::usage))
+            .then(literal("inv")
+                .then(literal("restore")
+                    .then(argument("player", StringArgumentType.word())
+                        .executes(DebugCommand::restoreInv))
+                    .executes(DebugCommand::usage))
+                .executes(DebugCommand::usage))
             .executes(DebugCommand::usage));
     }
 
@@ -42,8 +59,8 @@ public final class DebugCommand {
     }
 
     private static int set(CommandContext<ServerCommandSource> context) {
-        var property = StringArgumentType.getString(context, "property");
-        var value = StringArgumentType.getString(context, "value");
+        var property = getString(context, "property");
+        var value = getString(context, "value");
 
         try {
             var field = Debug.class.getDeclaredField(property);
@@ -125,6 +142,49 @@ public final class DebugCommand {
         BeaconManager.FUEL_TIME = value;
         context.getSource().sendMessage(Text.literal(
             "Set fuel time to " + value));
+        return 1;
+    }
+
+    private static int placeRealm(CommandContext<ServerCommandSource> context) {
+        var player = context.getSource().getPlayer();
+        if (player == null) {
+            context.getSource().sendError(Text.literal("Must be ran as a player"));
+            return 1;
+        }
+
+        TheRealmOfLight.getInstance().prepare();
+
+        return 1;
+    }
+
+    private static int restoreInv(CommandContext<ServerCommandSource> context) {
+        var player = context.getSource().getPlayer();
+        if (player == null) {
+            context.getSource().sendError(Text.literal("Must be ran as a player"));
+            return 1;
+        }
+
+        var target = getString(context, "player");
+        var targetPlayer = Objects.requireNonNull(player.getServer())
+            .getPlayerManager()
+            .getPlayer(target);
+        if (targetPlayer == null) {
+            context.getSource().sendError(Text.literal("Player not found"));
+            return 1;
+        }
+
+        if (!(targetPlayer instanceof ITimeTraveler traveler)) {
+            context.getSource().sendError(Text.literal("Player is not an ITimeTraveler"));
+            return 1;
+        }
+
+        try {
+            traveler.mwhrd$restoreInventory();
+            context.getSource().sendMessage(Text.literal("Restored inventory for " + target));
+        } catch (Exception exception) {
+            log.error("Failed to restore inventory for {}", target, exception);
+        }
+
         return 1;
     }
 }

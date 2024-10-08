@@ -14,6 +14,7 @@ import moe.seikimo.mwhrd.commands.*;
 import moe.seikimo.mwhrd.custom.CustomBlocks;
 import moe.seikimo.mwhrd.custom.CustomItems;
 import moe.seikimo.mwhrd.custom.CustomWorlds;
+import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.BuffManager;
@@ -223,6 +224,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             // Fetch custom dimensions.
             MyWellHasRunDry.realmOfLight = server.getWorld(CustomWorlds.REALM_OF_LIGHT);
             MyWellHasRunDry.ruins = server.getWorld(CustomWorlds.RUINS);
+
+            TheRealmOfLight.getInstance().initialize(realmOfLight);
         });
 
         // Wait for server ticks.

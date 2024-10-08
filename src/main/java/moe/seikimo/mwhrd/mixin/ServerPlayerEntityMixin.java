@@ -3,19 +3,23 @@ package moe.seikimo.mwhrd.mixin;
 import com.mojang.authlib.GameProfile;
 import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
-import moe.seikimo.mwhrd.interfaces.IDBObject;
-import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
-import moe.seikimo.mwhrd.interfaces.ISelectionPlayer;
-import moe.seikimo.mwhrd.interfaces.ITrialPlayer;
+import moe.seikimo.mwhrd.interfaces.*;
 import moe.seikimo.mwhrd.models.PlayerModel;
+import net.minecraft.block.Portal;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,22 +36,28 @@ public abstract class ServerPlayerEntityMixin
     implements IPlayerConditions,
     IDBObject<PlayerModel>,
     ISelectionPlayer,
-    ITrialPlayer {
-    @Unique private boolean trialChamber = false, ominous = false;
-    @Unique private long closedCooldown = 0;
+    ITrialPlayer,
+    ITimeTraveler {
+    @Shadow
+    public abstract void sendMessage(Text message);
+
+    @Shadow
+    public abstract boolean isCreative();
+
+    @Shadow
+    public abstract boolean isSpectator();
+
+    @Shadow
+    public abstract void sendMessage(Text message, boolean overlay);
 
     @Unique private PlayerModel model;
-
-    @Unique private BlockPos pos1, pos2;
-
     @Unique private boolean unbreakable = false;
-
-    @Unique private int mobKills = 0;
-    @Unique private long loseKills = -1;
 
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
     }
+
+    /// <editor-fold desc="Mixin" defaultstate="collapsed">
 
     @Override
     public boolean canFoodHeal() {
@@ -101,6 +111,8 @@ public abstract class ServerPlayerEntityMixin
         return super.damage(source, amount);
     }
 
+    /// </editor-fold>
+
     /// <editor-fold desc="Database Object">
 
     @Override
@@ -123,6 +135,8 @@ public abstract class ServerPlayerEntityMixin
     /// </editor-fold>
 
     /// <editor-fold desc="Selection Player">
+
+    @Unique private BlockPos pos1, pos2;
 
     @Override
     public BlockPos mwhrd$getPos1() {
@@ -147,6 +161,9 @@ public abstract class ServerPlayerEntityMixin
     /// </editor-fold>
 
     /// <editor-fold desc="Player Conditions">
+
+    @Unique private boolean trialChamber = false, ominous = false;
+    @Unique private long closedCooldown = 0;
 
     @Override
     public void mwhrd$setOminous(boolean ominous) {
@@ -213,6 +230,9 @@ public abstract class ServerPlayerEntityMixin
 
     /// <editor-fold desc="Trial Player">
 
+    @Unique private int mobKills = 0;
+    @Unique private long loseKills = -1;
+
     @Override
     public void mwhrd$addMobKill() {
         this.mobKills++;
@@ -221,6 +241,89 @@ public abstract class ServerPlayerEntityMixin
     @Override
     public int mwhrd$getMobKills() {
         return this.mobKills;
+    }
+
+    /// </editor-fold>
+
+    /// <editor-fold desc="Time Traveler">
+
+    @Unique private Pair<Portal, BlockPos> queuedPortal = null;
+
+    @Unique
+    @Override
+    public Pair<Portal, BlockPos> mwhrd$getQueuedPortal() {
+        return this.queuedPortal;
+    }
+
+    @Unique
+    @Override
+    public void mwhrd$setQueuedPortal(Pair<Portal, BlockPos> portal) {
+        this.queuedPortal = portal;
+    }
+
+    @Unique
+    @Override
+    public void mwhrd$restoreInventory() {
+        if (!this.model.isStoredInventory() && !this.isSpectator()) {
+            this.sendMessage(Text.translatable("text.mwhrd.inventory.not_stored")
+                .formatted(Formatting.RED));
+
+            if (this.hasPermissionLevel(3)) {
+                this.sendMessage(Text.translatable("text.mwhrd.inventory.admin_override")
+                    .formatted(Formatting.YELLOW));
+            }
+
+            return;
+        }
+
+        var storage = this.model.getStorage();
+
+        // Restore the entirety of the player's inventory.
+        this.getInventory().clear();
+
+        for (var stack : storage.getArmor()) {
+            if (!(stack.getItem() instanceof ArmorItem item)) continue;
+            this.equipStack(item.getSlotType(), stack);
+        }
+
+        for (var i = 0; i < storage.getInventory().size(); i++) {
+            this.getInventory().main.set(i, storage.getInventory().get(i));
+        }
+
+        this.setStackInHand(Hand.OFF_HAND, storage.getOffHand().get(0));
+
+        // Clear the player's stored inventory.
+        this.model.setStoredInventory(false);
+        this.model.save();
+    }
+
+    @Unique
+    @Override
+    public void mwhrd$storeInventory(boolean clear) {
+        // Check if the player needs to restore their inventory.
+        if (this.model.isStoredInventory()) {
+            this.sendMessage(Text.translatable("text.mwhrd.inventory.stored")
+                .formatted(Formatting.RED));
+            return;
+        }
+
+        var storage = this.model.getStorage();
+        storage.clear();
+
+        // Store the entirety of the player's inventory.
+        var inventory = this.getInventory();
+
+        inventory.armor.forEach(storage.getArmor()::offer);
+        inventory.main.forEach(storage.getInventory()::offer);
+        inventory.offHand.forEach(storage.getOffHand()::offer);
+
+        // Clear the player's existing inventory.
+        if (clear) {
+            this.getInventory().clear();
+        }
+
+        this.model.setStoredInventory(true);
+        this.model.save();
     }
 
     /// </editor-fold>

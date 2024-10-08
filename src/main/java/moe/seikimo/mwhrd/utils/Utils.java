@@ -1,10 +1,19 @@
 package moe.seikimo.mwhrd.utils;
 
+import lombok.SneakyThrows;
+import moe.seikimo.general.EncodingUtils;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -109,5 +118,55 @@ public interface Utils {
         }
 
         return ROMAN.get(l) + toRoman(number - l);
+    }
+
+    /**
+     * Converts a Vec3i to a BlockPos.
+     *
+     * @param pos The Vec3i to convert.
+     * @return The converted BlockPos.
+     */
+    static BlockPos blockPos(Vec3i pos) {
+        return new BlockPos(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    /**
+     * Returns a random element from an array.
+     *
+     * @param array The array to pick a random element from.
+     * @return A random element from the array.
+     */
+    static <T> T random(T[] array) {
+        return array[(int) (Math.random() * array.length)];
+    }
+
+    /**
+     * Base64-encodes a Minecraft tag.
+     *
+     * @param tag The tag to encode.
+     * @return The base64-encoded tag.
+     */
+    @SneakyThrows
+    static String base64Encode(NbtElement tag) {
+        var output = new ByteArrayOutputStream();
+        var stream = new DataOutputStream(output);
+        NbtIo.write(tag, stream);
+
+        var bytes = output.toByteArray();
+        return EncodingUtils.base64Encode(bytes);
+    }
+
+    /**
+     * Base64-decodes a Minecraft tag.
+     *
+     * @param base64 The base64-encoded tag.
+     * @return The decoded tag.
+     */
+    @SneakyThrows
+    static NbtElement base64Decode(String base64) {
+        var bytes = EncodingUtils.base64Decode(base64);
+        var input = new ByteArrayInputStream(bytes);
+        var stream = new DataInputStream(input);
+        return NbtIo.readCompound(stream);
     }
 }

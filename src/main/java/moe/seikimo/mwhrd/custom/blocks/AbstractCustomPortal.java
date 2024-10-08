@@ -49,6 +49,18 @@ public abstract class AbstractCustomPortal extends SimplePolymerBlock implements
      */
     protected abstract ContextPredicate getFrameValidator();
 
+    /**
+     * Invoked when an entity collides with the portal.
+     *
+     * @param entity The entity that collided with the portal.
+     * @param pos The position of the portal.
+     */
+    protected void transportEntity(Entity entity, BlockPos pos) {
+        if (entity.canUsePortals(false)) {
+            entity.tryUsePortal(this, pos);
+        }
+    }
+
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return state.get(AXIS) == Axis.Z ? Z_SHAPE : X_SHAPE;
@@ -71,9 +83,7 @@ public abstract class AbstractCustomPortal extends SimplePolymerBlock implements
 
     @Override
     protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (entity.canUsePortals(true)) {
-            entity.tryUsePortal(this, pos);
-        }
+        this.transportEntity(entity, pos);
     }
 
     @Override

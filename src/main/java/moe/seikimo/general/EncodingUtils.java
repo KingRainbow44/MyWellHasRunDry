@@ -107,6 +107,16 @@ public interface EncodingUtils {
     }
 
     /**
+     * Converts a JSON element to an object.
+     *
+     * @param type The type of the object.
+     * @return The object.
+     */
+    static <T> T jsonDecode(JsonElement json, Type type) {
+        return JSON.get().fromJson(json, type);
+    }
+
+    /**
      * Decodes a Base64 string.
      *
      * @param input The input string.
