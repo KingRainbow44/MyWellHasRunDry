@@ -10,6 +10,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -152,6 +153,12 @@ public final class BuffManager {
         var item = player.getStackInHand(hand);
         var blockEntity = world.getBlockEntity(hitResult.getBlockPos());
         if (blockEntity != null && item.getItem() != Items.HOPPER) {
+            return ActionResult.PASS;
+        }
+
+        // Check if the item originates from outside of Minecraft.
+        var identifier = Registries.ITEM.getId(item.getItem());
+        if (!identifier.getNamespace().equals("minecraft")) {
             return ActionResult.PASS;
         }
 
