@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,21 +72,40 @@ public final class AsyncPool {
     }
 
     /**
+     * Clears blocks at two points.
+     *
+     * @param executor The player which executed the operation.
+     * @param world The world to execute the operation.
+     */
+    public CompletableFuture<List<BlockState>> clear(
+        @Nullable PlayerEntity executor, ServerWorld world,
+        BlockPos first, BlockPos second
+    ) {
+        return this.fill(executor, world, first, second, Blocks.AIR.getDefaultState());
+    }
+
+    /**
      * Fills blocks at two points to a certain block.
      *
      * @param executor The player which executed the operation.
      * @param world The world to execute the operation.
      */
     public CompletableFuture<List<BlockState>> fill(
-        PlayerEntity executor, ServerWorld world,
-        BlockPos first, BlockPos second, BlockState to
+        @Nullable PlayerEntity executor,
+        ServerWorld world,
+        BlockPos first, BlockPos second,
+        BlockState to
     ) {
         var operationId = this.operationId++;
-        log.info("[ID: {}] {} executed a fill ({}) operation from {} to {} in {}.",
-            operationId,
-            executor.getName(), to.getBlock().getName().getString(),
-            Utils.serialize(first), Utils.serialize(second),
-            world.getDimensionEntry().getIdAsString());
+
+        // Log operation if applicable.
+        if (executor != null) {
+            log.info("[ID: {}] {} executed a fill ({}) operation from {} to {} in {}.",
+                operationId,
+                executor.getName(), to.getBlock().getName().getString(),
+                Utils.serialize(first), Utils.serialize(second),
+                world.getDimensionEntry().getIdAsString());
+        }
 
         // Calculate every block position.
         var blocks = Utils.rectangle(first, second);
@@ -108,6 +129,9 @@ public final class AsyncPool {
         return future;
     }
 
+    /**
+     * Internal handler for filling a rectangle.
+     */
     private static OperationConsumer fillConsumer(
         ServerWorld world, BlockState to, List<BlockPos> blocks,
         CompletableFuture<List<BlockState>> future, AtomicReference<List<BlockState>> changed
