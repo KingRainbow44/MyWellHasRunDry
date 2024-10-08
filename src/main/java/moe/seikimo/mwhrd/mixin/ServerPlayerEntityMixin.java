@@ -3,10 +3,12 @@ package moe.seikimo.mwhrd.mixin;
 import com.mojang.authlib.GameProfile;
 import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
+import moe.seikimo.mwhrd.events.PlayerMoveEvent;
 import moe.seikimo.mwhrd.interfaces.*;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import net.minecraft.block.Portal;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
@@ -16,6 +18,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -64,6 +67,14 @@ public abstract class ServerPlayerEntityMixin
         return super.canFoodHeal() &&
             !(this.mwhrd$isInTrialChamber() && this.mwhrd$isOminous()) &&
             (this.model == null || !this.model.isHardcore());
+    }
+
+    @Override
+    public void move(MovementType movementType, Vec3d movement) {
+        super.move(movementType, movement);
+
+        PlayerMoveEvent.EVENT.invoker()
+            .onMove(this.getWorld(), this.getBlockPos(), this);
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
