@@ -12,6 +12,7 @@ import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.beacon.BeaconManager;
 import moe.seikimo.mwhrd.commands.*;
 import moe.seikimo.mwhrd.custom.CustomBlocks;
+import moe.seikimo.mwhrd.custom.CustomEntities;
 import moe.seikimo.mwhrd.custom.CustomItems;
 import moe.seikimo.mwhrd.custom.CustomWorlds;
 import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
@@ -146,6 +147,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         // Register custom content.
         CustomBlocks.register();
         CustomItems.register();
+        CustomEntities.register();
 
         try {
             // Create the mod configuration directory.

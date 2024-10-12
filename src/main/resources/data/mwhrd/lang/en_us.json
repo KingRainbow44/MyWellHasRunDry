@@ -1,5 +1,6 @@
 {
     "itemGroup.mwhrd": "My Well Has Run Dry",
+
     "item.mwhrd.the_atlas": "The Atlas",
     "item.mwhrd.soul_of_light": "Soul of Light",
     "item.mwhrd.enlightened_diamond_helmet": "Enlightened Diamond Helmet",
@@ -9,8 +10,11 @@
     "item.mwhrd.tier_upgrade": "You've upgraded %s to Tier %d!",
     "item.mwhrd.max_tier": "This item is already at its max upgrade tier!",
 
-    "text.mwhrd.dimension.rol.ready": "The realm of light is ready!",
+    "entity.mwhrd.guardian_of_light": "Guardian of Light",
+
+    "text.mwhrd.dimension.rol.ready": "The Realm of Light is ready!",
     "text.mwhrd.dimension.rol.queued": "You are queued to enter The Realm of Light.",
+    "text.mwhrd.dimension.rol.fall": "You have fallen from The Realm of Light!",
 
     "text.mwhrd.dimension.rol.info.1": "Welcome to The Realm of Light.",
     "text.mwhrd.dimension.rol.info.2": "Objective: Reach the top and defeat The Guardian of Light.",
