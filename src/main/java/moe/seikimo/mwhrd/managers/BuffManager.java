@@ -29,7 +29,7 @@ public final class BuffManager {
     );
     private static final Set<Block> BLOCK_WHITELIST = Set.of(
         Blocks.WATER, Blocks.TNT, Blocks.FIRE,
-        Blocks.LAVA, Blocks.COBWEB, Blocks.DECORATED_POT,
+        Blocks.COBWEB, Blocks.DECORATED_POT,
         Blocks.WAXED_OXIDIZED_COPPER_GRATE
     );
 
