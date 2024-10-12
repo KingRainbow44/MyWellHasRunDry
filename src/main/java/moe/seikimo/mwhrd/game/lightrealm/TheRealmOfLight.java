@@ -6,6 +6,7 @@ import moe.seikimo.general.MapBuilder;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.custom.CustomWorlds;
 import moe.seikimo.mwhrd.events.BlockBreakEvent;
+import moe.seikimo.mwhrd.events.PlayerMoveEvent;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.utils.Players;
 import moe.seikimo.mwhrd.utils.Ticks;
@@ -72,6 +73,7 @@ public final class TheRealmOfLight {
 
     static {
         BlockBreakEvent.EVENT.register(TheRealmOfLight::onBlockBreak);
+        PlayerMoveEvent.EVENT.register(TheRealmOfLight::onPlayerMove);
     }
 
     /**
@@ -100,6 +102,40 @@ public final class TheRealmOfLight {
 
         // If we dropped an item, we do not drop the block.
         return override == null ? ActionResult.PASS : ActionResult.FAIL;
+    }
+
+    /**
+     * Invoked when a player moves.
+     *
+     * @param world The world the player is in.
+     * @param pos The position the player moved to.
+     * @param player The player that moved.
+     */
+    private static void onPlayerMove(World world, BlockPos pos, PlayerEntity player) {
+        if (!Players.inWorld(CustomWorlds.REALM_OF_LIGHT, player)) return;
+
+        var y = pos.getY();
+        if (y <= -70) {
+            // Teleport the player to the overworld.
+            Players.respawn(player);
+
+            // Restore the player's inventory.
+            if (player instanceof ITimeTraveler traveler) try {
+                traveler.mwhrd$restoreInventory();
+            } catch (Exception ex) {
+                Players.kickPlayer(
+                    (ServerPlayerEntity) player,
+                    Text.literal("Unable to restore your inventory. Please contact a server admin."));
+                log.error("Failed to restore player inventory.", ex);
+            }
+
+            // Send a message to the player.
+            player.sendMessage(
+                Text.literal("Oh no! ")
+                    .formatted(Formatting.BOLD, Formatting.RED)
+                    .append(Text.translatable("text.mwhrd.dimension.rol.fall"))
+            );
+        }
     }
 
     /**
@@ -226,6 +262,8 @@ public final class TheRealmOfLight {
 
         // Remove all entities in the world.
         for (var entity : this.world.iterateEntities()) {
+            if (entity == null) continue;
+
             if (entity instanceof ServerPlayerEntity player) {
                 var spawn = MyWellHasRunDry.getDefaultSpawn();
                 player.teleport(
