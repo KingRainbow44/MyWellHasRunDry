@@ -2,6 +2,8 @@ package moe.seikimo.mwhrd.utils;
 
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketCallbacks;
+import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -63,5 +65,17 @@ public interface Players {
      */
     static boolean inWorld(RegistryKey<World> world, PlayerEntity player) {
         return world.equals(player.getWorld().getRegistryKey());
+    }
+
+    /**
+     * Helper method to kick a player from the server.
+     *
+     * @param player The player to kick.
+     * @param text The reason for the kick.
+     */
+    static void kickPlayer(ServerPlayerEntity player, Text text) {
+        var connection = player.networkHandler.connection;
+        connection.send(new DisconnectS2CPacket(text), PacketCallbacks.always(() -> connection.disconnect(text)));
+        connection.tryDisableAutoRead();
     }
 }
