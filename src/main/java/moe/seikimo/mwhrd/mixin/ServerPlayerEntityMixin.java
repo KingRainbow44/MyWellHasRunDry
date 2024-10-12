@@ -297,8 +297,10 @@ public abstract class ServerPlayerEntityMixin
             this.equipStack(item.getSlotType(), stack);
         }
 
-        for (var i = 0; i < storage.getInventory().size(); i++) {
-            this.getInventory().main.set(i, storage.getInventory().get(i));
+        // Add all items to the player's inventory.
+        var inventory = this.getInventory();
+        for (var stack : storage.getInventory()) {
+            inventory.offerOrDrop(stack);
         }
 
         this.setStackInHand(Hand.OFF_HAND, storage.getOffHand().get(0));
