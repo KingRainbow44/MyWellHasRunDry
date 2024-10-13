@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,13 +33,13 @@ public final class LightTowerGenerator {
     private final boolean genOnly;
     private final ServerWorld world;
 
-    @Getter(onMethod_ = @ApiStatus.Internal)
+    @Getter(onMethod_ = @VisibleForTesting)
     private final List<Vec3i> nodes = new ArrayList<>();
 
     /**
      * Internal public constructor used for testing.
      */
-    @ApiStatus.Internal
+    @VisibleForTesting
     public LightTowerGenerator() {
         this(null, true);
     }

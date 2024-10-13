@@ -211,7 +211,7 @@ public final class TheRealmOfLight {
             generator.placeIslands();
 
             Players.broadcast(Text.translatable("text.mwhrd.dimension.rol.ready")
-                .formatted(Formatting.LIGHT_PURPLE), false);
+                .formatted(Formatting.LIGHT_PURPLE), true);
 
             this.running.set(true);
         } catch (Exception ex) {
