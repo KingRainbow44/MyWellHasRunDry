@@ -213,6 +213,12 @@ public abstract class BeaconBlockEntityMixin
 
     /// <editor-fold desc="IAdvancedBeacon">
 
+
+    @Override
+    public BeaconBlockEntity mwhrd$getBeacon() {
+        return (BeaconBlockEntity) (Object) this;
+    }
+
     @Override
     public World mwhrd$getWorld() {
         return this.world;
