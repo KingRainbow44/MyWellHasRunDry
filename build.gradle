@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '8.3.3'
 
     id 'fabric-loom' version '1.6-SNAPSHOT'
     id 'maven-publish'
@@ -36,15 +36,11 @@ dependencies {
 
     compileOnly "org.geysermc.geyser:api:${project.geyser_version}"
 
-    modImplementation include("eu.pb4:sgui:${project.sgui_version}")
+    shadow(modImplementation("eu.pb4:sgui:${project.sgui_version}"))
 
-    implementation "dev.morphia.morphia:morphia-core:${project.morphia_version}"
-    implementation "de.bwaldvogel:mongo-java-server:${project.mongo_version}"
-    implementation "de.bwaldvogel:mongo-java-server-h2-backend:${project.mongo_version}"
-
-    implementation "dev.morphia.morphia:morphia-core:${project.morphia_version}"
-    implementation "de.bwaldvogel:mongo-java-server:${project.mongo_version}"
-    implementation "de.bwaldvogel:mongo-java-server-h2-backend:${project.mongo_version}"
+    shadow(implementation("dev.morphia.morphia:morphia-core:${project.morphia_version}"))
+    shadow(implementation("de.bwaldvogel:mongo-java-server:${project.mongo_version}"))
+    shadow(implementation("de.bwaldvogel:mongo-java-server-h2-backend:${project.mongo_version}"))
 
     compileOnly "org.projectlombok:lombok:${project.lombok_version}"
     annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
@@ -91,6 +87,13 @@ java {
 }
 
 shadowJar {
+    archiveClassifier = "shadow"
+    configurations = [project.configurations.shadow]
+}
+
+remapJar {
+    dependsOn(shadowJar)
+    inputFile = tasks.shadowJar.archiveFile
 }
 
 jar {
