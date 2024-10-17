@@ -83,10 +83,6 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             .formatted(Formatting.DARK_GRAY),
         Text.literal("  - All recipes are unlocked by default")
             .formatted(Formatting.DARK_GRAY),
-        Text.empty(),
-        Text.literal("NEW")
-            .formatted(Formatting.BOLD, Formatting.AQUA),
-        Text.empty(),
         Text.literal("  - Brewing stands instantly craft items")
             .formatted(Formatting.DARK_GRAY),
         Text.literal("  - Brewing stand potions are stackable")
@@ -98,6 +94,14 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         Text.literal("  - Gain permanent +5 luck when completing hardcore")
             .formatted(Formatting.DARK_GRAY),
         Text.literal("  - To gain beacon loot, players must defeat ### monsters")
+            .formatted(Formatting.DARK_GRAY),
+        Text.empty(),
+        Text.literal("NEW")
+            .formatted(Formatting.BOLD, Formatting.AQUA),
+        Text.empty(),
+        Text.literal("  - Pixel printer fuel is buffed to 2x")
+            .formatted(Formatting.DARK_GRAY),
+        Text.literal("  - Beacon fuel scales with level")
             .formatted(Formatting.DARK_GRAY)
     );
 
