@@ -372,9 +372,16 @@ public final class AdvancedBeaconGui extends SimpleGui {
             fuel.decrement(1);
 
             // Add the fuel to the beacon.
-            added += 2;
+            var multiplier = switch (this.vanillaBeacon.level) {
+                case 2 -> 2;
+                case 3 -> 4;
+                case 4 -> 8;
+                default -> 1;
+            };
+
+            added += multiplier;
             this.beacon.mwhrd$setFuel(Math.min(maxFuel,
-                fuelLevel = fuelLevel + 2));
+                fuelLevel = fuelLevel + multiplier));
 
             if (fuelLevel >= maxFuel) {
                 break;
