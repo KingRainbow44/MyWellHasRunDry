@@ -43,6 +43,8 @@ public final class FlightPower extends ToggleablePower {
 
     @Override
     public void remove(World world, PlayerEntity player) {
+        if (player == null) return;
+
         var abilities = player.getAbilities();
         abilities.allowFlying = false;
         abilities.flying = false;
