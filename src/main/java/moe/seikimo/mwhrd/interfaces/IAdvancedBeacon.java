@@ -6,6 +6,7 @@ import moe.seikimo.mwhrd.beacon.BeaconPower;
 import moe.seikimo.mwhrd.beacon.powers.EffectsPower;
 import moe.seikimo.mwhrd.models.BeaconModel;
 import moe.seikimo.mwhrd.utils.ItemStorage;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -22,6 +23,7 @@ public interface IAdvancedBeacon {
         this.put(BeaconEffect.UNBREAKING_TOOLS, BeaconPower.Empty::new);
     }};
 
+    BeaconBlockEntity mwhrd$getBeacon();
     World mwhrd$getWorld();
     BlockPos mwhrd$getPos();
 

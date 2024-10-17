@@ -26,7 +26,7 @@ public final class PixelPrinterPower extends BeaconPower {
     private static final Set<Item> BLACKLISTED = Set.of(
         Items.BEACON, Items.SPAWNER, Items.NETHERITE_BLOCK,
         Items.DIAMOND_BLOCK, Items.EMERALD_BLOCK, Items.IRON_BLOCK,
-        Items.GOLD_BLOCK, Items.LAPIS_BLOCK, Items.REDSTONE_BLOCK,
+        Items.GOLD_BLOCK, Items.LAPIS_BLOCK,
         Items.ANCIENT_DEBRIS, Items.DRAGON_EGG, Items.BEDROCK,
         Items.COAL_ORE, Items.DEEPSLATE_COAL_ORE, Items.IRON_ORE, Items.DEEPSLATE_IRON_ORE,
         Items.COPPER_ORE, Items.DEEPSLATE_COPPER_ORE, Items.GOLD_ORE, Items.DEEPSLATE_GOLD_ORE,
@@ -37,10 +37,24 @@ public final class PixelPrinterPower extends BeaconPower {
         Items.TNT, Items.BARRIER, Items.REINFORCED_DEEPSLATE, Items.WITHER_SKELETON_SKULL
     );
 
-    private int itemFuel = 0; // Maxes out at 640. 1 fuel per item printed.
+    private static final int MAX_FUEL = 1280;
+
+    private int itemFuel = 0; // Maxes out at MAX_FUEL. 1 fuel per item printed.
 
     public PixelPrinterPower(BlockPos blockPos) {
         super(blockPos);
+    }
+
+    /**
+     * @return The percentage of beacon fuel to copy.
+     */
+    private int getPercentage() {
+        return switch (this.handle.mwhrd$getBeacon().level) {
+            case 2 -> 15;
+            case 3 -> 20;
+            case 4 -> 25;
+            default -> 10;
+        };
     }
 
     @Override
@@ -50,10 +64,11 @@ public final class PixelPrinterPower extends BeaconPower {
 
     @Override
     public void fuelTick(int fuel) {
-        if (this.itemFuel == 640) return;
+        if (this.itemFuel == MAX_FUEL) return;
 
-        var expected = (int) Math.floor(fuel * .1);
-        this.itemFuel = Math.min(640,
+        var percentage = this.getPercentage() / 100.0;
+        var expected = (int) Math.floor(fuel * percentage);
+        this.itemFuel = Math.min(MAX_FUEL,
             this.itemFuel + expected);
     }
 
@@ -107,20 +122,21 @@ public final class PixelPrinterPower extends BeaconPower {
         }
 
         private void drawButtons() {
+            var percentage = this.self.getPercentage();
             this.setSlot(PRINTER, new GuiElementBuilder(Items.COMMAND_BLOCK)
                 .setName(Text.literal("Pixel Printer")
                     .formatted(Formatting.GREEN))
                 .addLoreLine(GUI.lore("Fuel is consumed when printing items.", Formatting.GRAY))
-                .addLoreLine(GUI.lore("Every hour, the printer copies 10% of the beacon's fuel.", Formatting.GRAY))
-                .addLoreLine(GUI.lore("The printer can hold up to 640 fuel.", Formatting.GRAY))
+                .addLoreLine(GUI.lore("Every hour, the printer copies %s%% of the beacon's fuel.".formatted(percentage), Formatting.GRAY))
+                .addLoreLine(GUI.lore("The printer can hold up to %s fuel.".formatted(MAX_FUEL), Formatting.GRAY))
                 .addLoreLine(Text.empty())
                 .addLoreLine(GUI.lore("Item Fuel", Formatting.GRAY))
-                .addLoreLine(GUI.lore(" %s/640 fuel".formatted(this.self.itemFuel), Formatting.BLUE))
+                .addLoreLine(GUI.lore(" %s/%s fuel".formatted(this.self.itemFuel, MAX_FUEL), Formatting.BLUE))
                 .addLoreLine(Text.empty())
                 .addLoreLine(GUI.lore("Only blocks can be copied!", Formatting.GOLD))
                 .addLoreLine(Text.empty())
                 .addLoreLine(GUI.lore("Add an item here to print copies of it!", Formatting.YELLOW))
-                .addLoreLine(GUI.lore("Right-click to convert 10% of *ALL* beacon fuel into item fuel!", Formatting.AQUA))
+                .addLoreLine(GUI.lore("Right-click to convert %s%% of *ALL* beacon fuel into item fuel!".formatted(percentage), Formatting.AQUA))
                 .setCallback(this::printItems));
         }
 
@@ -130,8 +146,9 @@ public final class PixelPrinterPower extends BeaconPower {
             if (type == ClickType.MOUSE_RIGHT) {
                 // Burn all the beacon's fuel.
                 var beaconFuel = handle.mwhrd$getFuel();
-                var itemFuel = (int) Math.floor(beaconFuel * .1);
-                this.self.itemFuel += Math.min(640, itemFuel);
+                var percentage = this.self.getPercentage() / 100.0;
+                var itemFuel = (int) Math.floor(beaconFuel * percentage);
+                this.self.itemFuel += Math.min(MAX_FUEL, itemFuel);
                 handle.mwhrd$setFuel(0);
 
                 this.getPlayer().sendMessage(Text.literal("Converted beacon fuel into %s item fuel!"
@@ -166,7 +183,7 @@ public final class PixelPrinterPower extends BeaconPower {
                 if (itemFuel == 0) return;
 
                 // Deduct the fuel.
-                var toConsume = Math.min(640, stack.getCount());
+                var toConsume = Math.min(MAX_FUEL, stack.getCount());
                 if (itemFuel < toConsume) {
                     this.getPlayer().sendMessage(Text.literal("Not enough item fuel!")
                         .formatted(Formatting.RED));
