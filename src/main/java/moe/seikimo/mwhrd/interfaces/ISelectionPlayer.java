@@ -1,6 +1,7 @@
 package moe.seikimo.mwhrd.interfaces;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 
 /**
  * Used in world manipulation beacon powers.
@@ -27,11 +28,11 @@ public interface ISelectionPlayer {
             return 0;
         }
 
-        var pos1 = mwhrd$getPos1();
-        var pos2 = mwhrd$getPos2();
+        var box = Box.enclosing(
+            this.mwhrd$getPos1(),
+            this.mwhrd$getPos2()
+        );
 
-        return Math.abs(pos1.getX() - pos2.getX()) *
-            Math.abs(pos1.getY() - pos2.getY()) *
-            Math.abs(pos1.getZ() - pos2.getZ());
+        return (int) (box.getLengthX() * box.getLengthY() * box.getLengthZ());
     }
 }
