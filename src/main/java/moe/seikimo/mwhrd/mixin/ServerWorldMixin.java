@@ -6,6 +6,7 @@ import moe.seikimo.mwhrd.beacon.powers.SpawnControlPower;
 import moe.seikimo.mwhrd.interfaces.IEntityConditions;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
@@ -30,7 +31,8 @@ public abstract class ServerWorldMixin extends World {
 
     @Inject(method = "spawnEntity", at = @At("HEAD"), cancellable = true)
     public void spawnEntity(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (!(entity instanceof HostileEntity)) return;
+        if (!(entity instanceof HostileEntity) &&
+            entity.getType() != EntityType.SLIME) return;
 
         // Check if the entity is a trial entity.
         if (entity instanceof IEntityConditions conditions) {
