@@ -10,6 +10,8 @@ import moe.seikimo.mwhrd.events.EntityPreDeathEvent;
 import moe.seikimo.mwhrd.events.PlayerCraftEvent;
 import moe.seikimo.mwhrd.events.PlayerMoveEvent;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
+import moe.seikimo.mwhrd.interfaces.game.IRespawnableMob;
+import moe.seikimo.mwhrd.utils.ItemBuilder;
 import moe.seikimo.mwhrd.utils.Players;
 import moe.seikimo.mwhrd.utils.Ticks;
 import moe.seikimo.mwhrd.utils.Utils;
@@ -20,10 +22,13 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -38,11 +43,13 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -207,20 +214,49 @@ public final class TheRealmOfLight {
      * @return True to allow dying.
      */
     private static boolean onPreDeath(LivingEntity entity, DamageSource source) {
-        if (!(entity instanceof PlayerEntity player)) return true;
-        if (!Players.inWorld(CustomWorlds.REALM_OF_LIGHT, player)) return true;
+        if (entity instanceof PlayerEntity player) {
+            if (!Players.inWorld(CustomWorlds.REALM_OF_LIGHT, player)) return true;
 
-        // Respawn the player.
-        TheRealmOfLight.respawn(player);
+            // Respawn the player.
+            TheRealmOfLight.respawn(player);
 
-        // Send a message to the player.
-        player.sendMessage(
-            Text.literal("Oh no! ")
-                .formatted(Formatting.BOLD, Formatting.RED)
-                .append(Text.translatable("text.mwhrd.dimension.rol.death"))
-        );
+            // Send a message to the player.
+            player.sendMessage(
+                Text.literal("Oh no! ")
+                    .formatted(Formatting.BOLD, Formatting.RED)
+                    .append(Text.translatable("text.mwhrd.dimension.rol.death"))
+            );
 
-        return false;
+            return false;
+        } else if (entity instanceof MobEntity mob) {
+            if (!(mob instanceof IRespawnableMob respawnable)) return true;
+            if (!Utils.inWorld(mob, CustomWorlds.REALM_OF_LIGHT)) return true;
+
+            // Check what the mob has died to.
+            if (source.getAttacker() instanceof PlayerEntity) {
+                // Drop the mob's gear.
+                var world = mob.getEntityWorld();
+
+                mob.getArmorItems().forEach(item -> {
+                    if (item.isEmpty()) return;
+
+                    var itemEntity = new ItemEntity(
+                        world, mob.getX(), mob.getY(), mob.getZ(),
+                        item.copy()
+                    );
+                    world.spawnEntity(itemEntity);
+                });
+            }
+
+            if (Utils.compare(source, DamageTypes.OUT_OF_WORLD)) {
+                // Teleport the mob back to its starting position.
+                var spawnPoint = respawnable.mwhrd$getSpawnPoint();
+                mob.fallDistance = 0f;
+                mob.teleport(spawnPoint.getX(), spawnPoint.getY(), spawnPoint.getZ(), false);
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -271,6 +307,7 @@ public final class TheRealmOfLight {
     private final Set<ServerPlayerEntity> queued = new HashSet<>();
 
     private ServerWorld world;
+    private LightTowerGenerator generator;
 
     private long
         transportTicks = 200,
@@ -295,9 +332,11 @@ public final class TheRealmOfLight {
      */
     public synchronized void prepare() {
         try {
-            var generator = new LightTowerGenerator(this.world);
-            generator.generate(24);
-            generator.placeIslands();
+            this.generator = new LightTowerGenerator(this.world);
+            this.generator.generate(24);
+            this.generator.placeIslands();
+
+            this.spawnEntities();
 
             Players.broadcast(Text.translatable("text.mwhrd.dimension.rol.ready")
                 .formatted(Formatting.LIGHT_PURPLE), true);
@@ -306,6 +345,120 @@ public final class TheRealmOfLight {
         } catch (Exception ex) {
             log.error("Failed to prepare The Realm of Light.", ex);
         }
+    }
+
+    /**
+     * Spawns all realm monsters.
+     */
+    private void spawnEntities() {
+        Objects.requireNonNull(this.generator);
+
+        var spawned = 0;
+        for (var node : this.generator.getNodes()) {
+            // Skip the first island.
+            if (++spawned == 0) continue;
+
+            // Spawn all entities.
+            for (var i = 0; i < 3; i++) {
+                var entity = this.makeEntity(spawned, i);
+
+                // Set the entity's position.
+                entity.setPosition(Vec3d.of(node));
+                if (entity instanceof IRespawnableMob respawnable) {
+                    respawnable.mwhrd$setSpawnPoint(Utils.blockPos(node));
+                }
+
+                this.world.spawnEntity(entity);
+            }
+        }
+    }
+
+    /**
+     * Creates an entity for the Realm of Light.
+     *
+     * @param node The node to create the entity at.
+     * @param index The index of the entity to create.
+     * @return The created entity.
+     */
+    private HostileEntity makeEntity(int node, int index) {
+        var entity = switch (index) {
+            case 0 -> new ZombieEntity(this.world);
+            case 1 -> {
+                var skeleton = new SkeletonEntity(EntityType.SKELETON, this.world);
+
+                // Apply skeleton-specific items.
+                ItemBuilder.of(Items.BOW)
+                    .enchant(Enchantments.POWER, switch (node) {
+                        case 0, 1, 2 -> 0;
+                        case 3, 4, 5 -> 1;
+                        case 6, 7 -> 2;
+                        case 8, 9 -> 3;
+                        default -> 5;
+                    })
+                    .equip(skeleton, EquipmentSlot.MAINHAND);
+
+                yield skeleton;
+            }
+            case 2 -> new BlazeEntity(EntityType.BLAZE, this.world);
+            default -> throw new IllegalStateException("Unexpected value: " + index);
+        };
+
+        // Apply gear depending on the current node.
+        var protection = switch (node) {
+            case 0, 1, 2 -> 0;
+            case 3, 4, 5 -> 1;
+            case 6, 7 -> 2;
+            case 8, 9 -> 3;
+            default -> 5;
+        };
+
+        ItemBuilder.of(switch (node) {
+            case 0, 1, 2 -> Items.LEATHER_HELMET;
+            case 3, 4, 5 -> Items.IRON_HELMET;
+            case 6, 7, 8, 9 -> Items.DIAMOND_HELMET;
+            default -> Items.NETHERITE_HELMET;
+        })
+            .enchant(Enchantments.PROTECTION, protection)
+            .enchant(Enchantments.THORNS, 1)
+            .unbreakable()
+            .equip(entity, EquipmentSlot.HEAD);
+
+        ItemBuilder.of(switch (node) {
+                case 0, 1, 2 -> Items.LEATHER_CHESTPLATE;
+                case 3, 4, 5 -> Items.IRON_CHESTPLATE;
+                case 6, 7, 8, 9 -> Items.DIAMOND_CHESTPLATE;
+                default -> Items.NETHERITE_CHESTPLATE;
+            })
+            .enchant(Enchantments.PROTECTION, protection)
+            .enchant(Enchantments.THORNS, 1)
+            .unbreakable()
+            .equip(entity, EquipmentSlot.CHEST);
+
+        ItemBuilder.of(switch (node) {
+                case 0, 1, 2 -> Items.LEATHER_LEGGINGS;
+                case 3, 4, 5 -> Items.IRON_LEGGINGS;
+                case 6, 7, 8, 9 -> Items.DIAMOND_LEGGINGS;
+                default -> Items.NETHERITE_LEGGINGS;
+            })
+            .enchant(Enchantments.PROTECTION, protection)
+            .enchant(Enchantments.THORNS, 1)
+            .unbreakable()
+            .equip(entity, EquipmentSlot.LEGS);
+
+        ItemBuilder.of(switch (node) {
+                case 0, 1, 2 -> Items.LEATHER_BOOTS;
+                case 3, 4, 5 -> Items.IRON_BOOTS;
+                case 6, 7, 8, 9 -> Items.DIAMOND_BOOTS;
+                default -> Items.NETHERITE_BOOTS;
+            })
+            .enchant(Enchantments.PROTECTION, protection)
+            .enchant(Enchantments.THORNS, 1)
+            .unbreakable()
+            .equip(entity, EquipmentSlot.FEET);
+
+        // Spawn the entity.
+        entity.setPersistent();
+        return entity;
     }
 
     /**

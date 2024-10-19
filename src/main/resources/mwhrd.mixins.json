@@ -16,6 +16,7 @@
     "event.BlockMixin",
     "event.ItemStackMixin",
     "event.LivingEntityMixin",
+    "mwhrd.MobEntityMixin",
     "trial.ItemEntityMixin",
     "trial.MobEntityMixin",
     "trial.TrialSpawnerDataMixin",

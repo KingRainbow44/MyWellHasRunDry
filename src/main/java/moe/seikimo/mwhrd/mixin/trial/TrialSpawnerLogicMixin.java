@@ -2,7 +2,7 @@ package moe.seikimo.mwhrd.mixin.trial;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import moe.seikimo.mwhrd.interfaces.IEntityConditions;
-import moe.seikimo.mwhrd.utils.MobGear;
+import moe.seikimo.mwhrd.game.MobDungeonGear;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.utils.TrialChamberLoot;
 import moe.seikimo.mwhrd.interfaces.ITrialSpawnerUtils;
@@ -99,7 +99,7 @@ public abstract class TrialSpawnerLogicMixin implements ITrialSpawnerUtils {
 
         // Apply full armor to the mob.
         if (!BLACKLIST.contains(mob.getClass())) {
-            MobGear.applyArmor(mob);
+            MobDungeonGear.applyArmor(mob);
         }
 
         // Apply mob effects.
@@ -111,10 +111,10 @@ public abstract class TrialSpawnerLogicMixin implements ITrialSpawnerUtils {
         ));
 
         if (mob instanceof AbstractSkeletonEntity) {
-            mob.equipStack(EquipmentSlot.MAINHAND, MobGear.BOW.copy());
-            mob.equipStack(EquipmentSlot.OFFHAND, MobGear.ARROWS.copy());
+            mob.equipStack(EquipmentSlot.MAINHAND, MobDungeonGear.BOW.copy());
+            mob.equipStack(EquipmentSlot.OFFHAND, MobDungeonGear.ARROWS.copy());
         } else {
-            mob.equipStack(EquipmentSlot.MAINHAND, MobGear.SWORD.copy());
+            mob.equipStack(EquipmentSlot.MAINHAND, MobDungeonGear.SWORD.copy());
         }
 
         if (MyWellHasRunDry.getRandom().nextInt(0, 5) == 0) {

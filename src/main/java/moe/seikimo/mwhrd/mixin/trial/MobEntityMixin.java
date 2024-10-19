@@ -3,7 +3,7 @@ package moe.seikimo.mwhrd.mixin.trial;
 import moe.seikimo.mwhrd.interfaces.IEntityConditions;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.interfaces.ITrialPlayer;
-import moe.seikimo.mwhrd.utils.MobGear;
+import moe.seikimo.mwhrd.game.MobDungeonGear;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -67,14 +67,14 @@ public abstract class MobEntityMixin
                 this.stickTarget = true;
 
                 // Apply overpowered gear.
-                MobGear.applyArmor((MobEntity) (Object) this);
+                MobDungeonGear.applyArmor((MobEntity) (Object) this);
                 this.equipStack(EquipmentSlot.OFFHAND, Items.TOTEM_OF_UNDYING.getDefaultStack());
 
                 // Apply strong weapon.
                 if ((Object) this instanceof AbstractSkeletonEntity) {
-                    this.equipStack(EquipmentSlot.MAINHAND, MobGear.BOW.copy());
+                    this.equipStack(EquipmentSlot.MAINHAND, MobDungeonGear.BOW.copy());
                 } else {
-                    this.equipStack(EquipmentSlot.MAINHAND, MobGear.SWORD.copy());
+                    this.equipStack(EquipmentSlot.MAINHAND, MobDungeonGear.SWORD.copy());
                 }
 
                 // Apply status effects.

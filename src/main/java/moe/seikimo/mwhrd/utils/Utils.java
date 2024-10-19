@@ -4,7 +4,11 @@ import lombok.SneakyThrows;
 import moe.seikimo.general.EncodingUtils;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.registry.RegistryKey;
@@ -184,5 +188,42 @@ public interface Utils {
         return MyWellHasRunDry
             .getEnchantmentRegistry()
             .entryOf(key);
+    }
+
+    /**
+     * Enchants the given stack with the given enchantment at the given level.
+     *
+     * @param stack The stack to enchant.
+     * @param enchantment The enchantment to apply.
+     * @param level The level of the enchantment.
+     */
+    static void enchant(ItemStack stack, RegistryKey<Enchantment> enchantment, int level) {
+        var key = MyWellHasRunDry.getEnchantmentRegistry().entryOf(enchantment);
+        stack.addEnchantment(key, level);
+    }
+
+    /**
+     * Checks if the given entity is in the given world.
+     *
+     * @param entity The entity to check.
+     * @param registryKey The registry key of the world.
+     * @return Whether the entity is in the world.
+     */
+    static boolean inWorld(LivingEntity entity, RegistryKey<World> registryKey) {
+        return entity.getWorld().getRegistryKey().equals(registryKey);
+    }
+
+    /**
+     * Compares the given damage source to the given damage type.
+     *
+     * @param source The source of the damage.
+     * @param type The type of the damage.
+     * @return Whether the source matches the type.
+     */
+    static boolean compare(DamageSource source, RegistryKey<DamageType> type) {
+        var sourceType = source.getTypeRegistryEntry().getKey();
+        return sourceType
+            .map(k -> k.equals(type))
+            .orElse(false);
     }
 }

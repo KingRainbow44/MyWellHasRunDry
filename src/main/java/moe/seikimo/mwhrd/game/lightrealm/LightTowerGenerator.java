@@ -2,17 +2,13 @@ package moe.seikimo.mwhrd.game.lightrealm;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import moe.seikimo.mwhrd.utils.MobGear;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.StructureBlockMode;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -33,7 +29,7 @@ public final class LightTowerGenerator {
     private final boolean genOnly;
     private final ServerWorld world;
 
-    @Getter(onMethod_ = @VisibleForTesting)
+    @Getter
     private final List<Vec3i> nodes = new ArrayList<>();
 
     /**
@@ -96,12 +92,6 @@ public final class LightTowerGenerator {
 
             // Delete the structure block.
             this.world.setBlockState(position, Blocks.AIR.getDefaultState());
-
-            // Spawn a mob on the islands.
-            var mob = new ZombieEntity(EntityType.ZOMBIE, this.world);
-            mob.setPersistent();
-            mob.setPosition(Vec3d.of(node));
-            this.world.spawnEntity(mob);
         } catch (IllegalArgumentException ex) {
             log.warn("Failed to place island at node {}", i, ex);
         }
