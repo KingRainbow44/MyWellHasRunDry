@@ -10,6 +10,7 @@ import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.models.PlayerModel;
+import moe.seikimo.mwhrd.utils.BorderHelper;
 import moe.seikimo.mwhrd.utils.Debug;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -48,6 +49,8 @@ public final class DebugCommand {
                         .executes(DebugCommand::restoreInv))
                     .executes(DebugCommand::usage))
                 .executes(DebugCommand::usage))
+            .then(literal("border")
+                .executes(DebugCommand::border))
             .executes(DebugCommand::usage));
     }
 
@@ -183,6 +186,26 @@ public final class DebugCommand {
             context.getSource().sendMessage(Text.literal("Restored inventory for " + target));
         } catch (Exception exception) {
             log.error("Failed to restore inventory for {}", target, exception);
+        }
+
+        return 1;
+    }
+
+    private static int border(CommandContext<ServerCommandSource> context) {
+        var player = context.getSource().getPlayer();
+        if (player == null) {
+            context.getSource().sendError(Text.literal("Must be ran as a player"));
+            return 1;
+        }
+
+        var center = player.getBlockPos();
+        var radius = 1000;
+
+        try {
+            BorderHelper.setWorldBorder(player, center, radius);
+            context.getSource().sendMessage(Text.literal("Set world border"));
+        } catch (Exception exception) {
+            log.error("Failed to set world border", exception);
         }
 
         return 1;

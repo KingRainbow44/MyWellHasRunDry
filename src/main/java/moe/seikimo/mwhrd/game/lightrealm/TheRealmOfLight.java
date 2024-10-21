@@ -11,10 +11,7 @@ import moe.seikimo.mwhrd.events.PlayerCraftEvent;
 import moe.seikimo.mwhrd.events.PlayerMoveEvent;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.interfaces.game.IRespawnableMob;
-import moe.seikimo.mwhrd.utils.ItemBuilder;
-import moe.seikimo.mwhrd.utils.Players;
-import moe.seikimo.mwhrd.utils.Ticks;
-import moe.seikimo.mwhrd.utils.Utils;
+import moe.seikimo.mwhrd.utils.*;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -22,17 +19,12 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.ToolItem;
+import net.minecraft.item.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -232,6 +224,18 @@ public final class TheRealmOfLight {
             if (!(mob instanceof IRespawnableMob respawnable)) return true;
             if (!Utils.inWorld(mob, CustomWorlds.REALM_OF_LIGHT)) return true;
 
+            // Check if the mob died to the void.
+            var position = source.getPosition();
+            if ((position != null && position.getY() < -50) ||
+                Utils.compare(source, DamageTypes.OUT_OF_WORLD)) {
+                // Teleport the mob back to its starting position.
+                var spawnPoint = respawnable.mwhrd$getSpawnPoint();
+                mob.fallDistance = 0f;
+                mob.teleport(spawnPoint.getX(), spawnPoint.getY(), spawnPoint.getZ(), false);
+                mob.setHealth(mob.getMaxHealth());
+                return false;
+            }
+
             // Check what the mob has died to.
             if (source.getAttacker() instanceof PlayerEntity) {
                 // Drop the mob's gear.
@@ -246,13 +250,6 @@ public final class TheRealmOfLight {
                     );
                     world.spawnEntity(itemEntity);
                 });
-            }
-
-            if (Utils.compare(source, DamageTypes.OUT_OF_WORLD)) {
-                // Teleport the mob back to its starting position.
-                var spawnPoint = respawnable.mwhrd$getSpawnPoint();
-                mob.fallDistance = 0f;
-                mob.teleport(spawnPoint.getX(), spawnPoint.getY(), spawnPoint.getZ(), false);
             }
         }
 
@@ -276,6 +273,15 @@ public final class TheRealmOfLight {
                 builder.add(Utils.lookup(Enchantments.FORTUNE), 5);
                 builder.add(Utils.lookup(Enchantments.UNBREAKING), 3);
             });
+
+            if (item instanceof SwordItem || item instanceof AxeItem) {
+                EnchantmentHelper.apply(stack, builder -> {
+                    builder.add(Utils.lookup(Enchantments.SHARPNESS), 5);
+                    builder.add(Utils.lookup(Enchantments.SWEEPING_EDGE), 3);
+                    builder.add(Utils.lookup(Enchantments.LOOTING), 5);
+                    builder.add(Utils.lookup(Enchantments.UNBREAKING), 3);
+                });
+            }
         }
     }
 
@@ -321,6 +327,11 @@ public final class TheRealmOfLight {
      */
     public void initialize(ServerWorld world) {
         this.world = world;
+
+        // Set the world's border.
+        var border = this.world.getWorldBorder();
+        border.setSize(35);
+        border.setDamagePerBlock(1);
 
         ServerTickEvents.START_SERVER_TICK.register(this::tick);
 
@@ -389,7 +400,7 @@ public final class TheRealmOfLight {
                 // Apply skeleton-specific items.
                 ItemBuilder.of(Items.BOW)
                     .enchant(Enchantments.POWER, switch (node) {
-                        case 0, 1, 2 -> 0;
+                        case 1, 2 -> 0;
                         case 3, 4, 5 -> 1;
                         case 6, 7 -> 2;
                         case 8, 9 -> 3;
@@ -399,13 +410,13 @@ public final class TheRealmOfLight {
 
                 yield skeleton;
             }
-            case 2 -> new BlazeEntity(EntityType.BLAZE, this.world);
+            case 2 -> new BreezeEntity(EntityType.BREEZE, this.world);
             default -> throw new IllegalStateException("Unexpected value: " + index);
         };
 
         // Apply gear depending on the current node.
         var protection = switch (node) {
-            case 0, 1, 2 -> 0;
+            case 1, 2 -> 0;
             case 3, 4, 5 -> 1;
             case 6, 7 -> 2;
             case 8, 9 -> 3;
@@ -419,7 +430,7 @@ public final class TheRealmOfLight {
             default -> Items.NETHERITE_HELMET;
         })
             .enchant(Enchantments.PROTECTION, protection)
-            .enchant(Enchantments.THORNS, 1)
+            .enchant(Enchantments.THORNS, node != 1 ? 1 : 0)
             .unbreakable()
             .equip(entity, EquipmentSlot.HEAD);
 
@@ -430,7 +441,7 @@ public final class TheRealmOfLight {
                 default -> Items.NETHERITE_CHESTPLATE;
             })
             .enchant(Enchantments.PROTECTION, protection)
-            .enchant(Enchantments.THORNS, 1)
+            .enchant(Enchantments.THORNS, node != 1 ? 1 : 0)
             .unbreakable()
             .equip(entity, EquipmentSlot.CHEST);
 
@@ -441,7 +452,7 @@ public final class TheRealmOfLight {
                 default -> Items.NETHERITE_LEGGINGS;
             })
             .enchant(Enchantments.PROTECTION, protection)
-            .enchant(Enchantments.THORNS, 1)
+            .enchant(Enchantments.THORNS, node != 1 ? 1 : 0)
             .unbreakable()
             .equip(entity, EquipmentSlot.LEGS);
 
@@ -452,7 +463,7 @@ public final class TheRealmOfLight {
                 default -> Items.NETHERITE_BOOTS;
             })
             .enchant(Enchantments.PROTECTION, protection)
-            .enchant(Enchantments.THORNS, 1)
+            .enchant(Enchantments.THORNS, node != 1 ? 1 : 0)
             .unbreakable()
             .equip(entity, EquipmentSlot.FEET);
 
@@ -519,6 +530,9 @@ public final class TheRealmOfLight {
             var pos = portalInfo.getRight();
             player.tryUsePortal(portal, pos);
 
+            // Make the player invulnerable.
+            player.joinInvulnerabilityTicks = 20 * 10;
+
             // Send info messages.
             Players.bulkSend(player, INFO_MESSAGES);
 
@@ -555,7 +569,7 @@ public final class TheRealmOfLight {
                     mob.damage(mob.getWorld().getDamageSources().magic(), 1);
                 }
 
-                entity.kill();
+                entity.discard();
             }
         }
 
