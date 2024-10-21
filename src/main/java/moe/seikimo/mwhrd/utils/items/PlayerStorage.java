@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.utils;
+package moe.seikimo.mwhrd.utils.items;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonArray;

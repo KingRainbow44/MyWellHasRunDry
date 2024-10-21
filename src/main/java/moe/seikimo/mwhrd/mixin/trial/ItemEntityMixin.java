@@ -1,6 +1,6 @@
 package moe.seikimo.mwhrd.mixin.trial;
 
-import moe.seikimo.mwhrd.utils.TrialChamberLoot;
+import moe.seikimo.mwhrd.utils.items.TrialChamberLoot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

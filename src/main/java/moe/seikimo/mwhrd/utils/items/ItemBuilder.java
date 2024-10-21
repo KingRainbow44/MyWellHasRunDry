@@ -1,6 +1,7 @@
-package moe.seikimo.mwhrd.utils;
+package moe.seikimo.mwhrd.utils.items;
 
 import lombok.RequiredArgsConstructor;
+import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.enchantment.Enchantment;

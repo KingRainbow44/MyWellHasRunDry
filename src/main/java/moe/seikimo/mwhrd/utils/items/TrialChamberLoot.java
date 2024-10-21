@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.utils;
+package moe.seikimo.mwhrd.utils.items;
 
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.entity.ItemEntity;

@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import moe.seikimo.mwhrd.interfaces.IEntityConditions;
 import moe.seikimo.mwhrd.game.MobDungeonGear;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
-import moe.seikimo.mwhrd.utils.TrialChamberLoot;
+import moe.seikimo.mwhrd.utils.items.TrialChamberLoot;
 import moe.seikimo.mwhrd.interfaces.ITrialSpawnerUtils;
 import net.minecraft.block.spawner.TrialSpawnerData;
 import net.minecraft.block.spawner.TrialSpawnerLogic;

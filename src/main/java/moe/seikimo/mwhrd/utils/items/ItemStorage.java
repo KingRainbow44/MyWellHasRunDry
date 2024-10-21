@@ -1,10 +1,11 @@
-package moe.seikimo.mwhrd.utils;
+package moe.seikimo.mwhrd.utils.items;
 
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import lombok.Getter;
 import moe.seikimo.general.EncodingUtils;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.NotNull;

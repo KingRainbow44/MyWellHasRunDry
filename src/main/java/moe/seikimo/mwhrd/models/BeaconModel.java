@@ -5,7 +5,7 @@ import dev.morphia.annotations.*;
 import lombok.Data;
 import moe.seikimo.data.DatabaseObject;
 import moe.seikimo.general.JObject;
-import moe.seikimo.mwhrd.utils.ItemStorage;
+import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import net.minecraft.block.entity.BeaconBlockEntity;
 
 import java.util.ArrayList;

@@ -21,7 +21,7 @@ import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.BuffManager;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
-import moe.seikimo.mwhrd.utils.ItemStorage;
+import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;

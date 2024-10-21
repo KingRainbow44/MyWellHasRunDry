@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.utils;
+package moe.seikimo.mwhrd.utils.items;
 
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;

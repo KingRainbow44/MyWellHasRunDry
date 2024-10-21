@@ -5,7 +5,7 @@ import moe.seikimo.mwhrd.beacon.BeaconFuel;
 import moe.seikimo.mwhrd.beacon.BeaconPower;
 import moe.seikimo.mwhrd.beacon.powers.EffectsPower;
 import moe.seikimo.mwhrd.models.BeaconModel;
-import moe.seikimo.mwhrd.utils.ItemStorage;
+import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.nbt.NbtCompound;
