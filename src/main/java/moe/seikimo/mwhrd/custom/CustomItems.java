@@ -30,10 +30,7 @@ public interface CustomItems {
             entries.add(THE_ATLAS);
             entries.add(SOUL_OF_LIGHT);
 
-            entries.add(ENLIGHTENED_DIAMOND_HELMET);
-            entries.add(ENLIGHTENED_DIAMOND_CHESTPLATE);
-            entries.add(ENLIGHTENED_DIAMOND_LEGGINGS);
-            entries.add(ENLIGHTENED_DIAMOND_BOOTS);
+            ENLIGHTENED_DIAMOND_ARMOR.forEach(entries::add);
         })
         .build();
 
