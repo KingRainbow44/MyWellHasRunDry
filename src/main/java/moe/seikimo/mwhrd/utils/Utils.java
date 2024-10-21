@@ -13,6 +13,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3i;
@@ -211,6 +212,17 @@ public interface Utils {
      */
     static boolean inWorld(LivingEntity entity, RegistryKey<World> registryKey) {
         return entity.getWorld().getRegistryKey().equals(registryKey);
+    }
+
+    /**
+     * Compares the given worlds.
+     *
+     * @param source The source world.
+     * @param destination The destination world.
+     * @return Whether the worlds are the same.
+     */
+    static boolean compare(ServerWorld source, ServerWorld destination) {
+        return source.getRegistryKey().equals(destination.getRegistryKey());
     }
 
     /**
