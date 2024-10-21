@@ -49,7 +49,7 @@ public final class GuardianOfLight extends PathAwareEntity implements PolymerEnt
 
     @Override
     public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
-        return EntityType.AXOLOTL;
+        return EntityType.WITHER_SKELETON;
     }
 
     @Override
