@@ -5,6 +5,7 @@ import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.events.PlayerMoveEvent;
 import moe.seikimo.mwhrd.interfaces.*;
+import moe.seikimo.mwhrd.interfaces.player.ICallbackPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import net.minecraft.block.Portal;
 import net.minecraft.entity.Entity;
@@ -13,6 +14,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -32,6 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin
@@ -40,7 +43,8 @@ public abstract class ServerPlayerEntityMixin
     IDBObject<PlayerModel>,
     ISelectionPlayer,
     ITrialPlayer,
-    ITimeTraveler {
+    ITimeTraveler,
+    ICallbackPlayer {
     @Shadow
     public abstract void sendMessage(Text message);
 
@@ -52,6 +56,9 @@ public abstract class ServerPlayerEntityMixin
 
     @Shadow
     public abstract void sendMessage(Text message, boolean overlay);
+
+    @Shadow
+    protected abstract void worldChanged(ServerWorld origin);
 
     @Unique private PlayerModel model;
     @Unique private boolean unbreakable = false;
@@ -337,6 +344,25 @@ public abstract class ServerPlayerEntityMixin
 
         this.model.setStoredInventory(true);
         this.model.save();
+    }
+
+    /// </editor-fold>
+
+    /// <editor-fold desc="Callback Player">
+
+    @Unique private Consumer<World> worldCallback = null;
+
+    @Inject(method = "worldChanged", at = @At("TAIL"))
+    public void worldChanged(ServerWorld origin, CallbackInfo ci) {
+        if (this.worldCallback != null) {
+            this.worldCallback.accept(origin);
+            this.worldCallback = null;
+        }
+    }
+
+    @Override
+    public void mwhrd$onDimensionChange(Consumer<World> world) {
+        this.worldCallback = world;
     }
 
     /// </editor-fold>
