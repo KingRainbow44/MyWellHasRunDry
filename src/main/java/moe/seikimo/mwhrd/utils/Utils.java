@@ -226,6 +226,17 @@ public interface Utils {
     }
 
     /**
+     * Compares the given world to the given registry key.
+     *
+     * @param source The source world.
+     * @param destination The destination world.
+     * @return Whether the worlds are the same.
+     */
+    static boolean compare(ServerWorld source, RegistryKey<World> destination) {
+        return source.getRegistryKey().equals(destination);
+    }
+
+    /**
      * Compares the given damage source to the given damage type.
      *
      * @param source The source of the damage.

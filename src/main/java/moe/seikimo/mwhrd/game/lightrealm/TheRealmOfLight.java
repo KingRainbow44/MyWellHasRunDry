@@ -92,11 +92,23 @@ public final class TheRealmOfLight {
     @Getter private static final TheRealmOfLight instance = new TheRealmOfLight();
 
     static {
+        ServerTickEvents.START_WORLD_TICK.register(TheRealmOfLight::onWorldTick);
         BlockBreakEvent.EVENT.register(TheRealmOfLight::onBlockBreak);
         UseBlockCallback.EVENT.register(TheRealmOfLight::onBlockPlace);
         PlayerMoveEvent.EVENT.register(TheRealmOfLight::onPlayerMove);
         EntityPreDeathEvent.EVENT.register(TheRealmOfLight::onPreDeath);
         PlayerCraftEvent.EVENT.register(TheRealmOfLight::onCraft);
+    }
+
+    /**
+     * Invoked when a world ticks.
+     */
+    private static void onWorldTick(ServerWorld world) {
+        if (!Utils.compare(world, CustomWorlds.REALM_OF_LIGHT)) return;
+
+        for (var entity : world.iterateEntities()) {
+            entity.fallDistance = 0;
+        }
     }
 
     /**
