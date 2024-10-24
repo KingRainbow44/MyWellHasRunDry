@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.custom.entities;
 
 import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import moe.seikimo.mwhrd.custom.entities.goals.GuardianAttackGoal;
+import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -11,6 +12,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -50,6 +52,18 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
     @Override
     public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
         return EntityType.WITHER_SKELETON;
+    }
+
+    @Override
+    public void onDeath(DamageSource damageSource) {
+        super.onDeath(damageSource);
+
+        // Mark the Realm of Light for stoppage.
+        var realm = TheRealmOfLight.getInstance();
+        if (!realm.isRunning()) return;
+
+        // Destroy the realm.
+        realm.destroy(TheRealmOfLight.Reason.DEFEATED);
     }
 
     @Override

@@ -47,7 +47,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Global server instance for the Realm of Light.
@@ -338,8 +337,14 @@ public final class TheRealmOfLight {
         transportTicks = 200,
         collapseTicks = Ticks.ofHours(1);
 
-    @Getter private final AtomicBoolean running
-        = new AtomicBoolean(false);
+    private State state = State.PREPARING;
+
+    /**
+     * @return True if the dimension is running.
+     */
+    public boolean isRunning() {
+        return this.state == State.RUNNING;
+    }
 
     /**
      * Initializes the dimension.
@@ -379,7 +384,7 @@ public final class TheRealmOfLight {
             Players.broadcast(Text.translatable("text.mwhrd.dimension.rol.ready")
                 .formatted(Formatting.LIGHT_PURPLE), true);
 
-            this.running.set(true);
+            this.state = State.RUNNING;
         } catch (Exception ex) {
             log.error("Failed to prepare The Realm of Light.", ex);
         }
@@ -517,15 +522,21 @@ public final class TheRealmOfLight {
      * Invoked when the dimension should tick.
      */
     private void tick(MinecraftServer server) {
-        if (!this.running.get()) return;
+        if (this.state == State.PREPARING) return;
 
-        if (this.transportTicks-- <= 0) {
+        if (this.state == State.RUNNING &&
+            this.transportTicks-- <= 0) {
             this.transportPlayers();
             this.transportTicks = 200;
         }
 
         if (this.collapseTicks-- <= 0) {
-            this.destroy();
+            if (this.state == State.READY) {
+                // The realm has already been destroyed.
+                this.prepare();
+            } else {
+                this.destroy();
+            }
             this.collapseTicks = Ticks.ofHours(1);
         }
     }
@@ -588,9 +599,16 @@ public final class TheRealmOfLight {
     }
 
     /**
-     * Resets the dimension.
+     * Destroys the dimension.
      */
     public void destroy() {
+        this.destroy(Reason.COLLAPSED);
+    }
+
+    /**
+     * Resets the dimension.
+     */
+    public void destroy(Reason reason) {
         log.info("The Realm of Light is resetting...");
 
         // Remove all entities in the world.
@@ -620,6 +638,12 @@ public final class TheRealmOfLight {
 
             Players.respawn(player);
             traveler.mwhrd$restoreInventory();
+
+            if (reason == Reason.DEFEATED) {
+                // Send the player a completion message.
+                player.sendMessage(Text.translatable("text.mwhrd.dimension.rol.completed")
+                    .formatted(Formatting.GREEN));
+            }
         });
 
         // Destroy all blocks within the world's border.
@@ -629,14 +653,26 @@ public final class TheRealmOfLight {
             BOTTOM_CORNER, TOP_CORNER
         );
 
-        this.running.set(false);
+        this.state = State.PREPARING;
         operation.whenComplete((_blocks, exception) -> {
             if (exception != null) {
                 log.error("Unable to delete blocks in the realm.", exception);
             } else {
-                this.prepare();
+                this.state = State.READY;
+                if (reason == Reason.COLLAPSED) this.prepare();
                 log.info("The Realm of Light has been reset!");
             }
         });
+    }
+
+    public enum State {
+        PREPARING,
+        READY,
+        RUNNING
+    }
+
+    public enum Reason {
+        COLLAPSED,
+        DEFEATED
     }
 }
