@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.general.MapBuilder;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.custom.CustomEntities;
 import moe.seikimo.mwhrd.custom.CustomWorlds;
+import moe.seikimo.mwhrd.custom.entities.GuardianOfLight;
 import moe.seikimo.mwhrd.events.BlockBreakEvent;
 import moe.seikimo.mwhrd.events.EntityPreDeathEvent;
 import moe.seikimo.mwhrd.events.PlayerCraftEvent;
@@ -44,6 +46,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -51,8 +54,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Slf4j
 public final class TheRealmOfLight {
+    private static final Vec3d BOSS_SPAWN_POS = new Vec3d(1, 410, 1);
     private static final BlockPos BOTTOM_CORNER = new BlockPos(-25, -64, -25);
-    private static final BlockPos TOP_CORNER = new BlockPos(24, 320, 24);
+    private static final BlockPos TOP_CORNER = new BlockPos(24, 410, 24);
 
     private static final Text[] INFO_MESSAGES = {
         Text.empty(),
@@ -243,6 +247,8 @@ public final class TheRealmOfLight {
                 Utils.compare(source, DamageTypes.OUT_OF_WORLD)) {
                 // Teleport the mob back to its starting position.
                 var spawnPoint = respawnable.mwhrd$getSpawnPoint();
+                if (spawnPoint.equals(BlockPos.ORIGIN)) return true;
+
                 mob.fallDistance = 0f;
                 mob.teleport(spawnPoint.getX(), spawnPoint.getY(), spawnPoint.getZ(), false);
                 mob.setHealth(mob.getMaxHealth());
@@ -341,6 +347,14 @@ public final class TheRealmOfLight {
     public void initialize(ServerWorld world) {
         this.world = world;
 
+        // Force-load all chunks.
+        CompletableFuture.allOf(
+            Worlds.forceLoad(world, 0, 0),
+            Worlds.forceLoad(world, -1, 0),
+            Worlds.forceLoad(world, 0, -1),
+            Worlds.forceLoad(world, -1, -1)
+        ).join();
+
         // Set the world's border.
         var border = this.world.getWorldBorder();
         border.setSize(35);
@@ -382,8 +396,22 @@ public final class TheRealmOfLight {
             // Skip the first island.
             if (++spawned == 0) continue;
 
-            // Spawn all entities.
-            for (var i = 0; i < 3; i++) {
+            // Check if the node is a boss island.
+            if (spawned == this.generator.getNodes().size()) {
+                // Create the boss entity.
+                var entity = new GuardianOfLight(CustomEntities.GUARDIAN_OF_LIGHT, this.world);
+
+                // Set the entity's position.
+                entity.setPosition(BOSS_SPAWN_POS);
+                // noinspection ConstantValue
+                if ((Object) entity instanceof IRespawnableMob respawnable) {
+                    respawnable.mwhrd$setSpawnPoint(Utils.blockPos(BOSS_SPAWN_POS));
+                }
+
+                // Spawn the entity.
+                this.world.spawnEntity(entity);
+            } else for (var i = 0; i < 3; i++) {
+                // Make a normal entity.
                 var entity = this.makeEntity(spawned, i);
 
                 // Set the entity's position.

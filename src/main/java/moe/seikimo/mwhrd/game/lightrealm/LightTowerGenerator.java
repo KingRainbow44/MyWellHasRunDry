@@ -21,7 +21,8 @@ import java.util.List;
  */
 @Slf4j
 public final class LightTowerGenerator {
-    private static final Vec3i START_POS = new Vec3i(0, -50, 0);
+    private static final Vec3i START_POS = new Vec3i(0, -55, 0);
+    private static final String BOSS_ISLAND = "guardian_base";
     private static final String[] STRUCTURES = {
         "island_1", "island_2", "island_3", "island_4"
     };
@@ -74,7 +75,7 @@ public final class LightTowerGenerator {
 
             // Pick a random structure.
             var isFinal = i == totalNodes - 1;
-            var structure = isFinal ? "boss_island" : Utils.random(STRUCTURES);
+            var structure = isFinal ? BOSS_ISLAND : Utils.random(STRUCTURES);
 
             // Set the block state to a structure block.
             var blockState = Blocks.STRUCTURE_BLOCK.getDefaultState();
@@ -110,7 +111,7 @@ public final class LightTowerGenerator {
 
         // Simple algorithm to generate a spiral around the start position.
         for (var i = 0; i < height; i++) {
-            var y = START_POS.getY() + (i * 16);
+            var y = START_POS.getY() + (i * 20);
             var x = switch (i % 6) { case 1 -> 10; case 3 -> -10; default -> 0; };
             var z = switch (i % 6) { case 2 -> 10; case 4 -> -10; default -> 0; };
 

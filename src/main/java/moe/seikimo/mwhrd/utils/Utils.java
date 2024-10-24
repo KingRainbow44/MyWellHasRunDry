@@ -16,6 +16,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
@@ -137,6 +138,16 @@ public interface Utils {
      */
     static BlockPos blockPos(Vec3i pos) {
         return new BlockPos(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    /**
+     * Converts a Vec3i to a BlockPos.
+     *
+     * @param pos The Vec3i to convert.
+     * @return The converted BlockPos.
+     */
+    static BlockPos blockPos(Vec3d pos) {
+        return new BlockPos((int) pos.getX(), (int) pos.getY(), (int) pos.getZ());
     }
 
     /**

@@ -1,5 +1,5 @@
 {
-    "type": "minecraft:overworld",
+    "type": "mwhrd:tower",
     "generator": {
         "type": "minecraft:flat",
         "settings": {

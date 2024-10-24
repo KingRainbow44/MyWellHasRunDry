@@ -11,18 +11,18 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-public final class GuardianOfLight extends PathAwareEntity implements PolymerEntity {
+public final class GuardianOfLight extends HostileEntity implements PolymerEntity {
     private long ticksAlive = 0L;
     private boolean toweringUp = false;
 
-    public GuardianOfLight(EntityType<? extends PathAwareEntity> entityType, World world) {
+    public GuardianOfLight(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
     }
 
@@ -31,9 +31,9 @@ public final class GuardianOfLight extends PathAwareEntity implements PolymerEnt
      */
     public static DefaultAttributeContainer.Builder createAttributes() {
         return LivingEntity.createLivingAttributes()
-            .add(EntityAttributes.GENERIC_MAX_HEALTH, 500d)
+            .add(EntityAttributes.GENERIC_MAX_HEALTH, 150d)
             .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.7d)
-            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 37d)
+            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 14d)
             .add(EntityAttributes.GENERIC_ARMOR, 10d)
             .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 35d);
     }

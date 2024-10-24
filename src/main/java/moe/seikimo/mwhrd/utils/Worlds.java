@@ -1,12 +1,38 @@
 package moe.seikimo.mwhrd.utils;
 
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.chunk.ChunkStatus;
 
-public interface Structures {
+import java.util.concurrent.CompletableFuture;
+
+public interface Worlds {
+    /** Sourced from 'pop4959/Chunky'. */
+    ChunkTicketType<Unit> CHUNK_TICKET = ChunkTicketType.create("mwhrd", (unit, unit1) -> 0);
+
+    /**
+     * Force loads a chunk.
+     *
+     * @param world The world to force load the chunk in.
+     * @param chunkX The X coordinate of the chunk.
+     * @param chunkY The Y coordinate of the chunk.
+     */
+    static CompletableFuture<Void> forceLoad(ServerWorld world, int chunkX, int chunkY) {
+        var chunkPos = new ChunkPos(chunkX, chunkY);
+
+        var manager = world.getChunkManager();
+        manager.addTicket(CHUNK_TICKET, chunkPos, 0, Unit.INSTANCE);
+
+        return CompletableFuture.allOf(manager
+            .getChunkFutureSyncOnMainThread(chunkX, chunkY, ChunkStatus.FULL, true));
+    }
+
     /**
      * Pastes an NBT structure at the origin.
      *
