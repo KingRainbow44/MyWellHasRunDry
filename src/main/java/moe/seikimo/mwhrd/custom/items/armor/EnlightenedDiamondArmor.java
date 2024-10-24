@@ -81,7 +81,7 @@ public final class EnlightenedDiamondArmor extends ArmorItem implements PolymerI
         var upgradeTier = nbt.contains(UPGRADE_TIER) ? nbt.getInt(UPGRADE_TIER) : 0;
         // Check if the item is already at max tier.
         if (upgradeTier >= 10) {
-            player.sendMessage(Text.translatable("item.mwhrd.max_tier")
+            player.sendMessage(Text.translatable("text.mwhrd.max_tier")
                 .formatted(Formatting.RED));
 
             // Return the upgrade items.
@@ -120,7 +120,7 @@ public final class EnlightenedDiamondArmor extends ArmorItem implements PolymerI
                 .formatted(Formatting.GRAY)
         )));
 
-        player.sendMessage(Text.translatable("item.mwhrd.tier_upgrade",
+        player.sendMessage(Text.translatable("text.mwhrd.tier_upgrade",
             stack.toHoverableText().copy()
                 .formatted(Formatting.YELLOW),
             Text.literal(Utils.toRoman(upgradeTier)))

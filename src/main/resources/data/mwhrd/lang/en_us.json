@@ -7,10 +7,13 @@
     "item.mwhrd.enlightened_diamond_chestplate": "Enlightened Diamond Chestplate",
     "item.mwhrd.enlightened_diamond_leggings": "Enlightened Diamond Leggings",
     "item.mwhrd.enlightened_diamond_boots": "Enlightened Diamond Boots",
-    "item.mwhrd.tier_upgrade": "You've upgraded %s to Tier %d!",
-    "item.mwhrd.max_tier": "This item is already at its max upgrade tier!",
+
+    "block.mwhrd.blossom_sapling": "Restie's Blossom Sapling",
 
     "entity.mwhrd.guardian_of_light": "Guardian of Light",
+
+    "text.mwhrd.tier_upgrade": "You've upgraded %s to Tier %d!",
+    "text.mwhrd.max_tier": "This item is already at its max upgrade tier!",
 
     "text.mwhrd.dimension.rol.ready": "The Realm of Light is ready!",
     "text.mwhrd.dimension.rol.queued": "You are queued to enter The Realm of Light.",

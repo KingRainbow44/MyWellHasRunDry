@@ -1,5 +1,6 @@
 package moe.seikimo.mwhrd.custom;
 
+import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import eu.pb4.polymer.core.api.item.PolymerItemGroupUtils;
 import moe.seikimo.mwhrd.custom.items.SoulOfLight;
 import moe.seikimo.mwhrd.custom.items.TheAtlas;
@@ -23,14 +24,16 @@ public interface CustomItems {
     Item ENLIGHTENED_DIAMOND_BOOTS = Items.register(Identifier.of("mwhrd", "enlightened_diamond_boots"), new EnlightenedDiamondArmor((ArmorItem) Items.LEATHER_BOOTS));
     Set<Item> ENLIGHTENED_DIAMOND_ARMOR = Set.of(ENLIGHTENED_DIAMOND_HELMET, ENLIGHTENED_DIAMOND_CHESTPLATE, ENLIGHTENED_DIAMOND_LEGGINGS, ENLIGHTENED_DIAMOND_BOOTS);
 
+    Item BLOSSOM_SAPLING = Items.register(Identifier.of("mwhrd", "blossom_sapling"), new PolymerBlockItem(CustomBlocks.BLOSSOM_SAPLING, new Item.Settings(), Items.CHERRY_SAPLING));
+
     ItemGroup ITEM_GROUP = PolymerItemGroupUtils.builder()
         .displayName(Text.translatable("itemGroup.mwhrd"))
         .icon(Items.END_PORTAL_FRAME::getDefaultStack)
         .entries((context, entries) -> {
             entries.add(THE_ATLAS);
             entries.add(SOUL_OF_LIGHT);
-
             ENLIGHTENED_DIAMOND_ARMOR.forEach(entries::add);
+            entries.add(BLOSSOM_SAPLING);
         })
         .build();
 
