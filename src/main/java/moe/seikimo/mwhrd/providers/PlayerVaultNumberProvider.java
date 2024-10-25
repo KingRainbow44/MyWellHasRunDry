@@ -35,16 +35,21 @@ public record PlayerVaultNumberProvider(
         if (trialPlayer.mwhrd$getMobKills() < this.minKills) return 0f;
 
         var trialPlayers = 0;
+        var hasHardcore = false;
+
         for (var player : world.getPlayers()) {
             var condPlayer = (IPlayerConditions) player;
             if (condPlayer.mwhrd$isInTrialChamber()) {
-                if (this.hardcore && !condPlayer.mwhrd$isHardcore()) {
-                    return 0f; // Completely disable the drop if a player is not in hardcore mode.
+                if (!hasHardcore && condPlayer.mwhrd$isHardcore()) {
+                    hasHardcore = true;
                 }
 
                 trialPlayers++;
             }
         }
+
+        // Prevent the player from getting the vault if they are in hardcore mode.
+        if (this.hardcore() && !hasHardcore) return 0f;
 
         return Math.lerp(this.baseValue, this.maxValue,
             Math.min(1.0f, trialPlayers / this.scale));
