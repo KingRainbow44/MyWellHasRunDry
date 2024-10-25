@@ -104,6 +104,12 @@ public abstract class AbstractCustomPortal extends SimplePolymerBlock implements
     }
 
     @Override
+    public BlockState getPolymerBlockState(BlockState state) {
+        return super.getPolymerBlockState(state)
+            .with(AXIS, state.get(AXIS));
+    }
+
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(AXIS);
     }
