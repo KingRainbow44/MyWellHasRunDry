@@ -31,5 +31,8 @@ public final class ModItemTagProvider extends FabricTagProvider.ItemTagProvider 
             .add(CustomItems.ENLIGHTENED_DIAMOND_LEGGINGS);
         this.getOrCreateTagBuilder(ItemTags.FOOT_ARMOR)
             .add(CustomItems.ENLIGHTENED_DIAMOND_BOOTS);
+
+        this.getOrCreateTagBuilder(ItemTags.SWORDS)
+            .add(CustomItems.ENLIGHTENED_DIAMOND_SWORD);
     }
 }
