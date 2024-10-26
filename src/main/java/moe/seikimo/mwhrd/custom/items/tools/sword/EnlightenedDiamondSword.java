@@ -26,6 +26,11 @@ public final class EnlightenedDiamondSword
             .attributeModifiers(AttributeModifiersComponent.builder()
                 .add(
                     EntityAttributes.GENERIC_ATTACK_SPEED,
+                    Attributes.add(BASE_ATTACK_DAMAGE_MODIFIER_ID, 1.5f),
+                    AttributeModifierSlot.MAINHAND
+                )
+                .add(
+                    EntityAttributes.GENERIC_ATTACK_SPEED,
                     Attributes.add(BASE_ATTACK_SPEED_MODIFIER_ID, -2.4f),
                     AttributeModifierSlot.MAINHAND
                 )
@@ -49,27 +54,26 @@ public final class EnlightenedDiamondSword
 
     @Override
     public void applyUpgrades(ItemStack stack, int tier, Identifier attributeId) {
+        // For all tiers 8+, the player can gain 0.1 attack speed.
+        var attackSpeed = tier >= 8 ? Math.min(0.5, (tier - 7) * 0.1) : 0;
+
         var components = AttributeModifiersComponent.builder()
             .add(
                 EntityAttributes.GENERIC_ATTACK_DAMAGE,
-                Attributes.add(attributeId, Math.min(9, tier * 1.5)),
+                Attributes.add(BASE_ATTACK_DAMAGE_MODIFIER_ID, Math.min(9, tier * 1.5)),
+                AttributeModifierSlot.MAINHAND
+            )
+            .add(
+                EntityAttributes.GENERIC_ATTACK_SPEED,
+                Attributes.add(BASE_ATTACK_SPEED_MODIFIER_ID, -2.4f + attackSpeed),
                 AttributeModifierSlot.MAINHAND
             );
 
-        // For all tiers above 5, the player can gain 0.1 attack range.
+        // For all tiers 5+, the player can gain 0.1 attack range.
         if (tier >= 5) {
             components.add(
                 EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE,
                 Attributes.add(attributeId, Math.min(0.5, (tier - 4) * 0.1)),
-                AttributeModifierSlot.MAINHAND
-            );
-        }
-
-        // For all tiers above 8, the player can gain 0.1 attack speed.
-        if (tier >= 8) {
-            components.add(
-                EntityAttributes.GENERIC_ATTACK_SPEED,
-                Attributes.add(attributeId, Math.min(0.5, (tier - 7) * 0.1)),
                 AttributeModifierSlot.MAINHAND
             );
         }
