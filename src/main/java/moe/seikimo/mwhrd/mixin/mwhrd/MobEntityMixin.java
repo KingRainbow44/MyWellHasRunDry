@@ -18,7 +18,7 @@ public abstract class MobEntityMixin extends LivingEntity implements IRespawnabl
 
     /// <editor-fold desc="IRespawnableMob">
 
-    @Unique private BlockPos spawnPoint = new BlockPos(0, 0, 0);
+    @Unique private BlockPos spawnPoint = BlockPos.ORIGIN;
 
     @Override
     public void mwhrd$setSpawnPoint(BlockPos pos) {

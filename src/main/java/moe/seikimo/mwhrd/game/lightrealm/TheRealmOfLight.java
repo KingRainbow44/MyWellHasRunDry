@@ -242,7 +242,7 @@ public final class TheRealmOfLight {
 
             // Check if the mob died to the void.
             var position = source.getPosition();
-            if ((position != null && position.getY() < -50) ||
+            if ((position != null && position.getY() < -64) ||
                 Utils.compare(source, DamageTypes.OUT_OF_WORLD)) {
                 // Teleport the mob back to its starting position.
                 var spawnPoint = respawnable.mwhrd$getSpawnPoint();
@@ -286,11 +286,13 @@ public final class TheRealmOfLight {
         // Check if the item is a tool.
         var item = stack.getItem();
         if (item instanceof ToolItem) {
-            EnchantmentHelper.apply(stack, builder -> {
-                builder.add(Utils.lookup(Enchantments.EFFICIENCY), 5);
-                builder.add(Utils.lookup(Enchantments.FORTUNE), 5);
-                builder.add(Utils.lookup(Enchantments.UNBREAKING), 3);
-            });
+            if (!(item instanceof SwordItem)) {
+                EnchantmentHelper.apply(stack, builder -> {
+                    builder.add(Utils.lookup(Enchantments.EFFICIENCY), 5);
+                    builder.add(Utils.lookup(Enchantments.FORTUNE), 5);
+                    builder.add(Utils.lookup(Enchantments.UNBREAKING), 3);
+                });
+            }
 
             if (item instanceof SwordItem || item instanceof AxeItem) {
                 EnchantmentHelper.apply(stack, builder -> {
@@ -399,7 +401,7 @@ public final class TheRealmOfLight {
         var spawned = 0;
         for (var node : this.generator.getNodes()) {
             // Skip the first island.
-            if (++spawned == 0) continue;
+            if (++spawned == 1) continue;
 
             // Check if the node is a boss island.
             if (spawned == this.generator.getNodes().size()) {
