@@ -6,6 +6,10 @@ import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import moe.seikimo.mwhrd.custom.items.SoulOfLight;
 import moe.seikimo.mwhrd.custom.items.TheAtlas;
 import moe.seikimo.mwhrd.custom.items.armor.EnlightenedDiamondArmor;
+import moe.seikimo.mwhrd.custom.items.tools.axe.EnlightenedDiamondAxe;
+import moe.seikimo.mwhrd.custom.items.tools.hoe.EnlightenedDiamondHoe;
+import moe.seikimo.mwhrd.custom.items.tools.pickaxe.EnlightenedDiamondPickaxe;
+import moe.seikimo.mwhrd.custom.items.tools.shovel.EnlightenedDiamondShovel;
 import moe.seikimo.mwhrd.custom.items.tools.sword.EnlightenedDiamondSword;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -28,6 +32,10 @@ public interface CustomItems {
     Item ENLIGHTENED_DIAMOND_BOOTS = Items.register(itemKey("enlightened_diamond_boots"), settings -> new EnlightenedDiamondArmor(Items.LEATHER_BOOTS, EquipmentType.BOOTS, settings));
     Set<Item> ENLIGHTENED_DIAMOND_ARMOR = Set.of(ENLIGHTENED_DIAMOND_HELMET, ENLIGHTENED_DIAMOND_CHESTPLATE, ENLIGHTENED_DIAMOND_LEGGINGS, ENLIGHTENED_DIAMOND_BOOTS);
     Item ENLIGHTENED_DIAMOND_SWORD = Items.register(itemKey("enlightened_diamond_sword"), EnlightenedDiamondSword::new);
+    Item ENLIGHTENED_DIAMOND_AXE = Items.register(itemKey("enlightened_diamond_axe"), EnlightenedDiamondAxe::new);
+    Item ENLIGHTENED_DIAMOND_HOE = Items.register(itemKey("enlightened_diamond_hoe"), EnlightenedDiamondHoe::new);
+    Item ENLIGHTENED_DIAMOND_PICKAXE = Items.register(itemKey("enlightened_diamond_pickaxe"), EnlightenedDiamondPickaxe::new);
+    Item ENLIGHTENED_DIAMOND_SHOVEL = Items.register(itemKey("enlightened_diamond_shovel"), EnlightenedDiamondShovel::new);
 
     Item BLOSSOM_SAPLING = Items.register(itemKey("blossom_sapling"), settings -> new PolymerBlockItem(CustomBlocks.BLOSSOM_SAPLING, settings, Items.CHERRY_SAPLING));
 
@@ -39,6 +47,10 @@ public interface CustomItems {
             entries.add(ATLAS_SHARD);
             entries.add(SOUL_OF_LIGHT);
             entries.add(ENLIGHTENED_DIAMOND_SWORD);
+            entries.add(ENLIGHTENED_DIAMOND_AXE);
+            entries.add(ENLIGHTENED_DIAMOND_HOE);
+            entries.add(ENLIGHTENED_DIAMOND_PICKAXE);
+            entries.add(ENLIGHTENED_DIAMOND_SHOVEL);
             ENLIGHTENED_DIAMOND_ARMOR.forEach(entries::add);
         })
         .build();
