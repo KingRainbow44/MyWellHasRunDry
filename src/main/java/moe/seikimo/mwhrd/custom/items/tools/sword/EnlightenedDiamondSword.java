@@ -1,71 +1,46 @@
 package moe.seikimo.mwhrd.custom.items.tools.sword;
 
-import eu.pb4.polymer.core.api.item.SimplePolymerItem;
+import eu.pb4.polymer.core.api.item.PolymerItem;
 import moe.seikimo.mwhrd.custom.interfaces.EnlightenedItem;
+import moe.seikimo.mwhrd.custom.items.CustomToolMaterials;
 import moe.seikimo.mwhrd.utils.Attributes;
 import moe.seikimo.mwhrd.utils.items.NbtBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
-import net.minecraft.component.type.ToolComponent;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-import java.util.List;
-
-public final class EnlightenedDiamondSword extends SimplePolymerItem implements EnlightenedItem {
+public final class EnlightenedDiamondSword extends SwordItem implements PolymerItem, EnlightenedItem {
     public EnlightenedDiamondSword(Settings settings) {
         super(
+            CustomToolMaterials.ENLIGHTENED,
+            1.5f, -2.4f,
             settings
-                .maxCount(1).maxDamage(100)
-                .attributeModifiers(AttributeModifiersComponent.builder()
-                    .add(
-                        EntityAttributes.ATTACK_SPEED,
-                        Attributes.add(BASE_ATTACK_DAMAGE_MODIFIER_ID, 1.5f),
-                        AttributeModifierSlot.MAINHAND
-                    )
-                    .add(
-                        EntityAttributes.ATTACK_SPEED,
-                        Attributes.add(BASE_ATTACK_SPEED_MODIFIER_ID, -2.4f),
-                        AttributeModifierSlot.MAINHAND
-                    )
-                    .build())
-                .component(
-                    DataComponentTypes.TOOL,
-                    new ToolComponent(
-                        List.of(
-                            ToolComponent.Rule.ofAlwaysDropping(RegistryEntryList.of(Blocks.COBWEB.getRegistryEntry()), 15.0F),
-                            ToolComponent.Rule.of(Registries.createEntryLookup(Registries.BLOCK)
-                                .getOrThrow(BlockTags.SWORD_EFFICIENT), 1.5F)
-                        ),
-                        1.0F, 2
-                    )
-                )
+                .maxCount(1)
                 .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
                     .set("upgrade_tier", 0)
                     .build())
-                .component(DataComponentTypes.RARITY, Rarity.RARE),
-            Items.IRON_SWORD,
-            false
+                .component(DataComponentTypes.RARITY, Rarity.RARE)
         );
     }
 
     @Override
     public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
         return Items.IRON_SWORD;
+    }
+
+    @Override
+    @Nullable
+    public Identifier getPolymerItemModel(ItemStack stack, PacketContext context) {
+        return null;
     }
 
     @Override
@@ -101,18 +76,6 @@ public final class EnlightenedDiamondSword extends SimplePolymerItem implements 
         }
 
         stack.set(DataComponentTypes.ATTRIBUTE_MODIFIERS, components.build());
-    }
-
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        return !miner.isCreative();
-    }
-
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        return true;
-    }
-
-    public void postDamageEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        stack.damage(1, attacker, EquipmentSlot.MAINHAND);
     }
 
     @Override
