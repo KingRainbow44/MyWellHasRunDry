@@ -19,19 +19,7 @@
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "minecraft:spawner",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_components",
-                            "components": {
-                                "minecraft:hide_additional_tooltip": {},
-                                "minecraft:item_name": "{\"text\":\"Beacon Base\",\"color\":\"light_purple\",\"italic\":false}",
-                                "minecraft:lore": [
-                                    "{\"text\":\"Legend has it this beacon emits special radiation.\",\"color\":\"aqua\",\"italic\":false}"
-                                ]
-                            }
-                        }
-                    ]
+                    "name": "mwhrd:beacon_base"
                 }
             ],
             "rolls": 1.0
@@ -54,24 +42,7 @@
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "minecraft:wither_spawn_egg",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_components",
-                            "components": {
-                                "minecraft:item_name": "{\"text\":\"Plot Purger PRO\",\"color\":\"aqua\",\"italic\":false}",
-                                "minecraft:lore": [
-                                    "{\"text\":\"\"}",
-                                    "{\"text\":\"When Applied to a Beacon:\",\"color\":\"gray\",\"italic\":false}",
-                                    "{\"text\":\" Unlocks Plot Purging\",\"color\":\"blue\",\"italic\":false}"
-                                ]
-                            }
-                        },
-                        {
-                            "function": "minecraft:set_custom_data",
-                            "tag": "{\"beacon_upgrade\":\"plot_purger\"}"
-                        }
-                    ]
+                    "name": "mwhrd:plot_purger_upgrade"
                 }
             ],
             "rolls": 1.0
@@ -94,24 +65,7 @@
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "minecraft:bat_spawn_egg",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_components",
-                            "components": {
-                                "minecraft:item_name": "{\"text\":\"Pixel Printer 3000\",\"color\":\"aqua\",\"italic\":false}",
-                                "minecraft:lore": [
-                                    "{\"text\":\"\"}",
-                                    "{\"text\":\"When Applied to a Beacon:\",\"color\":\"gray\",\"italic\":false}",
-                                    "{\"text\":\" Unlocks Item Duplication\",\"color\":\"blue\",\"italic\":false}"
-                                ]
-                            }
-                        },
-                        {
-                            "function": "minecraft:set_custom_data",
-                            "tag": "{\"beacon_upgrade\":\"pixel_printer\"}"
-                        }
-                    ]
+                    "name": "mwhrd:pixel_printer_upgrade"
                 }
             ],
             "rolls": 1.0
@@ -134,24 +88,7 @@
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "minecraft:allay_spawn_egg",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_components",
-                            "components": {
-                                "minecraft:item_name": "{\"text\":\"Flight Crystal\",\"color\":\"yellow\",\"italic\":false}",
-                                "minecraft:lore": [
-                                    "{\"text\":\"\"}",
-                                    "{\"text\":\"When Applied to a Beacon:\",\"color\":\"gray\",\"italic\":false}",
-                                    "{\"text\":\" Grants Flight\",\"color\":\"blue\",\"italic\":false}"
-                                ]
-                            }
-                        },
-                        {
-                            "function": "minecraft:set_custom_data",
-                            "tag": "{\"beacon_upgrade\":\"flight_crystal\"}"
-                        }
-                    ],
+                    "name": "mwhrd:flight_crystal_upgrade",
                     "weight": 2
                 }
             ],
@@ -175,24 +112,7 @@
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "minecraft:enderman_spawn_egg",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_components",
-                            "components": {
-                                "minecraft:item_name": "{\"text\":\"Eye of Teleportation\",\"color\":\"yellow\",\"italic\":false}",
-                                "minecraft:lore": [
-                                    "{\"text\":\"\"}",
-                                    "{\"text\":\"When Applied to a Beacon:\",\"color\":\"gray\",\"italic\":false}",
-                                    "{\"text\":\" Enables Teleportation\",\"color\":\"blue\",\"italic\":false}"
-                                ]
-                            }
-                        },
-                        {
-                            "function": "minecraft:set_custom_data",
-                            "tag": "{\"beacon_upgrade\":\"eye_of_teleportation\"}"
-                        }
-                    ],
+                    "name": "mwhrd:teleport_eye_upgrade",
                     "weight": 2
                 }
             ],
@@ -208,32 +128,15 @@
                         "base": 0.005,
                         "max": 0.01,
                         "scale": 5,
-                        "minKills": 20,
-                        "hardcore": true
+                        "minKills": 50,
+                        "hardcore": false
                     }
                 }
             ],
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "minecraft:ender_dragon_spawn_egg",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_components",
-                            "components": {
-                                "minecraft:item_name": "{\"text\":\"Builder's Grace\",\"color\":\"light_purple\",\"italic\":false}",
-                                "minecraft:lore": [
-                                    "{\"text\":\"\"}",
-                                    "{\"text\":\"When Applied to a Beacon:\",\"color\":\"gray\",\"italic\":false}",
-                                    "{\"text\":\" Enables WorldEdit\",\"color\":\"blue\",\"italic\":false}"
-                                ]
-                            }
-                        },
-                        {
-                            "function": "minecraft:set_custom_data",
-                            "tag": "{\"beacon_upgrade\":\"worldedit\"}"
-                        }
-                    ]
+                    "name": "mwhrd:worldedit_upgrade"
                 }
             ],
             "rolls": 1.0

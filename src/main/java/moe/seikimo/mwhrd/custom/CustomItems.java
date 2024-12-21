@@ -11,18 +11,122 @@ import moe.seikimo.mwhrd.custom.items.tools.hoe.EnlightenedDiamondHoe;
 import moe.seikimo.mwhrd.custom.items.tools.pickaxe.EnlightenedDiamondPickaxe;
 import moe.seikimo.mwhrd.custom.items.tools.shovel.EnlightenedDiamondShovel;
 import moe.seikimo.mwhrd.custom.items.tools.sword.EnlightenedDiamondSword;
+import moe.seikimo.mwhrd.utils.items.LoreBuilder;
+import moe.seikimo.mwhrd.utils.items.NbtBuilder;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 
 import java.util.Set;
 
 import static moe.seikimo.mwhrd.utils.Utils.itemKey;
 
 public interface CustomItems {
+    Item BEACON_BASE = Items.register(
+        itemKey("beacon_base"),
+        settings -> new SimplePolymerItem(settings
+            .component(DataComponentTypes.LORE, LoreBuilder.of(false)
+                .literal("Legend has it this beacon can emit special radiation.", Formatting.AQUA)
+                .build())
+            .component(DataComponentTypes.RARITY, Rarity.EPIC),
+            Items.SPAWNER
+        )
+    );
+    Item ADVANCED_BEACON = Items.register(
+        itemKey("advanced_beacon"),
+        settings -> new SimplePolymerItem(settings
+            .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
+                .set("adv_beacon", 1)
+                .build())
+            .component(DataComponentTypes.LORE, LoreBuilder.of(false)
+                .literal("This beacon emits special radiation!", Formatting.AQUA)
+                .build())
+            .component(DataComponentTypes.RARITY, Rarity.EPIC),
+            Items.BEACON
+        )
+    );
+    Item PLOT_PURGER_UPGRADE = Items.register(
+        itemKey("plot_purger_upgrade"),
+        settings -> new SimplePolymerItem(settings
+            .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
+                .set("beacon_upgrade", "plot_purger")
+                .build())
+            .component(DataComponentTypes.LORE, LoreBuilder.of()
+                .add(Text.translatable("text.mwhrd.beacon.item_applied_to")
+                    .formatted(Formatting.GRAY))
+                .literal(" Unlocks Plot Purging", Formatting.BLUE)
+                .build())
+            .component(DataComponentTypes.RARITY, Rarity.RARE),
+            Items.WITHER_SPAWN_EGG
+        )
+    );
+    Item PIXEL_PRINTER_UPGRADE = Items.register(
+        itemKey("pixel_printer_upgrade"),
+        settings -> new SimplePolymerItem(settings
+            .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
+                .set("beacon_upgrade", "pixel_printer")
+                .build())
+            .component(DataComponentTypes.LORE, LoreBuilder.of()
+                .add(Text.translatable("text.mwhrd.beacon.item_applied_to")
+                    .formatted(Formatting.GRAY))
+                .literal(" Unlocks Item Duplication", Formatting.BLUE)
+                .build())
+            .component(DataComponentTypes.RARITY, Rarity.RARE),
+            Items.BAT_SPAWN_EGG
+        )
+    );
+    Item FLIGHT_CRYSTAL_UPGRADE = Items.register(
+        itemKey("flight_crystal_upgrade"),
+        settings -> new SimplePolymerItem(settings
+            .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
+                .set("beacon_upgrade", "flight_crystal")
+                .build())
+            .component(DataComponentTypes.LORE, LoreBuilder.of()
+                .add(Text.translatable("text.mwhrd.beacon.item_applied_to")
+                    .formatted(Formatting.GRAY))
+                .literal(" Grants Flight", Formatting.BLUE)
+                .build())
+            .component(DataComponentTypes.RARITY, Rarity.UNCOMMON),
+            Items.ALLAY_SPAWN_EGG
+        )
+    );
+    Item TELEPORT_EYE_UPGRADE = Items.register(
+        itemKey("teleport_eye_upgrade"),
+        settings -> new SimplePolymerItem(settings
+            .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
+                .set("beacon_upgrade", "eye_of_teleportation")
+                .build())
+            .component(DataComponentTypes.LORE, LoreBuilder.of()
+                .add(Text.translatable("text.mwhrd.beacon.item_applied_to")
+                    .formatted(Formatting.GRAY))
+                .literal(" Enables Teleportation", Formatting.BLUE)
+                .build())
+            .component(DataComponentTypes.RARITY, Rarity.UNCOMMON),
+            Items.ENDERMAN_SPAWN_EGG
+        )
+    );
+    Item WORLDEDIT_UPGRADE = Items.register(
+        itemKey("worldedit_upgrade"),
+        settings -> new SimplePolymerItem(settings
+            .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
+                .set("beacon_upgrade", "worldedit")
+                .build())
+            .component(DataComponentTypes.LORE, LoreBuilder.of()
+                .add(Text.translatable("text.mwhrd.beacon.item_applied_to")
+                    .formatted(Formatting.GRAY))
+                .literal(" Enables WorldEdit", Formatting.BLUE)
+                .build())
+            .component(DataComponentTypes.RARITY, Rarity.EPIC),
+            Items.ENDER_DRAGON_SPAWN_EGG
+        )
+    );
+
     Item THE_ATLAS = Items.register(itemKey("the_atlas"), TheAtlas::new);
     Item ATLAS_SHARD = Items.register(itemKey("atlas_shard"), settings -> new SimplePolymerItem(settings, Items.DISC_FRAGMENT_5));
     Item SOUL_OF_LIGHT = Items.register(itemKey("soul_of_light"), SoulOfLight::new);
@@ -38,6 +142,20 @@ public interface CustomItems {
     Item ENLIGHTENED_DIAMOND_SHOVEL = Items.register(itemKey("enlightened_diamond_shovel"), EnlightenedDiamondShovel::new);
 
     Item BLOSSOM_SAPLING = Items.register(itemKey("blossom_sapling"), settings -> new PolymerBlockItem(CustomBlocks.BLOSSOM_SAPLING, settings, Items.CHERRY_SAPLING));
+
+    ItemGroup LUCK_AND_LUXURY = PolymerItemGroupUtils.builder()
+        .displayName(Text.translatable("itemGroup.mwhrd.luck_and_luxury"))
+        .icon(Items.BEACON::getDefaultStack)
+        .entries((context, entries) -> {
+            entries.add(BEACON_BASE);
+            entries.add(ADVANCED_BEACON);
+            entries.add(PLOT_PURGER_UPGRADE);
+            entries.add(PIXEL_PRINTER_UPGRADE);
+            entries.add(FLIGHT_CRYSTAL_UPGRADE);
+            entries.add(TELEPORT_EYE_UPGRADE);
+            entries.add(WORLDEDIT_UPGRADE);
+        })
+        .build();
 
     ItemGroup THE_REALM_OF_LIGHT = PolymerItemGroupUtils.builder()
         .displayName(Text.translatable("itemGroup.mwhrd.the_realm_of_light"))
@@ -60,7 +178,12 @@ public interface CustomItems {
      */
     static void register() {
         PolymerItemGroupUtils.registerPolymerItemGroup(
-            Identifier.of("mwhrd", "item_group"),
+            Identifier.of("mwhrd", "luck_and_luxury"),
+            CustomItems.LUCK_AND_LUXURY
+        );
+
+        PolymerItemGroupUtils.registerPolymerItemGroup(
+            Identifier.of("mwhrd", "the_realm_of_light"),
             CustomItems.THE_REALM_OF_LIGHT
         );
     }

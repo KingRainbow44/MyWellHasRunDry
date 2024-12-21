@@ -8,21 +8,12 @@
     "key": {
         "S": "minecraft:netherite_scrap",
         "C": "minecraft:heavy_core",
-        "B": "minecraft:spawner",
+        "B": "#mwhrd:beacon_bases",
         "D": "minecraft:diamond_block",
         "E": "minecraft:beacon"
     },
     "result": {
         "count": 1,
-        "id": "minecraft:beacon",
-        "components": {
-            "minecraft:item_name": "{\"text\":\"Beacon\",\"color\":\"light_purple\",\"italic\":false}",
-            "minecraft:lore": [
-                "{\"text\":\"This beacon emits special radiation!\",\"color\":\"aqua\",\"italic\":false}"
-            ],
-            "minecraft:custom_data": {
-                "adv_beacon": 1
-            }
-        }
+        "id": "mwhrd:advanced_beacon"
     }
 }

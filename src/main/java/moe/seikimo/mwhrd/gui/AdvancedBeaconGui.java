@@ -325,19 +325,22 @@ public final class AdvancedBeaconGui extends SimpleGui {
             .filter(BeaconEffect::isDraw)
             .toList();
         if (upgrades.contains(upgrade)) {
-            this.player.sendMessage(Text.literal("Upgrade already applied!"));
+            this.player.sendMessage(Text.literal("Upgrade already applied!")
+                .formatted(Formatting.RED));
             return;
         }
 
         // Check if the upgrades are all full.
         if (upgrades.size() >= 3) {
-            this.player.sendMessage(Text.literal("All upgrade slots are full!"));
+            this.player.sendMessage(Text.literal("All upgrade slots are full!")
+                .formatted(Formatting.RED));
             return;
         }
 
         // Check if the beacon is at the required level.
         if (this.vanillaBeacon.level < upgrade.getMinLevel().ordinal()) {
-            this.player.sendMessage(Text.literal("Beacon is not at the required level!"));
+            this.player.sendMessage(Text.literal("Beacon is not at the required level!")
+                .formatted(Formatting.RED));
             return;
         }
 
