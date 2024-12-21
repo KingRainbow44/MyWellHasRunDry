@@ -161,6 +161,17 @@ public interface Utils {
     }
 
     /**
+     * Returns a random integer between min and max.
+     *
+     * @param min The minimum value.
+     * @param max The maximum value.
+     * @return A random integer between min and max.
+     */
+    static int random(int min, int max) {
+        return (int) (Math.random() * (max - min + 1) + min);
+    }
+
+    /**
      * Base64-encodes a Minecraft tag.
      *
      * @param tag The tag to encode.

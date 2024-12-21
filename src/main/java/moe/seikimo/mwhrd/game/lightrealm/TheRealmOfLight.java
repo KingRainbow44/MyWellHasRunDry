@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.general.MapBuilder;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.custom.CustomEntities;
+import moe.seikimo.mwhrd.custom.CustomItems;
 import moe.seikimo.mwhrd.custom.CustomWorlds;
 import moe.seikimo.mwhrd.custom.entities.GuardianOfLight;
 import moe.seikimo.mwhrd.events.BlockBreakEvent;
@@ -612,6 +613,22 @@ public final class TheRealmOfLight {
      */
     public void destroy(Reason reason) {
         log.info("The Realm of Light is resetting...");
+
+        // Restore all players.
+        this.players.forEach(player -> {
+            TheRealmOfLight.respawn(player);
+
+            if (reason == Reason.DEFEATED) {
+                // Send the player a completion message.
+                player.sendMessage(Text.translatable("text.mwhrd.dimension.rol.completed")
+                    .formatted(Formatting.GREEN));
+
+                var item = new ItemStack(
+                    CustomItems.SOUL_OF_LIGHT,
+                    Utils.random(1, 5));
+                player.getInventory().offerOrDrop(item);
+            }
+        });
 
         // Remove all entities in the world.
         for (var entity : this.world.iterateEntities()) {
