@@ -19,6 +19,7 @@ import moe.seikimo.mwhrd.utils.items.ItemBuilder;
 import moe.seikimo.mwhrd.worldedit.AsyncPool;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -30,6 +31,7 @@ import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -54,9 +56,9 @@ import java.util.concurrent.CompletableFuture;
  */
 @Slf4j
 public final class TheRealmOfLight {
-    private static final Vec3d BOSS_SPAWN_POS = new Vec3d(1, 410, 1);
-    private static final BlockPos BOTTOM_CORNER = new BlockPos(-25, -64, -25);
-    private static final BlockPos TOP_CORNER = new BlockPos(24, 410, 24);
+    private static final Vec3d BOSS_SPAWN_POS = new Vec3d(1, 410, 0);
+    private static final BlockPos BOTTOM_CORNER = new BlockPos(-18, -64, -18);
+    private static final BlockPos TOP_CORNER = new BlockPos(18, 440, 18);
 
     private static final Text[] INFO_MESSAGES = {
         Text.empty(),
@@ -102,6 +104,7 @@ public final class TheRealmOfLight {
         PlayerMoveEvent.EVENT.register(TheRealmOfLight::onPlayerMove);
         EntityPreDeathEvent.EVENT.register(TheRealmOfLight::onPreDeath);
         PlayerCraftEvent.EVENT.register(TheRealmOfLight::onCraft);
+        ServerPlayConnectionEvents.DISCONNECT.register(TheRealmOfLight::onDisconnect);
     }
 
     /**
@@ -307,6 +310,19 @@ public final class TheRealmOfLight {
     }
 
     /**
+     * Invoked when a player disconnects from the server.
+     *
+     * @param handler The network handler.
+     * @param server The server instance.
+     */
+    private static void onDisconnect(ServerPlayNetworkHandler handler, MinecraftServer server) {
+        var player = handler.getPlayer();
+        if (!Players.inWorld(CustomWorlds.REALM_OF_LIGHT, player)) return;
+
+        TheRealmOfLight.respawn(player);
+    }
+
+    /**
      * Respawns a player in the overworld.
      *
      * @param player The player to respawn.
@@ -314,6 +330,10 @@ public final class TheRealmOfLight {
     private static void respawn(PlayerEntity player) {
         // Teleport the player to the overworld.
         Players.respawn(player);
+
+        // Remove the player from the realm.
+        TheRealmOfLight.getInstance().players
+            .remove((ServerPlayerEntity) player);
 
         // Restore the player's inventory.
         if (player instanceof ITimeTraveler traveler) try {
@@ -650,20 +670,6 @@ public final class TheRealmOfLight {
                 }
 
                 entity.discard();
-            }
-        }
-
-        // Restore all players.
-        this.players.forEach(player -> {
-            if (!(player instanceof ITimeTraveler traveler)) return;
-
-            Players.respawn(player);
-            traveler.mwhrd$restoreInventory();
-
-            if (reason == Reason.DEFEATED) {
-                // Send the player a completion message.
-                player.sendMessage(Text.translatable("text.mwhrd.dimension.rol.completed")
-                    .formatted(Formatting.GREEN));
             }
         });
 
