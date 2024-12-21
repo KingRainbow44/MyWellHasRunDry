@@ -37,7 +37,8 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
             .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.7d)
             .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 14d)
             .add(EntityAttributes.GENERIC_ARMOR, 10d)
-            .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 35d);
+            .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 35d)
+            .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.4f);
     }
 
     @Override
@@ -51,7 +52,7 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
 
     @Override
     public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
-        return EntityType.WITHER_SKELETON;
+        return EntityType.VILLAGER;
     }
 
     @Override
