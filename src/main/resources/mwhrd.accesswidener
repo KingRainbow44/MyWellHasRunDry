@@ -24,3 +24,5 @@ accessible method net/minecraft/entity/LivingEntity getHitbox ()Lnet/minecraft/u
 
 accessible field net/minecraft/entity/mob/MobEntity persistent Z
 accessible field net/minecraft/server/network/ServerPlayerEntity joinInvulnerabilityTicks I
+
+accessible field net/minecraft/server/world/ServerWorld entityList Lnet/minecraft/world/EntityList;
