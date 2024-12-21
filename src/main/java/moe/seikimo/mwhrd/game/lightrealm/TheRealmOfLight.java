@@ -410,6 +410,7 @@ public final class TheRealmOfLight {
                 var entity = new GuardianOfLight(CustomEntities.GUARDIAN_OF_LIGHT, this.world);
 
                 // Set the entity's position.
+                entity.setPersistent();
                 entity.setPosition(BOSS_SPAWN_POS);
                 // noinspection ConstantValue
                 if ((Object) entity instanceof IRespawnableMob respawnable) {
@@ -631,8 +632,9 @@ public final class TheRealmOfLight {
         });
 
         // Remove all entities in the world.
-        for (var entity : this.world.iterateEntities()) {
-            if (entity == null) continue;
+        var entityList = this.world.entityList;
+        entityList.forEach(entity -> {
+            if (entity == null) return;
 
             if (entity instanceof ServerPlayerEntity player) {
                 var spawn = MyWellHasRunDry.getDefaultSpawn();
