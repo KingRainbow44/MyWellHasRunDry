@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "DD",
+        "DS",
+        " S"
+    ],
+    "key": {
+        "D": "minecraft:diamond",
+        "S": "mwhrd:soul_of_light"
+    },
+    "result": {
+        "count": 1,
+        "id": "mwhrd:enlightened_diamond_axe"
+    }
+}
