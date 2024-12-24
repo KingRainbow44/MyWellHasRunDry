@@ -6,18 +6,10 @@
         " G "
     ],
     "key": {
-        "G": {
-            "item": "minecraft:gold_block"
-        },
-        "E": {
-            "item": "minecraft:emerald_block"
-        },
-        "C": {
-            "item": "minecraft:end_crystal"
-        },
-        "A": {
-            "item": "minecraft:enchanted_golden_apple"
-        }
+        "G": "minecraft:gold_block",
+        "E": "minecraft:emerald_block",
+        "C": "minecraft:end_crystal",
+        "A": "minecraft:enchanted_golden_apple"
     },
     "result": {
         "count": 1,

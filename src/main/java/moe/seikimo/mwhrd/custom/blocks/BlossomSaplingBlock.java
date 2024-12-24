@@ -10,8 +10,8 @@ import net.minecraft.util.math.random.Random;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 public final class BlossomSaplingBlock extends SaplingBlock implements PolymerBlock {
-    public BlossomSaplingBlock() {
-        super(null, AbstractBlock.Settings.create());
+    public BlossomSaplingBlock(Settings settings) {
+        super(null, settings);
     }
 
     @Override

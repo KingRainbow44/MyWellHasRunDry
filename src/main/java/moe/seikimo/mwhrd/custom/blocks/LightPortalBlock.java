@@ -17,6 +17,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.TeleportTarget;
 
 public final class LightPortalBlock extends AbstractCustomPortal {
+    public LightPortalBlock(Settings settings) {
+        super(settings);
+    }
+
     @Override
     protected ContextPredicate getFrameValidator() {
         return (state, world, pos) -> state.isOf(Blocks.GLOWSTONE);

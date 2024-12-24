@@ -6,12 +6,8 @@
         "S"
     ],
     "key": {
-        "D": {
-            "item": "minecraft:diamond"
-        },
-        "S": {
-            "item": "mwhrd:soul_of_light"
-        }
+        "D": "minecraft:diamond",
+        "S": "mwhrd:soul_of_light"
     },
     "result": {
         "count": 1,

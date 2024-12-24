@@ -40,7 +40,7 @@ dependencies {
     shadow(modImplementation("eu.pb4:sgui:${project.sgui_version}"))
 
     // Server-side item and block creation
-    shadow(modImplementation("xyz.nucleoid:server-translations-api:2.3.1+1.21-pre2"))
+    shadow(modImplementation("xyz.nucleoid:server-translations-api:${project.translations_version}"))
     shadow(modImplementation("eu.pb4:polymer-core:${project.polymer_version}"))
     shadow(modImplementation("eu.pb4:polymer-blocks:${project.polymer_version}"))
 

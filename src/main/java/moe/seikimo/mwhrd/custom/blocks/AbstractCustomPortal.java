@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
@@ -28,9 +29,9 @@ public abstract class AbstractCustomPortal extends SimplePolymerBlock implements
     protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
     protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
 
-    public AbstractCustomPortal() {
+    public AbstractCustomPortal(Settings settings) {
         super(
-            Settings.create()
+            settings
                 .noCollision()
                 .ticksRandomly()
                 .strength(-1f)

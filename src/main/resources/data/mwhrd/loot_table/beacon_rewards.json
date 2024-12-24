@@ -25,7 +25,6 @@
                             "function": "minecraft:set_components",
                             "components": {
                                 "minecraft:hide_additional_tooltip": {},
-                                "minecraft:custom_model_data": 1,
                                 "minecraft:item_name": "{\"text\":\"Beacon Base\",\"color\":\"light_purple\",\"italic\":false}",
                                 "minecraft:lore": [
                                     "{\"text\":\"Legend has it this beacon emits special radiation.\",\"color\":\"aqua\",\"italic\":false}"

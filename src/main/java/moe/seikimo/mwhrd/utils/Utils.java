@@ -3,6 +3,7 @@ package moe.seikimo.mwhrd.utils;
 import lombok.SneakyThrows;
 import moe.seikimo.general.EncodingUtils;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import net.minecraft.block.Block;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.enchantment.Enchantment;
@@ -321,6 +322,19 @@ public interface Utils {
     static RegistryKey<EntityType<?>> entityKey(String id) {
         return RegistryKey.of(
             RegistryKeys.ENTITY_TYPE,
+            Identifier.of("mwhrd", id)
+        );
+    }
+
+    /**
+     * Creates a registry key for the given ID.
+     *
+     * @param id The ID of the registry key.
+     * @return The registry key.
+     */
+    static RegistryKey<Block> blockKey(String id) {
+        return RegistryKey.of(
+            RegistryKeys.BLOCK,
             Identifier.of("mwhrd", id)
         );
     }
