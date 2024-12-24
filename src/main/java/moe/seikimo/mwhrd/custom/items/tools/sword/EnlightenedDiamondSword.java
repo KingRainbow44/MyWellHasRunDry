@@ -59,7 +59,7 @@ public final class EnlightenedDiamondSword extends SimplePolymerItem implements 
                     .build())
                 .component(DataComponentTypes.RARITY, Rarity.RARE),
             Items.IRON_SWORD,
-            true
+            false
         );
     }
 

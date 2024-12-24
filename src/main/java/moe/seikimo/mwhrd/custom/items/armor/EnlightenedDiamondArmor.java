@@ -55,7 +55,7 @@ public final class EnlightenedDiamondArmor
                 .component(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(DEFAULT_NBT))
                 .repairable(CustomItems.SOUL_OF_LIGHT),
             baseItem,
-            true
+            false
         );
 
         this.baseItem = baseItem;
