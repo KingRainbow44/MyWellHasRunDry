@@ -19,6 +19,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -138,7 +139,8 @@ public final class BeaconManager {
         var target = entry.teleportTo().toCenterPos();
         player.teleport(serverWorld,
             target.getX(), target.getY(), target.getZ(),
-            player.getYaw(), player.getPitch());
+            Collections.emptySet(),
+            player.getYaw(), player.getPitch(), true);
 
         // Remove the experience level.
         player.addExperienceLevels(-5);

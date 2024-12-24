@@ -3,19 +3,25 @@ package moe.seikimo.mwhrd.custom.items.armor;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import moe.seikimo.mwhrd.custom.interfaces.EnlightenedItem;
 import moe.seikimo.mwhrd.utils.Attributes;
+import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.item.equipment.ArmorMaterials;
+import net.minecraft.item.equipment.EquipmentType;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.packettweaker.PacketContext;
+
+import java.util.Objects;
 
 public final class EnlightenedDiamondArmor
     extends ArmorItem
@@ -28,18 +34,19 @@ public final class EnlightenedDiamondArmor
 
     private final Item baseItem;
 
-    public EnlightenedDiamondArmor(ArmorItem baseItem) {
+    public EnlightenedDiamondArmor(Item baseItem, EquipmentType type, Settings settings) {
         super(
-            ArmorMaterials.DIAMOND,
-            baseItem.getType(),
-            new Settings()
-                .maxCount(1).maxDamage(100)
+            ArmorMaterials.DIAMOND, type,
+            settings
+                // Set item data.
+                .maxCount(1)
+                .maxDamage(100)
                 // Custom armor data component.
                 .attributeModifiers(AttributeModifiersComponent.builder()
                     .add(
-                        EntityAttributes.GENERIC_ARMOR,
-                        Attributes.add(Identifier.ofVanilla("armor." + baseItem.getType().getName()), 0),
-                        AttributeModifierSlot.forEquipmentSlot(baseItem.getSlotType())
+                        EntityAttributes.ARMOR,
+                        Attributes.add(Identifier.ofVanilla("armor." + type.getName()), 0),
+                        AttributeModifierSlot.forEquipmentSlot(type.getEquipmentSlot())
                     )
                     .build())
                 .component(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(DEFAULT_NBT))
@@ -49,23 +56,18 @@ public final class EnlightenedDiamondArmor
     }
 
     @Override
-    public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+    public Item getPolymerItem(ItemStack itemStack, PacketContext context) {
         return this.baseItem;
     }
 
     @Override
-    public int getPolymerArmorColor(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
-        return 0x9bb3e8;
-    }
+    public ItemStack getPolymerItemStack(ItemStack itemStack, TooltipType tooltipType, PacketContext context) {
+        var stack = PolymerItem.super.getPolymerItemStack(itemStack, tooltipType, context);
 
-    @Override
-    public int getProtection() {
-        return 0;
-    }
+        // Set armor color.
+        stack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0x9bb3e8, false));
 
-    @Override
-    public float getToughness() {
-        return 0;
+        return stack;
     }
 
     @Override
@@ -81,16 +83,21 @@ public final class EnlightenedDiamondArmor
 
     @Override
     public void applyUpgrades(ItemStack stack, int tier, Identifier attributeId) {
+        var slotType = Objects.requireNonNull(this.getComponents()
+                .get(DataComponentTypes.EQUIPPABLE),
+                "Armor item must have an equippable component")
+            .slot();
+
         stack.set(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.builder()
             .add(
-                EntityAttributes.GENERIC_ARMOR,
+                EntityAttributes.ARMOR,
                 Attributes.add(attributeId, tier),
-                AttributeModifierSlot.forEquipmentSlot(this.getSlotType())
+                AttributeModifierSlot.forEquipmentSlot(slotType)
             )
             .add(
-                EntityAttributes.GENERIC_ARMOR_TOUGHNESS,
+                EntityAttributes.ARMOR_TOUGHNESS,
                 Attributes.add(attributeId, Math.round(4f * (tier / 10f))),
-                AttributeModifierSlot.forEquipmentSlot(this.getSlotType())
+                AttributeModifierSlot.forEquipmentSlot(slotType)
             )
             .build());
     }

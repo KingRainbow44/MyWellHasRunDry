@@ -19,6 +19,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public final class GuardianOfLight extends HostileEntity implements PolymerEntity {
     private long ticksAlive = 0L;
@@ -33,12 +34,12 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
      */
     public static DefaultAttributeContainer.Builder createAttributes() {
         return LivingEntity.createLivingAttributes()
-            .add(EntityAttributes.GENERIC_MAX_HEALTH, 150d)
-            .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.7d)
-            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 14d)
-            .add(EntityAttributes.GENERIC_ARMOR, 10d)
-            .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 35d)
-            .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.4f);
+            .add(EntityAttributes.MAX_HEALTH, 150d)
+            .add(EntityAttributes.MOVEMENT_SPEED, 0.7d)
+            .add(EntityAttributes.ATTACK_DAMAGE, 14d)
+            .add(EntityAttributes.ARMOR, 10d)
+            .add(EntityAttributes.FOLLOW_RANGE, 35d)
+            .add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.4f);
     }
 
     @Override
@@ -51,7 +52,7 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
     }
 
     @Override
-    public EntityType<?> getPolymerEntityType(ServerPlayerEntity player) {
+    public EntityType<?> getPolymerEntityType(PacketContext context) {
         return EntityType.VILLAGER;
     }
 

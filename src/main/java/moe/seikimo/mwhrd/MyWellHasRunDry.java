@@ -49,7 +49,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureKeys;
@@ -117,7 +116,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
     @Getter private static BlockPos defaultSpawn;
     @Getter private static LocationPredicate trialChamberPredicate;
+
     @Getter private static Registry<Enchantment> enchantmentRegistry;
+    @Getter private static Registry<Item> itemRegistry;
 
     @Getter private static ServerWorld realmOfLight, ruins;
 
@@ -191,14 +192,19 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             MyWellHasRunDry.server = server;
 
+            // Resolve registry tables.
             MyWellHasRunDry.enchantmentRegistry = server
                 .getRegistryManager()
-                .get(RegistryKeys.ENCHANTMENT);
+                .getOrThrow(RegistryKeys.ENCHANTMENT);
+
+            MyWellHasRunDry.itemRegistry = server
+                .getRegistryManager()
+                .getOrThrow(RegistryKeys.ITEM);
 
             var trialChamber = server
                 .getRegistryManager()
-                .get(RegistryKeys.STRUCTURE)
-                .entryOf(StructureKeys.TRIAL_CHAMBERS);
+                .getOrThrow(RegistryKeys.STRUCTURE)
+                .getOrThrow(StructureKeys.TRIAL_CHAMBERS);
             MyWellHasRunDry.trialChamberPredicate = LocationPredicate.Builder.create()
                 .light(LightPredicate.Builder.create()
                     .light(NumberRange.IntRange.atLeast(1)))
@@ -270,8 +276,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             var item = player.getStackInHand(hand);
             var pass = BLACKLISTED.contains(item.getItem());
             return pass ?
-                TypedActionResult.fail(item) :
-                TypedActionResult.pass(item);
+                ActionResult.FAIL :
+                ActionResult.PASS;
         });
 
         // Wait for players to join.

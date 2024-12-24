@@ -6,7 +6,7 @@ accessible method net/minecraft/block/vault/VaultServerData setItemsToEject (Lja
 accessible method net/minecraft/block/vault/VaultServerData getItemToDisplay ()Lnet/minecraft/item/ItemStack;
 accessible method net/minecraft/block/vault/VaultServerData setStateUpdatingResumeTime (J)V
 accessible method net/minecraft/block/entity/VaultBlockEntity$Server changeVaultState (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/block/BlockState;Lnet/minecraft/block/vault/VaultConfig;Lnet/minecraft/block/vault/VaultSharedData;)V
-accessible method net/minecraft/block/entity/VaultBlockEntity$Server generateLoot (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/block/vault/VaultConfig;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/player/PlayerEntity;)Ljava/util/List;
+accessible method net/minecraft/block/entity/VaultBlockEntity$Server generateLoot (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/block/vault/VaultConfig;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;)Ljava/util/List;
 accessible method net/minecraft/block/vault/VaultSharedData updateConnectedPlayers (Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/vault/VaultServerData;Lnet/minecraft/block/vault/VaultConfig;D)V
 
 accessible method net/minecraft/server/network/ServerPlayerEntity onScreenHandlerOpened (Lnet/minecraft/screen/ScreenHandler;)V
@@ -23,6 +23,5 @@ accessible field net/minecraft/server/network/ServerCommonNetworkHandler connect
 accessible method net/minecraft/entity/LivingEntity getHitbox ()Lnet/minecraft/util/math/Box;
 
 accessible field net/minecraft/entity/mob/MobEntity persistent Z
-accessible field net/minecraft/server/network/ServerPlayerEntity joinInvulnerabilityTicks I
 
 accessible field net/minecraft/server/world/ServerWorld entityList Lnet/minecraft/world/EntityList;

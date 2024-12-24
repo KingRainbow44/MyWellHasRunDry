@@ -7,6 +7,7 @@ import net.minecraft.block.*;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import xyz.nucleoid.packettweaker.PacketContext;
 
 public final class BlossomSaplingBlock extends SaplingBlock implements PolymerBlock {
     public BlossomSaplingBlock() {
@@ -19,7 +20,7 @@ public final class BlossomSaplingBlock extends SaplingBlock implements PolymerBl
     }
 
     @Override
-    public BlockState getPolymerBlockState(BlockState state) {
+    public BlockState getPolymerBlockState(BlockState state, PacketContext packetContext) {
         return Blocks.CHERRY_SAPLING.getDefaultState()
             .with(SaplingBlock.STAGE, state.get(SaplingBlock.STAGE));
     }

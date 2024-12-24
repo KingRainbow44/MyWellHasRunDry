@@ -5,9 +5,9 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Rarity;
 
 public final class SoulOfLight extends SimplePolymerItem {
-    public SoulOfLight() {
+    public SoulOfLight(Settings settings) {
         super(
-            new Settings()
+            settings
                 .maxCount(64)
                 .rarity(Rarity.EPIC),
             Items.LIGHT_GRAY_DYE

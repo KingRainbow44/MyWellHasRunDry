@@ -6,6 +6,8 @@ import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
+import java.util.Collections;
+
 import static net.minecraft.server.command.CommandManager.literal;
 
 public final class ReturnCommand {
@@ -44,8 +46,10 @@ public final class ReturnCommand {
                 spawnPoint.getX(),
                 spawnPoint.getY(),
                 spawnPoint.getZ(),
+                Collections.emptySet(),
                 player.getYaw(),
-                player.getPitch()
+                player.getPitch(),
+                true
             );
         }
 

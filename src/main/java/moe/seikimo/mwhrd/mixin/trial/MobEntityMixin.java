@@ -82,7 +82,7 @@ public abstract class MobEntityMixin
                 this.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, Integer.MAX_VALUE, 2));
 
                 // Increase tracking distance.
-                var distance = this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE);
+                var distance = this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
                 if (distance != null) {
                     distance.setBaseValue(2048f);
                 }

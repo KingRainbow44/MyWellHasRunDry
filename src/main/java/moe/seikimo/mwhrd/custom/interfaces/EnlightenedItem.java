@@ -4,15 +4,9 @@ import moe.seikimo.mwhrd.interfaces.nbt.IItemNbtWrapper;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
-import net.minecraft.data.server.recipe.RecipeExporter;
-import net.minecraft.data.server.recipe.RecipeProvider;
-import net.minecraft.data.server.recipe.SmithingTransformRecipeJsonBuilder;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -22,23 +16,6 @@ import java.util.List;
 
 public interface EnlightenedItem {
     String UPGRADE_TIER = "upgrade_tier";
-
-    /**
-     * Generates a recipe for the item.
-     *
-     * @param item The item.
-     * @param exporter The recipe exporter.
-     */
-    static void recipeFor(Item item, RecipeExporter exporter) {
-        SmithingTransformRecipeJsonBuilder.create(
-                Ingredient.ofItems(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE),
-                Ingredient.ofItems(item),
-                Ingredient.ofItems(Items.NETHERITE_INGOT),
-                RecipeCategory.COMBAT, item
-            )
-            .criterion("has_netherite_ingot", RecipeProvider.conditionsFromItem(Items.NETHERITE_INGOT))
-            .offerTo(exporter, RecipeProvider.getItemPath(item) + "_smithing");
-    }
 
     /**
      * @return The item identifier.
@@ -68,7 +45,7 @@ public interface EnlightenedItem {
         // Check if the item is already at max tier.
         if (upgradeTier >= 10) {
             player.sendMessage(Text.translatable("text.mwhrd.max_tier")
-                .formatted(Formatting.RED));
+                .formatted(Formatting.RED), false);
 
             // Return the upgrade items.
             player.getInventory().offerOrDrop(new ItemStack(Items.NETHERITE_INGOT));
@@ -95,6 +72,6 @@ public interface EnlightenedItem {
         player.sendMessage(Text.translatable("text.mwhrd.tier_upgrade",
                 stack.toHoverableText().copy().formatted(Formatting.YELLOW),
                 Text.literal(Utils.toRoman(upgradeTier)))
-            .formatted(Formatting.GREEN));
+            .formatted(Formatting.GREEN), false);
     }
 }

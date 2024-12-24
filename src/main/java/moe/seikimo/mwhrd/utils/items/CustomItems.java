@@ -26,7 +26,6 @@ public final class CustomItems {
                 .setStyle(Style.EMPTY.withItalic(false))
                 .formatted(Formatting.AQUA)
         )));
-        ADVANCED_BEACON.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(1));
 
         var beaconNbt = new NbtCompound();
         beaconNbt.putInt("advanced_beacon", 1);

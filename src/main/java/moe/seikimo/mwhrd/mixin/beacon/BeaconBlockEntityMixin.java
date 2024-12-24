@@ -306,7 +306,7 @@ public abstract class BeaconBlockEntityMixin
 
         var chunk = world.getChunk(this.getPos());
         if (chunk != null) {
-            chunk.setNeedsSaving(true);
+            chunk.markNeedsSaving();
         }
     }
 

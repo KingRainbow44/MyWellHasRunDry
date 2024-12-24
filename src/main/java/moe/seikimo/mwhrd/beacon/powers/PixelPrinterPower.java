@@ -86,7 +86,7 @@ public final class PixelPrinterPower extends BeaconPower {
     public SimpleGui getGui(World world, PlayerEntity player) {
         if (!this.minimumFuel().compare(this.handle.mwhrd$fuel())) {
             player.sendMessage(Text.literal("Not enough beacon fuel!")
-                .formatted(Formatting.RED));
+                .formatted(Formatting.RED), false);
             return null;
         }
 

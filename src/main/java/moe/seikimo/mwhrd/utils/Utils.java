@@ -3,17 +3,25 @@ package moe.seikimo.mwhrd.utils;
 import lombok.SneakyThrows;
 import moe.seikimo.general.EncodingUtils;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -208,9 +216,8 @@ public interface Utils {
      * @return The registry entry of the enchantment.
      */
     static RegistryEntry<Enchantment> lookup(RegistryKey<Enchantment> key) {
-        return MyWellHasRunDry
-            .getEnchantmentRegistry()
-            .entryOf(key);
+        var instance = MyWellHasRunDry.getEnchantmentRegistry().get(key);
+        return MyWellHasRunDry.getEnchantmentRegistry().getEntry(instance);
     }
 
     /**
@@ -221,7 +228,7 @@ public interface Utils {
      * @param level The level of the enchantment.
      */
     static void enchant(ItemStack stack, RegistryKey<Enchantment> enchantment, int level) {
-        var key = MyWellHasRunDry.getEnchantmentRegistry().entryOf(enchantment);
+        var key = Utils.lookup(enchantment);
         stack.addEnchantment(key, level);
     }
 
@@ -270,5 +277,51 @@ public interface Utils {
         return sourceType
             .map(k -> k.equals(type))
             .orElse(false);
+    }
+
+    /**
+     * Fetches the equippable slot of the given item.
+     *
+     * @param item The item to fetch the slot of.
+     * @return The item's equippable slot.
+     */
+    static EquipmentSlot getSlot(Item item) {
+        // Get the item's equippable component.
+        var component = item
+            .getComponents()
+            .get(DataComponentTypes.EQUIPPABLE);
+
+        // Check if the component is null.
+        if (component == null) {
+            return EquipmentSlot.BODY;
+        }
+
+        return component.slot();
+    }
+
+    /**
+     * Creates a registry key for the given ID.
+     *
+     * @param id The ID of the registry key.
+     * @return The registry key.
+     */
+    static RegistryKey<Item> itemKey(String id) {
+        return RegistryKey.of(
+            RegistryKeys.ITEM,
+            Identifier.of("mwhrd", id)
+        );
+    }
+
+    /**
+     * Creates a registry key for the given ID.
+     *
+     * @param id The ID of the registry key.
+     * @return The registry key.
+     */
+    static RegistryKey<EntityType<?>> entityKey(String id) {
+        return RegistryKey.of(
+            RegistryKeys.ENTITY_TYPE,
+            Identifier.of("mwhrd", id)
+        );
     }
 }

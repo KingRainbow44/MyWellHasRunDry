@@ -86,7 +86,7 @@ public final class TeleportationPower extends BeaconPower {
     public SimpleGui getGui(World world, PlayerEntity player) {
         if (this.isForceDisabled()) {
             player.sendMessage(Text.literal("This beacon does not have enough fuel!")
-                .formatted(Formatting.RED));
+                .formatted(Formatting.RED), false);
             return null;
         }
 

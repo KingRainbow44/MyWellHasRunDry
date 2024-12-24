@@ -294,7 +294,7 @@ public final class PartyManager {
             member.teleport(
                 leader.getServerWorld(),
                 leader.getX(), leader.getY(), leader.getZ(),
-                Collections.emptySet(), leader.getYaw(), leader.getPitch()
+                Collections.emptySet(), leader.getYaw(), leader.getPitch(), true
             );
 
             // Create a scoreboard team for the player.
@@ -339,7 +339,7 @@ public final class PartyManager {
             player.teleport(
                 lastLocation.getWorld(),
                 position.getX(), position.getY(), position.getZ(),
-                Collections.emptySet(), player.getYaw(), player.getPitch()
+                Collections.emptySet(), player.getYaw(), player.getPitch(), true
             );
             return true;
         }

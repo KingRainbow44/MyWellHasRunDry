@@ -266,7 +266,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
 
         this.setSlot(EFFECTS, new GuiElementBuilder(Items.POTION)
             .setComponent(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(
-                Optional.empty(), Optional.of(0xFFA148), Collections.emptyList()))
+                Optional.empty(), Optional.of(0xFFA148), Collections.emptyList(), Optional.empty()))
             .hideDefaultTooltip()
             .setName(Text.literal("Potion Effects")
                 .formatted(Formatting.GREEN))

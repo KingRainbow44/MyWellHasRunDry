@@ -12,9 +12,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 
 public final class TheAtlas extends SimplePolymerItem {
-    public TheAtlas() {
+    public TheAtlas(Settings settings) {
         super(
-            new Settings()
+            settings
                 .maxCount(1)
                 .component(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true),
             Items.ENCHANTED_BOOK
@@ -35,7 +35,7 @@ public final class TheAtlas extends SimplePolymerItem {
         if (optional.isEmpty()) return ActionResult.PASS;
 
         // Otherwise, create the portal.
-        optional.get().createPortal(CustomBlocks.LIGHT_PORTAL);
+        optional.get().createPortal(context.getWorld(), CustomBlocks.LIGHT_PORTAL);
         // Play a sound.
         context.getWorld().playSound(
             null, context.getBlockPos(),

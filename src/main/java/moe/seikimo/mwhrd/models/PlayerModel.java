@@ -23,6 +23,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -85,7 +86,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
                 .formatted(Formatting.GREEN));
         }
 
-        var maxHealth = handle.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
+        var maxHealth = handle.getAttributeInstance(EntityAttributes.MAX_HEALTH);
         if (maxHealth == null) throw new IllegalStateException("Max health attribute is null.");
 
         if (this.isHardcore() &&
@@ -141,7 +142,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
 
                 var world = this.handle.getServerWorld();
                 var pos = world.getSpawnPos();
-                this.handle.teleport(world, pos.getX(), pos.getY(), pos.getZ(), 0.0F, 0.0F);
+                this.handle.teleport(world, pos.getX(), pos.getY(), pos.getZ(), Collections.emptySet(), 0.0F, 0.0F, true);
 
                 this.handle.interactionManager.changeGameMode(GameMode.SURVIVAL);
             }).start();
@@ -195,7 +196,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
                 false
             );
 
-            var maxHealth = this.handle.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
+            var maxHealth = this.handle.getAttributeInstance(EntityAttributes.MAX_HEALTH);
             if (maxHealth == null) {
                 throw new IllegalStateException("Max health attribute is null.");
             }
@@ -220,7 +221,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
                     .formatted(Formatting.GREEN));
             }
 
-            var maxHealth = this.handle.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
+            var maxHealth = this.handle.getAttributeInstance(EntityAttributes.MAX_HEALTH);
             if (maxHealth == null) throw new IllegalStateException("Max health attribute is null.");
 
             maxHealth.setBaseValue(20);

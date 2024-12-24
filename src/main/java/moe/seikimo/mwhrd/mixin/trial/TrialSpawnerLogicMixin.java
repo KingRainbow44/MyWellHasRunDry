@@ -16,8 +16,8 @@ import net.minecraft.entity.mob.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -64,7 +64,7 @@ public abstract class TrialSpawnerLogicMixin implements ITrialSpawnerUtils {
 
         // Determine the loot.
         var table = world.getServer().getReloadableRegistries().getLootTable(lootTable);
-        var loot = table.generateLoot(new LootContextParameterSet.Builder(world)
+        var loot = table.generateLoot(new LootWorldContext.Builder(world)
             .build(LootContextTypes.EMPTY));
         if (loot.isEmpty()) return;
 

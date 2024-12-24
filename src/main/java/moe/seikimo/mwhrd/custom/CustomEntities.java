@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.custom;
 
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import moe.seikimo.mwhrd.custom.entities.GuardianOfLight;
+import moe.seikimo.mwhrd.utils.Utils;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -14,7 +15,7 @@ public interface CustomEntities {
         Registries.ENTITY_TYPE,
         Identifier.of("mwhrd", "guardian_of_light"),
         EntityType.Builder.create(GuardianOfLight::new, SpawnGroup.MONSTER)
-            .build("guardian_of_light")
+            .build(Utils.entityKey("guardian_of_light"))
     );
 
     /**

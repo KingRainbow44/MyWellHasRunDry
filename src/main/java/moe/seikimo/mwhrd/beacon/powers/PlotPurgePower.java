@@ -74,7 +74,7 @@ public final class PlotPurgePower extends BeaconPower {
                     // Add all blocks to the beacon's storage.
                     changed.stream()
                         .filter(state -> !BLACKLISTED.contains(state.getBlock()))
-                        .filter(state -> state.getBlock().getLootTableKey() != LootTables.EMPTY)
+                        .filter(state -> state.getBlock().getLootTableKey().isPresent())
                         .map(state -> state.getBlock().asItem().getDefaultStack())
                         .forEach(item -> data.getItemStorage().offer(item));
                 } else {

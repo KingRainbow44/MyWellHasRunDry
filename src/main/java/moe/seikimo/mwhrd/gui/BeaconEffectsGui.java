@@ -124,7 +124,7 @@ public final class BeaconEffectsGui extends SimpleGui {
             var builder = new GuiElementBuilder(Items.LINGERING_POTION)
                 .hideDefaultTooltip()
                 .setComponent(DataComponentTypes.POTION_CONTENTS, new PotionContentsComponent(
-                    Optional.empty(), Optional.of(item.value().getColor()), Collections.emptyList()
+                    Optional.empty(), Optional.of(item.value().getColor()), Collections.emptyList(), Optional.empty()
                 ))
                 .setName(translate(item.getIdAsString()).copyContentOnly()
                     .formatted(Formatting.GREEN)

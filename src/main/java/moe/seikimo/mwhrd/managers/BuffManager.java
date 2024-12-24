@@ -44,7 +44,7 @@ public final class BuffManager {
      * @param player The player to apply debuffs to.
      */
     public static void applyDebuffs(ServerPlayerEntity player) {
-        var maxHealth = player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
+        var maxHealth = player.getAttributeInstance(EntityAttributes.MAX_HEALTH);
         if (maxHealth == null) return;
 
         // Check if the player is hardcore.
@@ -107,7 +107,7 @@ public final class BuffManager {
     public static void applyBuffs(ServerPlayerEntity player) {
         var condPlayer = (IPlayerConditions) player;
         if (condPlayer.mwhrd$finishedHardcore()) {
-            var luck = player.getAttributeInstance(EntityAttributes.GENERIC_LUCK);
+            var luck = player.getAttributeInstance(EntityAttributes.LUCK);
             if (luck != null) {
                 luck.addTemporaryModifier(new EntityAttributeModifier(
                     LUCK_BUFF, 5.0f, EntityAttributeModifier.Operation.ADD_VALUE
@@ -122,7 +122,7 @@ public final class BuffManager {
      * @param player The Bedrock player to apply buffs to.
      */
     public static void applyBedrockBuff(ServerPlayerEntity player) {
-        var attackSpeed = player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED);
+        var attackSpeed = player.getAttributeInstance(EntityAttributes.ATTACK_SPEED);
         if (attackSpeed == null) return;
 
         attackSpeed.addTemporaryModifier(new EntityAttributeModifier(

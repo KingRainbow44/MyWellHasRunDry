@@ -45,10 +45,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -172,7 +169,7 @@ public final class TheRealmOfLight {
         if (block instanceof StairsBlock || block instanceof SlabBlock || block instanceof FenceBlock || block instanceof FenceGateBlock) {
             player.sendMessage(
                 Text.translatable("text.mwhrd.dimension.rol.banned")
-                    .formatted(Formatting.RED)
+                    .formatted(Formatting.RED), false
             );
             return ActionResult.FAIL;
         }
@@ -185,7 +182,7 @@ public final class TheRealmOfLight {
                 if (disallowed.contains(block)) {
                     player.sendMessage(
                         Text.translatable("text.mwhrd.dimension.rol.disallowed")
-                            .formatted(Formatting.RED)
+                            .formatted(Formatting.RED), false
                     );
                     return ActionResult.FAIL;
                 }
@@ -213,7 +210,8 @@ public final class TheRealmOfLight {
             player.sendMessage(
                 Text.literal("Oh no! ")
                     .formatted(Formatting.BOLD, Formatting.RED)
-                    .append(Text.translatable("text.mwhrd.dimension.rol.fall"))
+                    .append(Text.translatable("text.mwhrd.dimension.rol.fall")),
+                false
             );
         }
     }
@@ -236,7 +234,8 @@ public final class TheRealmOfLight {
             player.sendMessage(
                 Text.literal("Oh no! ")
                     .formatted(Formatting.BOLD, Formatting.RED)
-                    .append(Text.translatable("text.mwhrd.dimension.rol.death"))
+                    .append(Text.translatable("text.mwhrd.dimension.rol.death")),
+                false
             );
 
             return false;
@@ -289,23 +288,21 @@ public final class TheRealmOfLight {
 
         // Check if the item is a tool.
         var item = stack.getItem();
-        if (item instanceof ToolItem) {
-            if (!(item instanceof SwordItem)) {
-                EnchantmentHelper.apply(stack, builder -> {
-                    builder.add(Utils.lookup(Enchantments.EFFICIENCY), 5);
-                    builder.add(Utils.lookup(Enchantments.FORTUNE), 5);
-                    builder.add(Utils.lookup(Enchantments.UNBREAKING), 3);
-                });
-            }
+        if (item instanceof MiningToolItem) {
+            EnchantmentHelper.apply(stack, builder -> {
+                builder.add(Utils.lookup(Enchantments.EFFICIENCY), 5);
+                builder.add(Utils.lookup(Enchantments.FORTUNE), 5);
+                builder.add(Utils.lookup(Enchantments.UNBREAKING), 3);
+            });
+        }
 
-            if (item instanceof SwordItem || item instanceof AxeItem) {
-                EnchantmentHelper.apply(stack, builder -> {
-                    builder.add(Utils.lookup(Enchantments.SHARPNESS), 5);
-                    builder.add(Utils.lookup(Enchantments.SWEEPING_EDGE), 3);
-                    builder.add(Utils.lookup(Enchantments.LOOTING), 5);
-                    builder.add(Utils.lookup(Enchantments.UNBREAKING), 3);
-                });
-            }
+        if (item instanceof SwordItem || item instanceof AxeItem) {
+            EnchantmentHelper.apply(stack, builder -> {
+                builder.add(Utils.lookup(Enchantments.SHARPNESS), 5);
+                builder.add(Utils.lookup(Enchantments.SWEEPING_EDGE), 3);
+                builder.add(Utils.lookup(Enchantments.LOOTING), 5);
+                builder.add(Utils.lookup(Enchantments.UNBREAKING), 3);
+            });
         }
     }
 
@@ -606,9 +603,6 @@ public final class TheRealmOfLight {
             var pos = portalInfo.getRight();
             player.tryUsePortal(portal, pos);
 
-            // Make the player invulnerable.
-            player.joinInvulnerabilityTicks = 20 * 10;
-
             // Send info messages.
             Players.bulkSend(player, INFO_MESSAGES);
 
@@ -660,13 +654,17 @@ public final class TheRealmOfLight {
                 var spawn = MyWellHasRunDry.getDefaultSpawn();
                 player.teleport(
                     MyWellHasRunDry.getServer().getWorld(World.OVERWORLD),
-                    spawn.getX(), spawn.getY(), spawn.getZ(), 0, 0
+                    spawn.getX(), spawn.getY(), spawn.getZ(),
+                    Collections.emptySet(), 0, 0, true
                 );
             } else {
                 if (entity instanceof MobEntity mob) {
                     mob.persistent = false;
                     mob.setHealth(0);
-                    mob.damage(mob.getWorld().getDamageSources().magic(), 1);
+
+                    if (mob.getWorld() instanceof ServerWorld serverWorld) {
+                        mob.damage(serverWorld, mob.getWorld().getDamageSources().magic(), 1);
+                    }
                 }
 
                 entity.discard();

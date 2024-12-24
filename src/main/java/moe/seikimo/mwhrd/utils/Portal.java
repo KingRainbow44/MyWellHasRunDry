@@ -9,6 +9,7 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -18,7 +19,7 @@ import java.util.function.Predicate;
  * A portal utility class to allow for custom portals.
  */
 public final class Portal {
-    private final WorldAccess world;
+    private final WorldView world;
     private final Direction.Axis axis;
     private final Direction negativeDir;
     private int foundPortalBlocks;
@@ -46,7 +47,7 @@ public final class Portal {
         return Optional.of(new Portal(world, pos, axis2, frameValidator)).filter(validator);
     }
 
-    public Portal(WorldAccess world, BlockPos pos, Direction.Axis axis, ContextPredicate frameValidator) {
+    public Portal(WorldView world, BlockPos pos, Direction.Axis axis, ContextPredicate frameValidator) {
         if (frameValidator != null) {
             this.frameValidator = frameValidator;
         }
@@ -154,16 +155,16 @@ public final class Portal {
         return this.lowerCorner != null && this.width >= 2 && this.width <= 21 && this.height >= 3 && this.height <= 21;
     }
 
-    public void createPortal() {
-        this.createPortal(Blocks.NETHER_PORTAL);
+    public void createPortal(WorldAccess world) {
+        this.createPortal(world, Blocks.NETHER_PORTAL);
     }
 
-    public void createPortal(Block block) {
+    public void createPortal(WorldAccess world, Block block) {
         if (!this.isValid()) return;
 
         var blockState = block.getDefaultState().with(NetherPortalBlock.AXIS, this.axis);
         BlockPos.iterate(this.lowerCorner, this.lowerCorner.offset(Direction.UP, this.height - 1).offset(this.negativeDir, this.width - 1))
-            .forEach(pos -> this.world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE));
+            .forEach(pos -> world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE));
     }
 
     public boolean wasAlreadyValid() {

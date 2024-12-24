@@ -37,7 +37,7 @@ public abstract class VaultBlockEntityMixin {
         PlayerEntity player, ItemStack stack, CallbackInfo ci
     ) {
         // Generate the player's loot.
-        var list = VaultBlockEntity.Server.generateLoot(world, config, pos, player);
+        var list = VaultBlockEntity.Server.generateLoot(world, config, pos, player, stack);
         if (list.isEmpty()) {
             return;
         }
@@ -54,7 +54,8 @@ public abstract class VaultBlockEntityMixin {
             player.sendMessage(Text.literal("Wow! ")
                 .withColor(Formatting.YELLOW.getColorValue())
                 .append(Text.literal("This vault will reward you again!")
-                    .withColor(Formatting.AQUA.getColorValue())));
+                    .withColor(Formatting.AQUA.getColorValue())),
+                false);
         }
         sharedData.updateConnectedPlayers(world, pos, serverData, config, config.deactivationRange());
 

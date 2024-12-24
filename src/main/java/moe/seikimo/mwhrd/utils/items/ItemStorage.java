@@ -193,7 +193,7 @@ public final class ItemStorage implements Iterable<ItemStack> {
         for (var stack : this.backing) {
             if (stack.isEmpty()) continue;
 
-            var nbt = stack.encode(registry);
+            var nbt = stack.toNbt(registry);
             var base64 = Utils.base64Encode(nbt);
             items.add(base64);
         }

@@ -7,6 +7,7 @@ import moe.seikimo.mwhrd.events.PlayerMoveEvent;
 import moe.seikimo.mwhrd.interfaces.*;
 import moe.seikimo.mwhrd.interfaces.player.ICallbackPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
+import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.block.Portal;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
@@ -115,18 +116,18 @@ public abstract class ServerPlayerEntityMixin
 
     @Redirect(method = "damage", at = @At(
         value = "INVOKE",
-        target = "Lnet/minecraft/entity/player/PlayerEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"
+        target = "Lnet/minecraft/entity/player/PlayerEntity;damage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)Z"
     ))
     public boolean damage(
-        PlayerEntity instance, DamageSource source, float amount
+        PlayerEntity instance, ServerWorld serverWorld, DamageSource source, float amount
     ) {
         if (this.mwhrd$isHardcore() &&
             !(source.getAttacker() instanceof PlayerEntity)) {
-            return super.damage(source, amount *
+            return super.damage(serverWorld, source, amount *
                 (this.mwhrd$isInTrialChamber() ? 2 : 3));
         }
 
-        return super.damage(source, amount);
+        return super.damage(serverWorld, source, amount);
     }
 
     /// </editor-fold>
@@ -301,7 +302,7 @@ public abstract class ServerPlayerEntityMixin
 
         for (var stack : storage.getArmor()) {
             if (!(stack.getItem() instanceof ArmorItem item)) continue;
-            this.equipStack(item.getSlotType(), stack);
+            this.equipStack(Utils.getSlot(item), stack);
         }
 
         // Add all items to the player's inventory.
