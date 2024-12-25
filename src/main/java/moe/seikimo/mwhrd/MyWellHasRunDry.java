@@ -47,6 +47,8 @@ import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -69,45 +71,18 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             .formatted(Formatting.BOLD, Formatting.AQUA)
             .append(Text.literal("v" + BuildConfig.VERSION)
                 .formatted(Formatting.YELLOW)),
-        Text.literal(" Minecraft: Luck and Luxury")
-            .formatted(Formatting.GOLD),
+        Text.literal(" Minecraft: Rekindled Worlds Arise")
+            .formatted(Formatting.RED),
         Text.empty(),
-        Text.literal("  - Overhauled ominous trial chambers")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Adventure mode is enforced in trial chambers")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - New powerful beacons have been added")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Vaults have a 50% chance to double-reward")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Standing near heavy-armored players causes debuff")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Removed Bedrock player attack cooldown")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Hardcode mode (read /hardcore for info)")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - All recipes are unlocked by default")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Brewing stands instantly craft items")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Brewing stand potions are stackable")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Trial chamber monsters no longer attack each other")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Hardcore is significantly harder")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Gain permanent +5 luck when completing hardcore")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - To gain beacon loot, players must defeat ### monsters")
-            .formatted(Formatting.DARK_GRAY),
-        Text.empty(),
-        Text.literal("NEW")
-            .formatted(Formatting.BOLD, Formatting.AQUA),
-        Text.empty(),
-        Text.literal("  - Pixel printer fuel is buffed to 2x")
-            .formatted(Formatting.DARK_GRAY),
-        Text.literal("  - Beacon fuel scales with level")
-            .formatted(Formatting.DARK_GRAY)
+        Text.literal("View the changelog at:")
+            .formatted(Formatting.GRAY),
+        Text.literal("https://docs.seikimo.moe/mwhrd/changelog")
+            .setStyle(Style.EMPTY
+                .withClickEvent(new ClickEvent(
+                    ClickEvent.Action.OPEN_URL,
+                    "https://docs.seikimo.moe/mwhrd/changelog"
+                )))
+            .formatted(Formatting.AQUA)
     );
 
     public static LootNumberProviderType PLAYER_VAULT;
@@ -300,24 +275,13 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             // Apply luck buff.
             BuffManager.applyBuffs(player);
 
-            if (!GeyserApi.api().isBedrockPlayer(player.getUuid())) {
-                for (var i = 0; i < 7; i++) {
-                    player.sendMessage(CHANGELOG.get(i));
-                }
-                player.sendMessage(Text.empty());
-                player.sendMessage(Text.literal("Run /changelog for all changes.")
-                    .formatted(Formatting.DARK_GRAY));
-            } else {
-                // Send version message.
-                for (var i = 0; i < 2; i++) {
-                    player.sendMessage(CHANGELOG.get(i));
-                }
-                player.sendMessage(Text.literal("Run /changelog for all changes.")
-                    .formatted(Formatting.DARK_GRAY));
-
-                // Apply Bedrock player buff.
+            // Apply Bedrock player buff.
+            if (GeyserApi.api().isBedrockPlayer(player.getUuid())) {
                 BuffManager.applyBedrockBuff(player);
             }
+
+            // Send the changelog message.
+            CHANGELOG.forEach(player::sendMessage);
 
             // Remove all beacon effects on join.
             Arrays.stream(BeaconEffect.values())
