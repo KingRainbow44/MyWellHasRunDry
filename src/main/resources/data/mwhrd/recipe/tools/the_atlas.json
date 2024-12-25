@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " S ",
+        "SCS",
+        " S "
+    ],
+    "key": {
+        "S": "mwhrd:atlas_shard",
+        "C": "minecraft:recovery_compass"
+    },
+    "result": {
+        "count": 1,
+        "id": "mwhrd:the_atlas"
+    }
+}
