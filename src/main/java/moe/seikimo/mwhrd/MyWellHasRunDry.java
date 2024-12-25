@@ -68,9 +68,9 @@ import java.util.*;
 public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     public static final List<Text> CHANGELOG = List.of(
         Text.literal(" My Well Has Run Dry: ")
-            .formatted(Formatting.BOLD, Formatting.AQUA)
+            .formatted(Formatting.BOLD, Formatting.DARK_AQUA)
             .append(Text.literal("v" + BuildConfig.VERSION)
-                .formatted(Formatting.YELLOW)),
+                .formatted(Formatting.GOLD)),
         Text.literal(" Minecraft: Rekindled Worlds Arise")
             .formatted(Formatting.RED),
         Text.empty(),
