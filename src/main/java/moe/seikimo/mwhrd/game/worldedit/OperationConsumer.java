@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.worldedit;
+package moe.seikimo.mwhrd.game.worldedit;
 
 public interface OperationConsumer {
     /**

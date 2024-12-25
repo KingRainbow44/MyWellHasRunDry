@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.worldedit;
+package moe.seikimo.mwhrd.game.worldedit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

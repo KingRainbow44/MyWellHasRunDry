@@ -16,7 +16,7 @@ import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.interfaces.game.IRespawnableMob;
 import moe.seikimo.mwhrd.utils.*;
 import moe.seikimo.mwhrd.utils.items.ItemBuilder;
-import moe.seikimo.mwhrd.worldedit.AsyncPool;
+import moe.seikimo.mwhrd.game.worldedit.AsyncPool;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
