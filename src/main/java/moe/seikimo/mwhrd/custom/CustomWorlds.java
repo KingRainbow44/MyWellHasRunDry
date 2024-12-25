@@ -1,6 +1,7 @@
 package moe.seikimo.mwhrd.custom;
 
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.game.lightrealm.RealmOfLightLogic;
 import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -34,5 +35,7 @@ public interface CustomWorlds {
     /**
      * No-op method to register the custom worlds.
      */
-    static void register() {}
+    static void register() {
+        RealmOfLightLogic.initialize();
+    }
 }
