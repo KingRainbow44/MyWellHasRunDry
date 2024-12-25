@@ -6,7 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.game.beacon.BeaconManager;
-import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
+import moe.seikimo.mwhrd.game.lightrealm.RealmOfLightLogic;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.models.PlayerModel;
@@ -40,8 +40,6 @@ public final class DebugCommand {
                 .then(argument("value", LongArgumentType.longArg(0))
                     .executes(DebugCommand::fuel)))
             .then(literal("custom")
-                .then(literal("rol")
-                    .executes(DebugCommand::placeRealm))
                 .executes(DebugCommand::usage))
             .then(literal("inv")
                 .then(literal("restore")
@@ -145,18 +143,6 @@ public final class DebugCommand {
         BeaconManager.FUEL_TIME = value;
         context.getSource().sendMessage(Text.literal(
             "Set fuel time to " + value));
-        return 1;
-    }
-
-    private static int placeRealm(CommandContext<ServerCommandSource> context) {
-        var player = context.getSource().getPlayer();
-        if (player == null) {
-            context.getSource().sendError(Text.literal("Must be ran as a player"));
-            return 1;
-        }
-
-        TheRealmOfLight.getInstance().prepare();
-
         return 1;
     }
 

@@ -6,6 +6,7 @@ import de.bwaldvogel.mongo.backend.h2.H2Backend;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
@@ -36,6 +37,7 @@ import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.predicate.LightPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -53,6 +55,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureKeys;
 import org.geysermc.geyser.api.GeyserApi;
+import xyz.nucleoid.fantasy.Fantasy;
+import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -111,16 +115,20 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     @Getter private static final Random random = new Random();
 
     @Getter private static MinecraftServer server;
+    @Getter private static Fantasy fantasy;
+
     @Getter private static MongoServer mongoServer;
     @Getter private static Datastore datastore;
 
     @Getter private static BlockPos defaultSpawn;
     @Getter private static LocationPredicate trialChamberPredicate;
 
+    @Getter private static DynamicRegistryManager registry;
     @Getter private static Registry<Enchantment> enchantmentRegistry;
     @Getter private static Registry<Item> itemRegistry;
 
-    @Getter private static ServerWorld realmOfLight, ruins;
+    @Getter @Setter
+    private static RuntimeWorldHandle realmOfLight;
 
     private static final Set<Item> BLACKLISTED = Set.of(
         Items.SPAWNER,
@@ -191,8 +199,11 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         // Wait for the server to start.
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             MyWellHasRunDry.server = server;
+            var fantasy = MyWellHasRunDry.fantasy = Fantasy.get(server);
 
             // Resolve registry tables.
+            MyWellHasRunDry.registry = server.getRegistryManager();
+
             MyWellHasRunDry.enchantmentRegistry = server
                 .getRegistryManager()
                 .getOrThrow(RegistryKeys.ENCHANTMENT);
@@ -230,11 +241,10 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                 log.info("Configured the scoreboard to show player health!");
             }
 
-            // Fetch custom dimensions.
-            MyWellHasRunDry.realmOfLight = server.getWorld(CustomWorlds.REALM_OF_LIGHT);
-            MyWellHasRunDry.ruins = server.getWorld(CustomWorlds.RUINS);
+            // Initialize custom dimensions.
+            CustomWorlds.register();
 
-            TheRealmOfLight.getInstance().initialize(realmOfLight);
+            MyWellHasRunDry.realmOfLight = TheRealmOfLight.open(fantasy);
         });
 
         // Wait for server ticks.

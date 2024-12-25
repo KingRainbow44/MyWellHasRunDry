@@ -1,9 +1,10 @@
 package moe.seikimo.mwhrd.custom.blocks;
 
 import moe.seikimo.mwhrd.MyWellHasRunDry;
-import moe.seikimo.mwhrd.custom.CustomWorlds;
 import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
+import moe.seikimo.mwhrd.utils.Players;
+import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,7 +35,7 @@ public final class LightPortalBlock extends AbstractCustomPortal {
 
         if (player.canUsePortals(false)) {
             // Check if the player is already in the Realm of Light.
-            if (player.getWorld().getRegistryKey() == CustomWorlds.REALM_OF_LIGHT) {
+            if (Players.inWorld(MyWellHasRunDry.getRealmOfLight(), player)) {
                 // Run the portal's teleportation logic.
                 player.tryUsePortal(this, pos);
                 return;
@@ -44,7 +45,7 @@ public final class LightPortalBlock extends AbstractCustomPortal {
             traveler.mwhrd$setQueuedPortal(new Pair<>(this, pos));
 
             // Queue the player to be teleported.
-            TheRealmOfLight.getInstance().queuePlayer(player);
+            TheRealmOfLight.getWorld().queuePlayer(player);
             player.sendMessage(Text.translatable("text.mwhrd.dimension.rol.queued")
                 .formatted(Formatting.YELLOW), true);
         }
@@ -52,11 +53,11 @@ public final class LightPortalBlock extends AbstractCustomPortal {
 
     @Override
     public TeleportTarget createTeleportTarget(ServerWorld world, Entity entity, BlockPos pos) {
-        var dimension = MyWellHasRunDry.getRealmOfLight();
+        var dimension = MyWellHasRunDry.getRealmOfLight().asWorld();
         var targetPos = new Vec3d(0, -50, 0);
 
         // Check if the world is currently the Realm of Light.
-        if (world.getRegistryKey() == CustomWorlds.REALM_OF_LIGHT) {
+        if (Utils.compare(world, MyWellHasRunDry.getRealmOfLight())) {
             // We should redirect them to the Overworld.
             dimension = world.getServer().getWorld(ServerWorld.OVERWORLD);
             if (dimension == null) throw new IllegalStateException("Overworld is not loaded.");

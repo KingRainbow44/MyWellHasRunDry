@@ -9,6 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
+import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.util.function.Consumer;
 
@@ -65,6 +66,17 @@ public interface Players {
      */
     static boolean inWorld(RegistryKey<World> world, PlayerEntity player) {
         return world.equals(player.getWorld().getRegistryKey());
+    }
+
+    /**
+     * Checks if the player is in the specified world.
+     *
+     * @param world The world to check.
+     * @param player The player to check.
+     * @return Whether the player is in the world.
+     */
+    static boolean inWorld(RuntimeWorldHandle world, PlayerEntity player) {
+        return Players.inWorld(world.getRegistryKey(), player);
     }
 
     /**

@@ -28,6 +28,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
+import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -245,6 +246,17 @@ public interface Utils {
     }
 
     /**
+     * Checks if the given entity is in the given world.
+     *
+     * @param entity The entity to check.
+     * @param world The world to check.
+     * @return Whether the entity is in the world.
+     */
+    static boolean inWorld(LivingEntity entity, RuntimeWorldHandle world) {
+        return entity.getWorld().getRegistryKey().equals(world.getRegistryKey());
+    }
+
+    /**
      * Compares the given worlds.
      *
      * @param source The source world.
@@ -252,6 +264,17 @@ public interface Utils {
      * @return Whether the worlds are the same.
      */
     static boolean compare(ServerWorld source, ServerWorld destination) {
+        return source.getRegistryKey().equals(destination.getRegistryKey());
+    }
+
+    /**
+     * Compares the given worlds.
+     *
+     * @param source The source world.
+     * @param destination The destination world.
+     * @return Whether the worlds are the same.
+     */
+    static boolean compare(ServerWorld source, RuntimeWorldHandle destination) {
         return source.getRegistryKey().equals(destination.getRegistryKey());
     }
 
