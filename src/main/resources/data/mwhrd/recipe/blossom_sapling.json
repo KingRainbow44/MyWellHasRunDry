@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "E",
+        "S",
+        "G"
+    ],
+    "key": {
+        "E": "minecraft:end_rod",
+        "S": "minecraft:cherry_sapling",
+        "G": "minecraft:white_stained_glass_pane"
+    },
+    "result": {
+        "count": 1,
+        "id": "mwhrd:blossom_sapling"
+    }
+}
