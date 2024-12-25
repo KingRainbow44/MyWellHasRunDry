@@ -1,7 +1,7 @@
-package moe.seikimo.mwhrd.beacon.powers;
+package moe.seikimo.mwhrd.game.beacon.powers;
 
-import moe.seikimo.mwhrd.beacon.BeaconEffect;
-import moe.seikimo.mwhrd.beacon.ToggleablePower;
+import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
+import moe.seikimo.mwhrd.game.beacon.ToggleablePower;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;

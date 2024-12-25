@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.beacon;
+package moe.seikimo.mwhrd.game.beacon;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

@@ -3,7 +3,7 @@ package moe.seikimo.mwhrd.gui;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import moe.seikimo.mwhrd.beacon.powers.EffectsPower;
+import moe.seikimo.mwhrd.game.beacon.powers.EffectsPower;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.component.DataComponentTypes;

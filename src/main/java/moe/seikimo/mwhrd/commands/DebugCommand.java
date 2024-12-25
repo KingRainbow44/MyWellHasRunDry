@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.extern.slf4j.Slf4j;
-import moe.seikimo.mwhrd.beacon.BeaconManager;
+import moe.seikimo.mwhrd.game.beacon.BeaconManager;
 import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;

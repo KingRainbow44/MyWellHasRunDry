@@ -2,13 +2,13 @@ package moe.seikimo.mwhrd.mixin.beacon;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import moe.seikimo.data.DatabaseUtils;
-import moe.seikimo.mwhrd.beacon.BeaconManager;
+import moe.seikimo.mwhrd.game.beacon.BeaconManager;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.models.BeaconModel;
 import moe.seikimo.mwhrd.utils.Utils;
-import moe.seikimo.mwhrd.beacon.BeaconEffect;
-import moe.seikimo.mwhrd.beacon.BeaconLevel;
-import moe.seikimo.mwhrd.beacon.BeaconPower;
+import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
+import moe.seikimo.mwhrd.game.beacon.BeaconLevel;
+import moe.seikimo.mwhrd.game.beacon.BeaconPower;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.*;
 
-import static moe.seikimo.mwhrd.beacon.BeaconManager.FUEL_TIME;
+import static moe.seikimo.mwhrd.game.beacon.BeaconManager.FUEL_TIME;
 
 @Mixin(BeaconBlockEntity.class)
 public abstract class BeaconBlockEntityMixin

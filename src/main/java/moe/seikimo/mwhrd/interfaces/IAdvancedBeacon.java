@@ -1,9 +1,9 @@
 package moe.seikimo.mwhrd.interfaces;
 
-import moe.seikimo.mwhrd.beacon.BeaconEffect;
-import moe.seikimo.mwhrd.beacon.BeaconFuel;
-import moe.seikimo.mwhrd.beacon.BeaconPower;
-import moe.seikimo.mwhrd.beacon.powers.EffectsPower;
+import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
+import moe.seikimo.mwhrd.game.beacon.BeaconFuel;
+import moe.seikimo.mwhrd.game.beacon.BeaconPower;
+import moe.seikimo.mwhrd.game.beacon.powers.EffectsPower;
 import moe.seikimo.mwhrd.models.BeaconModel;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import net.minecraft.block.entity.BeaconBlockEntity;

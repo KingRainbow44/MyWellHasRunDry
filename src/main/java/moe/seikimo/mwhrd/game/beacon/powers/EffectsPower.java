@@ -1,10 +1,10 @@
-package moe.seikimo.mwhrd.beacon.powers;
+package moe.seikimo.mwhrd.game.beacon.powers;
 
 import eu.pb4.sgui.api.gui.SimpleGui;
 import lombok.Getter;
 import lombok.Setter;
-import moe.seikimo.mwhrd.beacon.BeaconFuel;
-import moe.seikimo.mwhrd.beacon.BeaconPower;
+import moe.seikimo.mwhrd.game.beacon.BeaconFuel;
+import moe.seikimo.mwhrd.game.beacon.BeaconPower;
 import moe.seikimo.mwhrd.gui.BeaconEffectsGui;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;

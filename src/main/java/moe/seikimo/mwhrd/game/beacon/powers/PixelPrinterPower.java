@@ -1,10 +1,10 @@
-package moe.seikimo.mwhrd.beacon.powers;
+package moe.seikimo.mwhrd.game.beacon.powers;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import moe.seikimo.mwhrd.beacon.BeaconFuel;
-import moe.seikimo.mwhrd.beacon.BeaconPower;
+import moe.seikimo.mwhrd.game.beacon.BeaconFuel;
+import moe.seikimo.mwhrd.game.beacon.BeaconPower;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.entity.player.PlayerEntity;

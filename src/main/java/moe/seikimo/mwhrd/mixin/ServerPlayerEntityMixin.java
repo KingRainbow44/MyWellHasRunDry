@@ -2,7 +2,7 @@ package moe.seikimo.mwhrd.mixin;
 
 import com.mojang.authlib.GameProfile;
 import moe.seikimo.data.DatabaseUtils;
-import moe.seikimo.mwhrd.beacon.BeaconEffect;
+import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.events.PlayerMoveEvent;
 import moe.seikimo.mwhrd.interfaces.*;
 import moe.seikimo.mwhrd.interfaces.player.ICallbackPlayer;

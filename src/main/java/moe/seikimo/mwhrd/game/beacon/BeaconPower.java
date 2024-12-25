@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.beacon;
+package moe.seikimo.mwhrd.game.beacon;
 
 import eu.pb4.sgui.api.gui.SimpleGui;
 import lombok.RequiredArgsConstructor;

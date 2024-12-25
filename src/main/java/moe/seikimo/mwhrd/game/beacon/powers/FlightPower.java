@@ -1,8 +1,8 @@
-package moe.seikimo.mwhrd.beacon.powers;
+package moe.seikimo.mwhrd.game.beacon.powers;
 
-import moe.seikimo.mwhrd.beacon.BeaconEffect;
-import moe.seikimo.mwhrd.beacon.BeaconFuel;
-import moe.seikimo.mwhrd.beacon.ToggleablePower;
+import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
+import moe.seikimo.mwhrd.game.beacon.BeaconFuel;
+import moe.seikimo.mwhrd.game.beacon.ToggleablePower;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

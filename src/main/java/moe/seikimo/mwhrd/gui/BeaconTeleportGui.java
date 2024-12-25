@@ -2,8 +2,8 @@ package moe.seikimo.mwhrd.gui;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import moe.seikimo.mwhrd.beacon.BeaconEntry;
-import moe.seikimo.mwhrd.beacon.BeaconManager;
+import moe.seikimo.mwhrd.game.beacon.BeaconEntry;
+import moe.seikimo.mwhrd.game.beacon.BeaconManager;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.item.ItemStack;

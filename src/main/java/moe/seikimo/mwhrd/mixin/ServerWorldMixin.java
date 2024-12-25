@@ -1,8 +1,8 @@
 package moe.seikimo.mwhrd.mixin;
 
-import moe.seikimo.mwhrd.beacon.BeaconLevel;
-import moe.seikimo.mwhrd.beacon.BeaconManager;
-import moe.seikimo.mwhrd.beacon.powers.SpawnControlPower;
+import moe.seikimo.mwhrd.game.beacon.BeaconLevel;
+import moe.seikimo.mwhrd.game.beacon.BeaconManager;
+import moe.seikimo.mwhrd.game.beacon.powers.SpawnControlPower;
 import moe.seikimo.mwhrd.interfaces.IEntityConditions;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.Entity;
@@ -12,7 +12,6 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -22,7 +21,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Set;
-import java.util.function.Supplier;
 
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldMixin extends World {

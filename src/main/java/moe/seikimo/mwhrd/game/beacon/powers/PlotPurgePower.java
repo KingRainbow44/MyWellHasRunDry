@@ -1,11 +1,11 @@
-package moe.seikimo.mwhrd.beacon.powers;
+package moe.seikimo.mwhrd.game.beacon.powers;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import lombok.extern.slf4j.Slf4j;
-import moe.seikimo.mwhrd.beacon.BeaconFuel;
-import moe.seikimo.mwhrd.beacon.BeaconLevel;
-import moe.seikimo.mwhrd.beacon.BeaconPower;
+import moe.seikimo.mwhrd.game.beacon.BeaconFuel;
+import moe.seikimo.mwhrd.game.beacon.BeaconLevel;
+import moe.seikimo.mwhrd.game.beacon.BeaconPower;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.ISelectionPlayer;
 import moe.seikimo.mwhrd.models.BeaconModel;

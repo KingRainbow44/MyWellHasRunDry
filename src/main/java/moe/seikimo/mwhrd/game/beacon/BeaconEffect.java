@@ -1,8 +1,8 @@
-package moe.seikimo.mwhrd.beacon;
+package moe.seikimo.mwhrd.game.beacon;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import moe.seikimo.mwhrd.beacon.powers.*;
+import moe.seikimo.mwhrd.game.beacon.powers.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;

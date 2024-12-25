@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.beacon.powers;
+package moe.seikimo.mwhrd.game.beacon.powers;
 
 import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
@@ -6,7 +6,10 @@ import eu.pb4.sgui.api.gui.SignGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import lombok.Getter;
 import lombok.Setter;
-import moe.seikimo.mwhrd.beacon.*;
+import moe.seikimo.mwhrd.game.beacon.BeaconEntry;
+import moe.seikimo.mwhrd.game.beacon.BeaconFuel;
+import moe.seikimo.mwhrd.game.beacon.BeaconManager;
+import moe.seikimo.mwhrd.game.beacon.BeaconPower;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.block.entity.BeaconBlockEntity;
