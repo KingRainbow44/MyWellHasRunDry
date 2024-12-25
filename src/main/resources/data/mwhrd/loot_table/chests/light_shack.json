@@ -2,7 +2,11 @@
     "type": "minecraft:chest",
     "pools": [
         {
-            "bonus_rolls": 0.0,
+            "rolls": {
+                "type": "minecraft:uniform",
+                "min": 3,
+                "max": 8
+            },
             "entries": [
                 {
                     "type": "minecraft:item",
