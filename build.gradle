@@ -40,10 +40,11 @@ dependencies {
     shadow(modImplementation("eu.pb4:sgui:${project.sgui_version}"))
 
     // Server-side item and block creation
-    shadow(modImplementation("xyz.nucleoid:server-translations-api:${project.translations_version}"))
-    shadow(modImplementation("xyz.nucleoid:fantasy:${project.fantasy_version}"))
-    shadow(modImplementation("eu.pb4:polymer-core:${project.polymer_version}"))
-    shadow(modImplementation("eu.pb4:polymer-blocks:${project.polymer_version}"))
+    modImplementation("xyz.nucleoid:server-translations-api:${project.translations_version}")
+    modImplementation("xyz.nucleoid:fantasy:${project.fantasy_version}")
+
+    modImplementation("eu.pb4:polymer-core:${project.polymer_version}")
+    modImplementation("eu.pb4:polymer-blocks:${project.polymer_version}")
 
     // Database and storage
     shadow(implementation("dev.morphia.morphia:morphia-core:${project.morphia_version}"))
