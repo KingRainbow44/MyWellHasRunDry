@@ -3,7 +3,12 @@
 
     "item.mwhrd.the_atlas": "The Atlas",
     "item.mwhrd.atlas_shard": "Atlas Shard",
+
     "item.mwhrd.soul_of_light": "Soul of Light",
+    "item.mwhrd.soul_of_light.warning.1": "Do NOT use 'Shift+Click' when",
+    "item.mwhrd.soul_of_light.warning.2": "interacting with this item",
+    "item.mwhrd.soul_of_light.warning.3": "in crafting recipes.",
+
     "item.mwhrd.enlightened_diamond_helmet": "Enlightened Diamond Helmet",
     "item.mwhrd.enlightened_diamond_chestplate": "Enlightened Diamond Chestplate",
     "item.mwhrd.enlightened_diamond_leggings": "Enlightened Diamond Leggings",
