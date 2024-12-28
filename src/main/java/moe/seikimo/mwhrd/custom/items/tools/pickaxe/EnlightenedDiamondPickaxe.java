@@ -62,7 +62,7 @@ public final class EnlightenedDiamondPickaxe extends PickaxeItem implements Poly
             .builder()
             .add(
                 EntityAttributes.ATTACK_DAMAGE,
-                Attributes.add(BASE_ATTACK_DAMAGE_MODIFIER_ID, Math.min(9, tier * 1.5)),
+                Attributes.add(BASE_ATTACK_DAMAGE_MODIFIER_ID, tier * 0.75),
                 AttributeModifierSlot.MAINHAND
             )
             .add(
