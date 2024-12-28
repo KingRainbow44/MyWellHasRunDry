@@ -23,6 +23,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static moe.seikimo.mwhrd.utils.Utils.itemKey;
@@ -134,12 +135,17 @@ public interface CustomItems {
     Item ENLIGHTENED_DIAMOND_CHESTPLATE = Items.register(itemKey("enlightened_diamond_chestplate"), settings -> new EnlightenedDiamondArmor(Items.LEATHER_CHESTPLATE, EquipmentType.CHESTPLATE, settings));
     Item ENLIGHTENED_DIAMOND_LEGGINGS = Items.register(itemKey("enlightened_diamond_leggings"), settings -> new EnlightenedDiamondArmor(Items.LEATHER_LEGGINGS, EquipmentType.LEGGINGS, settings));
     Item ENLIGHTENED_DIAMOND_BOOTS = Items.register(itemKey("enlightened_diamond_boots"), settings -> new EnlightenedDiamondArmor(Items.LEATHER_BOOTS, EquipmentType.BOOTS, settings));
-    Set<Item> ENLIGHTENED_DIAMOND_ARMOR = Set.of(ENLIGHTENED_DIAMOND_HELMET, ENLIGHTENED_DIAMOND_CHESTPLATE, ENLIGHTENED_DIAMOND_LEGGINGS, ENLIGHTENED_DIAMOND_BOOTS);
     Item ENLIGHTENED_DIAMOND_SWORD = Items.register(itemKey("enlightened_diamond_sword"), EnlightenedDiamondSword::new);
     Item ENLIGHTENED_DIAMOND_AXE = Items.register(itemKey("enlightened_diamond_axe"), EnlightenedDiamondAxe::new);
     Item ENLIGHTENED_DIAMOND_HOE = Items.register(itemKey("enlightened_diamond_hoe"), EnlightenedDiamondHoe::new);
     Item ENLIGHTENED_DIAMOND_PICKAXE = Items.register(itemKey("enlightened_diamond_pickaxe"), EnlightenedDiamondPickaxe::new);
     Item ENLIGHTENED_DIAMOND_SHOVEL = Items.register(itemKey("enlightened_diamond_shovel"), EnlightenedDiamondShovel::new);
+    Set<Item> ENLIGHTENED_DIAMOND_ARMOR = Set.of(ENLIGHTENED_DIAMOND_HELMET, ENLIGHTENED_DIAMOND_CHESTPLATE, ENLIGHTENED_DIAMOND_LEGGINGS, ENLIGHTENED_DIAMOND_BOOTS);
+    Set<Item> ENLIGHTENED_DIAMOND_TOOLS = Set.of(ENLIGHTENED_DIAMOND_SWORD, ENLIGHTENED_DIAMOND_AXE, ENLIGHTENED_DIAMOND_PICKAXE, ENLIGHTENED_DIAMOND_HOE, ENLIGHTENED_DIAMOND_SHOVEL);
+    Set<Item> ENLIGHTENED_DIAMOND_ITEMS = new HashSet<>() {{
+        this.addAll(ENLIGHTENED_DIAMOND_ARMOR);
+        this.addAll(ENLIGHTENED_DIAMOND_TOOLS);
+    }};
 
     Item BLOSSOM_SAPLING = Items.register(itemKey("blossom_sapling"), settings -> new PolymerBlockItem(CustomBlocks.BLOSSOM_SAPLING, settings, Items.CHERRY_SAPLING));
 
