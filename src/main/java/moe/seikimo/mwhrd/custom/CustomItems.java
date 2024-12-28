@@ -26,6 +26,7 @@ import net.minecraft.util.Rarity;
 import java.util.HashSet;
 import java.util.Set;
 
+import static eu.pb4.polymer.core.api.item.PolymerItemGroupUtils.registerPolymerItemGroup;
 import static moe.seikimo.mwhrd.utils.Utils.itemKey;
 
 public interface CustomItems {
@@ -149,6 +150,14 @@ public interface CustomItems {
 
     Item BLOSSOM_SAPLING = Items.register(itemKey("blossom_sapling"), settings -> new PolymerBlockItem(CustomBlocks.BLOSSOM_SAPLING, settings, Items.CHERRY_SAPLING));
 
+    ItemGroup MY_WELL_HAS_RUN_DRY = PolymerItemGroupUtils.builder()
+        .displayName(Text.translatable("itemGroup.mwhrd"))
+        .icon(Items.BUCKET::getDefaultStack)
+        .entries((context, entries) -> {
+            entries.add(BLOSSOM_SAPLING);
+        })
+        .build();
+
     ItemGroup LUCK_AND_LUXURY = PolymerItemGroupUtils.builder()
         .displayName(Text.translatable("itemGroup.mwhrd.luck_and_luxury"))
         .icon(Items.BEACON::getDefaultStack)
@@ -183,14 +192,8 @@ public interface CustomItems {
      * Registers all custom content.
      */
     static void register() {
-        PolymerItemGroupUtils.registerPolymerItemGroup(
-            Identifier.of("mwhrd", "luck_and_luxury"),
-            CustomItems.LUCK_AND_LUXURY
-        );
-
-        PolymerItemGroupUtils.registerPolymerItemGroup(
-            Identifier.of("mwhrd", "the_realm_of_light"),
-            CustomItems.THE_REALM_OF_LIGHT
-        );
+        registerPolymerItemGroup(Identifier.of("mwhrd", "my_well_has_run_dry"), CustomItems.MY_WELL_HAS_RUN_DRY);
+        registerPolymerItemGroup(Identifier.of("mwhrd", "luck_and_luxury"), CustomItems.LUCK_AND_LUXURY);
+        registerPolymerItemGroup(Identifier.of("mwhrd", "the_realm_of_light"), CustomItems.THE_REALM_OF_LIGHT);
     }
 }
