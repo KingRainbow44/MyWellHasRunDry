@@ -14,8 +14,9 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+@Getter
 public abstract class ToggleablePower extends BeaconPower {
-    @Getter protected boolean enabled = true;
+    protected boolean enabled = true;
 
     public ToggleablePower(BlockPos blockPos) {
         super(blockPos);
