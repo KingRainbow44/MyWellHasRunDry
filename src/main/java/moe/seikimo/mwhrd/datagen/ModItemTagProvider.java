@@ -34,5 +34,13 @@ public final class ModItemTagProvider extends FabricTagProvider.ItemTagProvider 
 
         this.getOrCreateTagBuilder(ItemTags.SWORDS)
             .add(CustomItems.ENLIGHTENED_DIAMOND_SWORD);
+        this.getOrCreateTagBuilder(ItemTags.AXES)
+            .add(CustomItems.ENLIGHTENED_DIAMOND_AXE);
+        this.getOrCreateTagBuilder(ItemTags.PICKAXES)
+            .add(CustomItems.ENLIGHTENED_DIAMOND_PICKAXE);
+        this.getOrCreateTagBuilder(ItemTags.SHOVELS)
+            .add(CustomItems.ENLIGHTENED_DIAMOND_SHOVEL);
+        this.getOrCreateTagBuilder(ItemTags.HOES)
+            .add(CustomItems.ENLIGHTENED_DIAMOND_HOE);
     }
 }

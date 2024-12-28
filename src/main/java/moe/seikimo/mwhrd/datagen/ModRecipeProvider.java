@@ -22,7 +22,7 @@ public final class ModRecipeProvider extends FabricRecipeProvider {
      * @param item The item.
      * @param exporter The recipe exporter.
      */
-    private static void recipeFor(RecipeGenerator generator, Item item, RecipeExporter exporter) {
+    private static void enlightenedSmithing(RecipeGenerator generator, Item item, RecipeExporter exporter) {
         SmithingTransformRecipeJsonBuilder.create(
                 Ingredient.ofItems(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE),
                 Ingredient.ofItems(item),
@@ -42,10 +42,9 @@ public final class ModRecipeProvider extends FabricRecipeProvider {
         var generator = new EnlightenedRecipeGenerator(lookup, exporter);
 
         /// <editor-fold desc="Enlightened Items">
-        for (var item : CustomItems.ENLIGHTENED_DIAMOND_ARMOR) {
-            ModRecipeProvider.recipeFor(generator, item, exporter);
+        for (var item : CustomItems.ENLIGHTENED_DIAMOND_ITEMS) {
+            ModRecipeProvider.enlightenedSmithing(generator, item, exporter);
         }
-        ModRecipeProvider.recipeFor(generator, CustomItems.ENLIGHTENED_DIAMOND_SWORD, exporter);
         /// </editor-fold>
 
         return generator;
