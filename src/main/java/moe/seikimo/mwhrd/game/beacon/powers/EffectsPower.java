@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import moe.seikimo.mwhrd.game.beacon.BeaconFuel;
 import moe.seikimo.mwhrd.game.beacon.BeaconPower;
-import moe.seikimo.mwhrd.gui.BeaconEffectsGui;
+import moe.seikimo.mwhrd.gui.beacon.BeaconEffectsGui;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;

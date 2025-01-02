@@ -3,7 +3,7 @@ package moe.seikimo.mwhrd.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.extern.slf4j.Slf4j;
-import moe.seikimo.mwhrd.gui.TrialChamberLootGui;
+import moe.seikimo.mwhrd.gui.command.TrialChamberLootGui;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 

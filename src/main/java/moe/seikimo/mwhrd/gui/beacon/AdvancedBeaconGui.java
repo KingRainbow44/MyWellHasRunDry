@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.gui;
+package moe.seikimo.mwhrd.gui.beacon;
 
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElement;

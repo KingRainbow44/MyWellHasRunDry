@@ -2,7 +2,7 @@ package moe.seikimo.mwhrd.mixin.beacon;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import moe.seikimo.mwhrd.utils.items.CustomItems;
-import moe.seikimo.mwhrd.gui.AdvancedBeaconGui;
+import moe.seikimo.mwhrd.gui.beacon.AdvancedBeaconGui;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import net.minecraft.block.BeaconBlock;
 import net.minecraft.block.BlockState;

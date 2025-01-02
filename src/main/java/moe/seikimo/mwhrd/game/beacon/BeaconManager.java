@@ -3,7 +3,7 @@ package moe.seikimo.mwhrd.game.beacon;
 import eu.pb4.sgui.virtual.inventory.VirtualScreenHandler;
 import lombok.Getter;
 import moe.seikimo.mwhrd.game.beacon.powers.TeleportationPower;
-import moe.seikimo.mwhrd.gui.BeaconTeleportGui;
+import moe.seikimo.mwhrd.gui.beacon.BeaconTeleportGui;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import net.minecraft.block.Blocks;

@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.gui;
+package moe.seikimo.mwhrd.gui.command;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
