@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public final class AsyncPool {
-    private static final long TICKS = 5;
-    private static final int BLOCKS_PER_OP = 10_000;
+    private static final long TICKS = 10;
+    private static final int BLOCKS_PER_OP = 2_500;
 
     @Getter private static AsyncPool instance;
 
