@@ -75,7 +75,7 @@ public final class EnlightenedDiamondHoe extends HoeItem implements PolymerItem,
             )
             .add(
                 EntityAttributes.MINING_EFFICIENCY,
-                Attributes.add(attributeId, tier * 4.9),
+                Attributes.add(attributeId, tier * 2.9),
                 AttributeModifierSlot.OFFHAND
             );
 
