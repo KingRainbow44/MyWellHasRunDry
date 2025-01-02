@@ -56,7 +56,7 @@ public final class TheAtlas extends SimplePolymerItem {
             out.set(
                 DataComponentTypes.LORE,
                 new LoreComponent(List.of(
-                    Text.literal("Reveal the secrets of the world~")
+                    Text.literal("Reveal the secrets of the world-")
                         .formatted(Formatting.GRAY),
                     Text.empty(),
                     Text.literal("Right click to open The Atlas Lookup!")

@@ -133,7 +133,7 @@ public final class ItemNbt {
         var dimensionKey = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(dimensionId));
 
         // Read the block position.
-        var blockPos = NBT.readBlockPos(posNbt);
+        var blockPos = NBT.readBlockPos(posNbt.getCompound("position"));
 
         return GlobalPos.create(dimensionKey, blockPos);
     }
