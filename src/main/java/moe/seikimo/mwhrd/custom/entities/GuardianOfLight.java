@@ -86,6 +86,11 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
         this.ticksAlive++;
         this.tryBuild();
         super.tick();
+
+        // Move the entity if it falls off.
+        if (this.getPos().getY() < 390) {
+            this.teleport(0, 405, 0, false);
+        }
     }
 
     @Override
