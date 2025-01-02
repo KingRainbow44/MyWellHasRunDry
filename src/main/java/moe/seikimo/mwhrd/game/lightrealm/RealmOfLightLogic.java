@@ -54,15 +54,15 @@ public final class RealmOfLightLogic {
             .put(Blocks.ROOTED_DIRT, new ItemStack(Items.DIRT))
             .put(Blocks.MOSS_CARPET, new ItemStack(Items.COBBLESTONE))
             .put(Blocks.OAK_LOG, new ItemStack(Items.OAK_PLANKS, 8))
-            .put(Blocks.WHEAT, new ItemStack(Items.IRON_INGOT))
+            .put(Blocks.WHEAT, new ItemStack(Items.IRON_NUGGET))
             .build();
 
     private static final Map<Pair<Integer, Integer>, Set<Block>> DISALLOWED_BLOCKS =
         MapBuilder.<Pair<Integer, Integer>, Set<Block>>create()
             .put(new Pair<>(-64, 0), Set.of())
-            .put(new Pair<>(1, 100), Set.of(Blocks.MOSS_BLOCK))
-            .put(new Pair<>(101, 250), Set.of(Blocks.MOSS_BLOCK, Blocks.BONE_BLOCK, Blocks.OAK_PLANKS))
-            .put(new Pair<>(251, 270), Set.of(Blocks.MOSS_BLOCK, Blocks.OAK_PLANKS, Blocks.BONE_BLOCK, Blocks.COBBLESTONE, Blocks.DIRT))
+            .put(new Pair<>(1, 100), Set.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET))
+            .put(new Pair<>(101, 250), Set.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET, Blocks.BONE_BLOCK, Blocks.OAK_PLANKS))
+            .put(new Pair<>(251, 270), Set.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET, Blocks.OAK_PLANKS, Blocks.BONE_BLOCK, Blocks.COBBLESTONE, Blocks.DIRT))
             .build();
 
     /**
