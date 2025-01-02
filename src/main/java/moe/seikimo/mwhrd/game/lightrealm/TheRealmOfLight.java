@@ -17,10 +17,7 @@ import moe.seikimo.mwhrd.utils.items.ItemBuilder;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.mob.BreezeEntity;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
-import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -172,7 +169,7 @@ public final class TheRealmOfLight extends RuntimeWorld {
 
                 // Spawn the entity.
                 this.spawnEntity(entity);
-            } else for (var i = 0; i < 3; i++) {
+            } else for (var i = 0; i < 4; i++) {
                 // Make a normal entity.
                 var entity = this.makeEntity(spawned, i);
 
@@ -214,6 +211,7 @@ public final class TheRealmOfLight extends RuntimeWorld {
                 yield skeleton;
             }
             case 2 -> new BreezeEntity(EntityType.BREEZE, this);
+            case 3 -> new BlazeEntity(EntityType.BLAZE, this);
             default -> throw new IllegalStateException("Unexpected value: " + index);
         };
 
