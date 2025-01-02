@@ -8,12 +8,21 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
+    @Shadow protected boolean dead;
+
+    @Shadow
+    public abstract void setHealth(float health);
+
+    @Shadow
+    public abstract float getMaxHealth();
+
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
@@ -36,6 +45,9 @@ public abstract class LivingEntityMixin extends Entity {
             .onPreDeath((LivingEntity) (Object) this, source);
         if (!result) {
             cir.setReturnValue(false);
+
+            this.dead = false;
+            this.setHealth(this.getMaxHealth());
         }
     }
 }
