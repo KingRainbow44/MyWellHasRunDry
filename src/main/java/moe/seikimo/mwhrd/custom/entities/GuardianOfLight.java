@@ -34,12 +34,12 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
      */
     public static DefaultAttributeContainer.Builder createAttributes() {
         return LivingEntity.createLivingAttributes()
-            .add(EntityAttributes.MAX_HEALTH, 150d)
-            .add(EntityAttributes.MOVEMENT_SPEED, 0.7d)
-            .add(EntityAttributes.ATTACK_DAMAGE, 14d)
+            .add(EntityAttributes.MAX_HEALTH, 250d)
+            .add(EntityAttributes.MOVEMENT_SPEED, 0.8d)
+            .add(EntityAttributes.ATTACK_DAMAGE, 18d)
             .add(EntityAttributes.ARMOR, 10d)
             .add(EntityAttributes.FOLLOW_RANGE, 35d)
-            .add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.4f);
+            .add(EntityAttributes.KNOCKBACK_RESISTANCE, 0.8f);
     }
 
     @Override
@@ -134,7 +134,7 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
 
         var targetPos = target.getBlockPos().withY(0);
         var mobPos = this.getBlockPos().withY(0);
-        return mobPos.getSquaredDistance(targetPos) <= 10;
+        return mobPos.getSquaredDistance(targetPos) <= 8;
     }
 
     /**
