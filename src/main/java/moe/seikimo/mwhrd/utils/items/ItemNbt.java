@@ -1,12 +1,27 @@
 package moe.seikimo.mwhrd.utils.items;
 
+import moe.seikimo.mwhrd.utils.NBT;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.GlobalPos;
 
 public final class ItemNbt {
+    /**
+     * Wraps an item stack into an ItemNbt instance.
+     *
+     * @param stack The item stack to wrap.
+     * @return The ItemNbt instance.
+     */
+    public static ItemNbt wrap(ItemStack stack) {
+        return new ItemNbt(stack);
+    }
+
     private final ItemStack stack;
     private final NbtCompound compound;
 
@@ -100,6 +115,27 @@ public final class ItemNbt {
      */
     public long[] getLongArray(String key) {
         return this.compound.getLongArray(key);
+    }
+
+    /**
+     * Gets a block position from the NBT.
+     *
+     * @param key The key to get.
+     * @return The block position value.
+     */
+    public GlobalPos getGlobalPos(String key) {
+        if (!(this.compound.get(key) instanceof NbtCompound posNbt)) {
+            throw new IllegalArgumentException("Expected a compound tag");
+        }
+
+        // Read the dimension registry key.
+        var dimensionId = posNbt.getString("dimension");
+        var dimensionKey = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(dimensionId));
+
+        // Read the block position.
+        var blockPos = NBT.readBlockPos(posNbt);
+
+        return GlobalPos.create(dimensionKey, blockPos);
     }
 
     /**
@@ -212,6 +248,32 @@ public final class ItemNbt {
      */
     public ItemNbt set(String key, NbtElement value) {
         this.compound.put(key, value);
+        NbtComponent.set(DataComponentTypes.CUSTOM_DATA, this.stack, this.compound);
+        return this;
+    }
+
+    /**
+     * Sets a key-value pair in the NBT.
+     *
+     * @param key The key to set.
+     * @param value The value to set.
+     * @return The ItemNbt instance.
+     */
+    public ItemNbt set(String key, GlobalPos value) {
+        return this.set(key, NbtBuilder.of()
+            .set("dimension", value.dimension())
+            .set("position", value.pos())
+            .asElement());
+    }
+
+    /**
+     * Removes a key from the NBT.
+     *
+     * @param key The key to remove.
+     * @return The ItemNbt instance.
+     */
+    public ItemNbt remove(String key) {
+        this.compound.remove(key);
         NbtComponent.set(DataComponentTypes.CUSTOM_DATA, this.stack, this.compound);
         return this;
     }
