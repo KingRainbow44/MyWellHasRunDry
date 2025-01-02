@@ -60,9 +60,9 @@ public final class RealmOfLightLogic {
     private static final Map<Pair<Integer, Integer>, Set<Block>> DISALLOWED_BLOCKS =
         MapBuilder.<Pair<Integer, Integer>, Set<Block>>create()
             .put(new Pair<>(-64, 0), Set.of())
-            .put(new Pair<>(1, 100), Set.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET))
-            .put(new Pair<>(101, 250), Set.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET, Blocks.BONE_BLOCK, Blocks.OAK_PLANKS))
-            .put(new Pair<>(251, 270), Set.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET, Blocks.OAK_PLANKS, Blocks.BONE_BLOCK, Blocks.COBBLESTONE, Blocks.DIRT))
+            .put(new Pair<>(1, 100), Set.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET, Blocks.IRON_BARS))
+            .put(new Pair<>(101, 250), Set.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET, Blocks.IRON_BARS, Blocks.BONE_BLOCK, Blocks.OAK_PLANKS))
+            .put(new Pair<>(251, 270), Set.of(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET, Blocks.IRON_BARS, Blocks.OAK_PLANKS, Blocks.BONE_BLOCK, Blocks.COBBLESTONE, Blocks.DIRT))
             .build();
 
     /**
