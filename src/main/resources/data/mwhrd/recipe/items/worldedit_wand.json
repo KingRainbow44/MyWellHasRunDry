@@ -1,0 +1,17 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "  R",
+        " B ",
+        "S  "
+    ],
+    "key": {
+        "S": "minecraft:stick",
+        "B": "minecraft:enchanted_book",
+        "R": "minecraft:blaze_rod"
+    },
+    "result": {
+        "count": 1,
+        "id": "mwhrd:worldedit_wand"
+    }
+}

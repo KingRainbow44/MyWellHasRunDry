@@ -48,6 +48,7 @@ public final class SelectionCommands {
                     "Position 2 set at " + Utils.serialize(position) + ".")
                 .formatted(Formatting.LIGHT_PURPLE));
         }
+
         return 1;
     }
 }

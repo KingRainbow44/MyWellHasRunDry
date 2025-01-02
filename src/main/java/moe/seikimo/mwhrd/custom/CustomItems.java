@@ -5,6 +5,7 @@ import eu.pb4.polymer.core.api.item.PolymerItemGroupUtils;
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import moe.seikimo.mwhrd.custom.items.SoulOfLight;
 import moe.seikimo.mwhrd.custom.items.TheAtlas;
+import moe.seikimo.mwhrd.custom.items.WorldEditWand;
 import moe.seikimo.mwhrd.custom.items.armor.EnlightenedDiamondArmor;
 import moe.seikimo.mwhrd.custom.items.tools.axe.EnlightenedDiamondAxe;
 import moe.seikimo.mwhrd.custom.items.tools.hoe.EnlightenedDiamondHoe;
@@ -149,12 +150,14 @@ public interface CustomItems {
     }};
 
     Item BLOSSOM_SAPLING = Items.register(itemKey("blossom_sapling"), settings -> new PolymerBlockItem(CustomBlocks.BLOSSOM_SAPLING, settings, Items.CHERRY_SAPLING));
+    Item WORLDEDIT_WAND = Items.register(itemKey("worldedit_wand"), WorldEditWand::new);
 
     ItemGroup MY_WELL_HAS_RUN_DRY = PolymerItemGroupUtils.builder()
         .displayName(Text.translatable("itemGroup.mwhrd"))
         .icon(Items.BUCKET::getDefaultStack)
         .entries((context, entries) -> {
             entries.add(BLOSSOM_SAPLING);
+            entries.add(WORLDEDIT_WAND);
         })
         .build();
 
