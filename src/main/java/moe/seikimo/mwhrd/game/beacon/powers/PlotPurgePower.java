@@ -15,6 +15,7 @@ import moe.seikimo.mwhrd.game.worldedit.AsyncPool;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,7 +32,7 @@ import static moe.seikimo.mwhrd.utils.GUI.BORDER;
 @Slf4j
 public final class PlotPurgePower extends BeaconPower {
     private static final int FUEL_COST = 4; // The cost in fuel per hour.
-    private static final Set<Block> BLACKLISTED = Set.of();
+    private static final Set<Item> BLACKLISTED = Set.of();
 
     public PlotPurgePower(BlockPos blockPos) {
         super(blockPos);
@@ -71,7 +72,7 @@ public final class PlotPurgePower extends BeaconPower {
                 if (holder.mwhrd$getData() instanceof BeaconModel data) {
                     // Add all blocks to the beacon's storage.
                     changed.stream()
-                        .filter(state -> !BLACKLISTED.contains(state.getBlock()))
+                        .filter(state -> !BLACKLISTED.contains(state.getBlock().asItem()))
                         .filter(state -> state.getBlock().getLootTableKey().isPresent())
                         .map(state -> state.getBlock().asItem().getDefaultStack())
                         .forEach(item -> data.getItemStorage().offer(item));
@@ -213,6 +214,14 @@ public final class PlotPurgePower extends BeaconPower {
 
             // Check if the beacon has enough fuel.
             var fuelCost = level.getFuelCost() * FUEL_COST;
+
+            // Adjust the fuel cost for the selection size.
+            var selectionSize = this.select.selectionSize();
+            fuelCost *= 1 + (selectionSize / 1000);
+
+            // Round the fuel cost to the nearest integer.
+            fuelCost = Math.min(fuelCost, 640);
+
             if (advBeacon.mwhrd$getFuel() < fuelCost) {
                 this.player.sendMessage(Text.literal("The beacon does not have enough fuel!")
                     .formatted(Formatting.RED));
