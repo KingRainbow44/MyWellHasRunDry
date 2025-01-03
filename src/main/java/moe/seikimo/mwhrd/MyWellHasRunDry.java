@@ -70,7 +70,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             .formatted(Formatting.BOLD, Formatting.DARK_AQUA)
             .append(Text.literal("v" + BuildConfig.VERSION)
                 .formatted(Formatting.GOLD)),
-        Text.literal(" Minecraft: Rekindled Worlds Arise")
+        Text.literal(" Allied Nations Align, Enemy Ideals Falter")
             .formatted(Formatting.RED),
         Text.empty(),
         Text.literal("View the changelog at:")
@@ -84,9 +84,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             .formatted(Formatting.AQUA)
     );
 
-    public static LootNumberProviderType PLAYER_VAULT;
-
     @Getter private static final Random random = new Random();
+
+    public static LootNumberProviderType PLAYER_VAULT;
 
     @Getter private static MinecraftServer server;
     @Getter private static Fantasy fantasy;
