@@ -5,7 +5,6 @@ import moe.seikimo.general.EncodingUtils;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.block.Block;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -15,7 +14,6 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.registry.RegistryKey;
@@ -36,9 +34,16 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 public interface Utils {
+    Set<RegistryKey<World>> ALLOWED_WORLDS = Set.of(
+        World.OVERWORLD,
+        World.NETHER,
+        World.END
+    );
+
     /**
      * Fetches all nearby players.
      *

@@ -3,6 +3,7 @@ package moe.seikimo.mwhrd.managers;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.utils.Position;
+import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
@@ -127,6 +128,12 @@ public final class PartyManager {
      * @return Whether the invite was accepted.
      */
     public static boolean acceptInvite(ServerPlayerEntity player) {
+        // Check if the player is in a valid dimension.
+        var world = player.getWorld().getRegistryKey();
+        if (!Utils.ALLOWED_WORLDS.contains(world)) {
+            return false;
+        }
+
         var leader = invites.remove(player.getUuid());
         if (leader == null) {
             return false;
@@ -252,6 +259,12 @@ public final class PartyManager {
      * @return Whether the party was warped.
      */
     public static boolean warpParty(ServerPlayerEntity player) {
+        // Check if the player is in a valid dimension.
+        var world = player.getWorld().getRegistryKey();
+        if (!Utils.ALLOWED_WORLDS.contains(world)) {
+            return false;
+        }
+
         var party = findParty(player);
         if (party == null) {
             return false;
@@ -330,6 +343,12 @@ public final class PartyManager {
      * @param player The player to return.
      */
     public static boolean returnPlayer(ServerPlayerEntity player) {
+        // Check if the player is in a valid dimension.
+        var world = player.getWorld().getRegistryKey();
+        if (!Utils.ALLOWED_WORLDS.contains(world)) {
+            return false;
+        }
+
         player.setGlowing(false);
         PartyManager.removePlayer(player);
 
