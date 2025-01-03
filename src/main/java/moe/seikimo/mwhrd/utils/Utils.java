@@ -162,7 +162,11 @@ public interface Utils {
      * @return The converted BlockPos.
      */
     static BlockPos blockPos(Vec3d pos) {
-        return new BlockPos((int) pos.getX(), (int) pos.getY(), (int) pos.getZ());
+        return new BlockPos(
+            (int) Math.round(pos.getX()),
+            (int) Math.round(pos.getY()),
+            (int) Math.round(pos.getZ())
+        );
     }
 
     /**
