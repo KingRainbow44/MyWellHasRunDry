@@ -189,8 +189,9 @@ public abstract class ServerPlayNetworkHandlerMixin {
         // Invoke the item stack's swing hand listener.
         var stack = player.getStackInHand(hand);
         var item = stack.getItem();
-        if (item instanceof SwingHandListener) {
-            item.use(player.getWorld(), player, hand);
+
+        if (item instanceof SwingHandListener listener) {
+            listener.onSwingHand(stack, player.getWorld(), player, hand);
         }
     }
 }

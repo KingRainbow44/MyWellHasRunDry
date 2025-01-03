@@ -6,6 +6,7 @@ import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.events.PlayerMoveEvent;
 import moe.seikimo.mwhrd.interfaces.*;
 import moe.seikimo.mwhrd.interfaces.player.ICallbackPlayer;
+import moe.seikimo.mwhrd.interfaces.player.IGunWielder;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.block.Portal;
@@ -45,7 +46,8 @@ public abstract class ServerPlayerEntityMixin
     ISelectionPlayer,
     ITrialPlayer,
     ITimeTraveler,
-    ICallbackPlayer {
+    ICallbackPlayer,
+    IGunWielder {
     @Shadow
     public abstract void sendMessage(Text message);
 
@@ -364,6 +366,29 @@ public abstract class ServerPlayerEntityMixin
     @Override
     public void mwhrd$onDimensionChange(Consumer<World> world) {
         this.worldCallback = world;
+    }
+
+    /// </editor-fold>
+
+    /// <editor-fold desc="Gun Wielder">
+
+    @Unique private int cooldown = 0;
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    public void gun$tick(CallbackInfo ci) {
+        if (this.cooldown > 0) {
+            this.cooldown--;
+        }
+    }
+
+    @Override
+    public boolean mwhrd$canFire() {
+        return this.cooldown == 0;
+    }
+
+    @Override
+    public void mwhrd$setCooldown(int cooldown) {
+        this.cooldown = cooldown;
     }
 
     /// </editor-fold>

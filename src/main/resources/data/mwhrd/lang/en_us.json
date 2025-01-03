@@ -38,6 +38,8 @@
     "entity.mwhrd.guardian_of_light": "Guardian of Light",
 
     "text.mwhrd.beacon.item_applied_to": "When Applied to a Beacon:",
+    "text.mwhrd.gun.base_damage": " %s Base Damage",
+    "text.mwhrd.gun.fire_rate": " %.2fs Fire Rate",
 
     "text.mwhrd.tier_upgrade": "You've upgraded %s to Tier %d!",
     "text.mwhrd.max_tier": "This item is already at its max upgrade tier!",

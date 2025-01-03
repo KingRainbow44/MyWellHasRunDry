@@ -1,30 +1,20 @@
 package moe.seikimo.mwhrd.custom.items.guns;
 
+import moe.seikimo.mwhrd.custom.CustomComponents;
+import moe.seikimo.mwhrd.custom.components.GunComponent;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.Rarity;
 
 public final class PrototypeLauncher extends BaseGun {
-    private static final int BASE_DAMAGE = 25;
-
     public PrototypeLauncher(Settings settings) {
         super(
             settings
-                .useCooldown(0.0125f)
                 .rarity(Rarity.UNCOMMON),
+            new GunComponent(25, 25, 18, 2, 14),
             Items.IRON_HORSE_ARMOR
         );
-    }
-
-    @Override
-    public int getRange() {
-        return 25;
-    }
-
-    @Override
-    public float getDamage(int distance) {
-        return Math.clamp(BASE_DAMAGE - distance / 4, 1, BASE_DAMAGE);
     }
 
     @Override

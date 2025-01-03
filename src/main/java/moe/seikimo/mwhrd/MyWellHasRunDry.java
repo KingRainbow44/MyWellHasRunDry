@@ -84,6 +84,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             .formatted(Formatting.AQUA)
     );
 
+    public static final String MOD_ID = "mwhrd";
+
     @Getter private static final Random random = new Random();
 
     public static LootNumberProviderType PLAYER_VAULT;
@@ -121,6 +123,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     public void onInitializeServer() {
         // Register custom content.
         CustomBlocks.register();
+        CustomComponents.register();
         CustomItems.register();
         CustomEntities.register();
 
