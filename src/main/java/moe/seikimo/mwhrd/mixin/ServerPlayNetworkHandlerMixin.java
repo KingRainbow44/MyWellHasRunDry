@@ -1,5 +1,7 @@
 package moe.seikimo.mwhrd.mixin;
 
+import moe.seikimo.mwhrd.custom.interfaces.SwingHandListener;
+import moe.seikimo.mwhrd.events.PlayerSwingHandEvent;
 import moe.seikimo.mwhrd.impl.ShulkerListener;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.component.DataComponentTypes;
@@ -9,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.SlotActionType;
@@ -53,6 +56,9 @@ public abstract class ServerPlayNetworkHandlerMixin {
     }
 
     @Shadow public ServerPlayerEntity player;
+
+    @Shadow
+    public abstract ServerPlayerEntity getPlayer();
 
     @Inject(method = "onClickSlot", at = @At(
         value = "INVOKE",
@@ -171,5 +177,20 @@ public abstract class ServerPlayNetworkHandlerMixin {
     ))
     public boolean changeHost(ServerPlayNetworkHandler instance) {
         return true;
+    }
+
+    @Inject(method = "onHandSwing", at = @At("RETURN"))
+    public void onHandSwing(HandSwingC2SPacket packet, CallbackInfo ci) {
+        var player = this.getPlayer();
+        var hand = packet.getHand();
+
+        PlayerSwingHandEvent.EVENT.invoker().onSwing(player, hand);
+
+        // Invoke the item stack's swing hand listener.
+        var stack = player.getStackInHand(hand);
+        var item = stack.getItem();
+        if (item instanceof SwingHandListener) {
+            item.use(player.getWorld(), player, hand);
+        }
     }
 }
