@@ -7,6 +7,9 @@ import moe.seikimo.mwhrd.custom.items.SoulOfLight;
 import moe.seikimo.mwhrd.custom.items.TheAtlas;
 import moe.seikimo.mwhrd.custom.items.WorldEditWand;
 import moe.seikimo.mwhrd.custom.items.armor.EnlightenedDiamondArmor;
+import moe.seikimo.mwhrd.custom.items.guns.PrototypeLauncher;
+import moe.seikimo.mwhrd.custom.items.guns.TestGun;
+import moe.seikimo.mwhrd.custom.items.guns.TurfGun;
 import moe.seikimo.mwhrd.custom.items.tools.axe.EnlightenedDiamondAxe;
 import moe.seikimo.mwhrd.custom.items.tools.hoe.EnlightenedDiamondHoe;
 import moe.seikimo.mwhrd.custom.items.tools.pickaxe.EnlightenedDiamondPickaxe;
@@ -152,6 +155,10 @@ public interface CustomItems {
     Item BLOSSOM_SAPLING = Items.register(itemKey("blossom_sapling"), settings -> new PolymerBlockItem(CustomBlocks.BLOSSOM_SAPLING, settings, Items.CHERRY_SAPLING));
     Item WORLDEDIT_WAND = Items.register(itemKey("worldedit_wand"), WorldEditWand::new);
 
+    Item TEST_GUN = Items.register(itemKey("test_gun"), TestGun::new);
+    Item TURF_GUN = Items.register(itemKey("turf_gun"), TurfGun::new);
+    Item PROTOTYPE_LAUNCHER = Items.register(itemKey("prototype_launcher"), PrototypeLauncher::new);
+
     ItemGroup MY_WELL_HAS_RUN_DRY = PolymerItemGroupUtils.builder()
         .displayName(Text.translatable("itemGroup.mwhrd"))
         .icon(Items.BUCKET::getDefaultStack)
@@ -191,6 +198,16 @@ public interface CustomItems {
         })
         .build();
 
+    ItemGroup ALLIED_NATIONS = PolymerItemGroupUtils.builder()
+        .displayName(Text.translatable("itemGroup.mwhrd.allied_nations"))
+        .icon(Items.SPYGLASS::getDefaultStack)
+        .entries((context, entries) -> {
+            entries.add(TEST_GUN);
+            entries.add(TURF_GUN);
+            entries.add(PROTOTYPE_LAUNCHER);
+        })
+        .build();
+
     /**
      * Registers all custom content.
      */
@@ -198,5 +215,6 @@ public interface CustomItems {
         registerPolymerItemGroup(Identifier.of("mwhrd", "my_well_has_run_dry"), CustomItems.MY_WELL_HAS_RUN_DRY);
         registerPolymerItemGroup(Identifier.of("mwhrd", "luck_and_luxury"), CustomItems.LUCK_AND_LUXURY);
         registerPolymerItemGroup(Identifier.of("mwhrd", "the_realm_of_light"), CustomItems.THE_REALM_OF_LIGHT);
+        registerPolymerItemGroup(Identifier.of("mwhrd", "allied_nations"), CustomItems.ALLIED_NATIONS);
     }
 }

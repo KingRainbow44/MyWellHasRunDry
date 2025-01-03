@@ -2,6 +2,7 @@
     "itemGroup.mwhrd": "My Well Has Run Dry",
     "itemGroup.mwhrd.the_realm_of_light": "The Realm of Light",
     "itemGroup.mwhrd.luck_and_luxury": "Luck and Luxury",
+    "itemGroup.mwhrd.allied_nations": "Allied Nations Align",
 
     "item.mwhrd.beacon_base": "Beacon Base",
     "item.mwhrd.advanced_beacon": "Beacon",
@@ -29,6 +30,10 @@
 
     "item.mwhrd.blossom_sapling": "Restie's Blossom Sapling",
     "item.mwhrd.worldedit_wand": "WorldEdit Wand",
+
+    "item.mwhrd.test_gun": "Test™ Gun",
+    "item.mwhrd.turf_gun": "TURF! Blaster",
+    "item.mwhrd.prototype_launcher": "Prototype 3000 Launcher",
 
     "entity.mwhrd.guardian_of_light": "Guardian of Light",
 
