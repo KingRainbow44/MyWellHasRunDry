@@ -11,7 +11,7 @@ public final class Frenzy extends BaseGun {
         super(
             settings
                 .rarity(Rarity.UNCOMMON),
-            new GunComponent(6, 40, 9, 0, 10),
+            new GunComponent(6, 40, 5, 0, 10),
             Items.DIAMOND_HORSE_ARMOR
         );
     }

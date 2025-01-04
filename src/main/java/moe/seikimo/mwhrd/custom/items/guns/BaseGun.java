@@ -112,10 +112,11 @@ public abstract class BaseGun
     /**
      * Computes the damage at a certain distance.
      *
+     * @param entity The entity to compute the damage for.
      * @param distance The distance to compute the damage at.
      * @return The damage at the given distance.
      */
-    public float getDamage(ItemStack stack, int distance) {
+    public float getDamage(LivingEntity entity, ItemStack stack, int distance) {
         var gunData = stack.get(CustomComponents.GUN);
         if (gunData == null) return 0;
 
@@ -182,12 +183,15 @@ public abstract class BaseGun
 
         // Create the damage source.
         var arrow = new ArrowEntity(EntityType.ARROW, world);
-        var source = world.getDamageSources()
+
+        var playerSource = world.getDamageSources()
             .mobProjectile(arrow, shooter);
+        var mobSource = world.getDamageSources()
+            .indirectMagic(shooter, shooter);
 
         // Check for entities within the impact range.
         for (var entity : BaseGun.otherEntities(world, shooter, position, this.getImpactRange())) {
-            var damage = this.getDamage(stack, iteration);
+            var damage = this.getDamage(entity, stack, iteration);
 
             // Check if the collision was within the head range of the entity.
             var headBox = Box.of(entity.getEyePos(), 0.6f, 0.6f, 0.6f);
@@ -197,7 +201,9 @@ public abstract class BaseGun
                 damage *= this.getCritMultiplier();
             }
 
-            entity.damage(world, source, damage);
+            entity.damage(world,
+                entity instanceof PlayerEntity ? playerSource : mobSource,
+                damage);
             entity.timeUntilRegen = 2;
             return true;
         }
@@ -224,7 +230,7 @@ public abstract class BaseGun
      * @param world The world to draw the particles in.
      */
     public void bulletLoop(ItemStack stack, ServerPlayerEntity player, ServerWorld world) {
-        var offset = player.getRotationVector().multiply(0.5f);
+        var offset = player.getRotationVector().multiply(0.1f);
         var position = player.getEyePos().add(offset);
 
         // Play the shoot sound effect.
@@ -237,7 +243,7 @@ public abstract class BaseGun
         );
 
         var stopPosition = player.getBlockPos();
-        for (var i = 0; i < this.getRange(stack); i++) {
+        for (var i = 0; i < this.getRange(stack) * 10; i++) {
             // Offset the position.
             position = position.add(offset);
 
@@ -249,7 +255,7 @@ public abstract class BaseGun
             );
 
             // Check if the bullet should stop.
-            if (this.bulletImpact(stack, i, player, position, world)) {
+            if (this.bulletImpact(stack, i / 10, player, position, world)) {
                 break;
             }
         }

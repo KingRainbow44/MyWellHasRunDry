@@ -11,7 +11,7 @@ public final class PrototypeLauncher extends BaseGun {
         super(
             settings
                 .rarity(Rarity.UNCOMMON),
-            new GunComponent(18, 27, 22, 3, 20),
+            new GunComponent(18, 27, 18, 3, 20),
             Items.IRON_HORSE_ARMOR
         );
     }

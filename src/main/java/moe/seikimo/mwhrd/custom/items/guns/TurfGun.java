@@ -11,7 +11,7 @@ public final class TurfGun extends BaseGun {
         super(
             settings
                 .rarity(Rarity.UNCOMMON),
-            new GunComponent(13, 16, 14, 5, 10),
+            new GunComponent(13, 16, 11, 5, 10),
             Items.GOLDEN_HORSE_ARMOR
         );
     }

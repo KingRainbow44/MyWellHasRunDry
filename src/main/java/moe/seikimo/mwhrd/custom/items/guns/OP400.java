@@ -25,14 +25,14 @@ public final class OP400 extends BaseGun {
         super(
             settings
                 .rarity(Rarity.EPIC),
-            new GunComponent(31, 1, 500, 30, 75),
+            new GunComponent(100, 6, 500, 75, 30),
             Items.SPYGLASS
         );
     }
 
     @Override
-    public float getDamage(ItemStack stack, int distance) {
-        return 31;
+    public float getDamage(LivingEntity entity, ItemStack stack, int distance) {
+        return entity instanceof PlayerEntity ? 30 : 100;
     }
 
     @Override
@@ -93,10 +93,7 @@ public final class OP400 extends BaseGun {
         if (
             user instanceof ServerPlayerEntity player &&
                 world instanceof ServerWorld serverWorld &&
-                (
-                    remainingUseTicks <= 1 ||
-                        (player.isSneaking() && remainingUseTicks < 42)
-                )
+                (remainingUseTicks <= 1 || player.isSneaking())
         ) {
             this.shoot(serverWorld, player, stack);
         }
@@ -104,6 +101,6 @@ public final class OP400 extends BaseGun {
 
     @Override
     public int getMaxUseTime(ItemStack stack, LivingEntity user) {
-        return user instanceof PlayerEntity player && player.isSneaking() ? 8 : 50;
+        return user instanceof PlayerEntity player && player.isSneaking() ? 1 : 50;
     }
 }
