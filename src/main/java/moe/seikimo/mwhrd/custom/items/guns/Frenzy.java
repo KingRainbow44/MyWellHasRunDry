@@ -6,18 +6,28 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.Rarity;
 
-public final class PrototypeLauncher extends BaseGun {
-    public PrototypeLauncher(Settings settings) {
+public final class Frenzy extends BaseGun {
+    public Frenzy(Settings settings) {
         super(
             settings
                 .rarity(Rarity.UNCOMMON),
-            new GunComponent(18, 27, 22, 3, 20),
-            Items.IRON_HORSE_ARMOR
+            new GunComponent(6, 40, 9, 0, 10),
+            Items.DIAMOND_HORSE_ARMOR
         );
     }
 
     @Override
+    public boolean isRapidFire() {
+        return true;
+    }
+
+    @Override
     public SimpleParticleType getParticle() {
-        return ParticleTypes.SOUL_FIRE_FLAME;
+        return ParticleTypes.ASH;
+    }
+
+    @Override
+    public int getParticleCount() {
+        return 5;
     }
 }

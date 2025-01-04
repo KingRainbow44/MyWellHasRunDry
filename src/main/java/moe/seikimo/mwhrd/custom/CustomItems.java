@@ -7,9 +7,7 @@ import moe.seikimo.mwhrd.custom.items.SoulOfLight;
 import moe.seikimo.mwhrd.custom.items.TheAtlas;
 import moe.seikimo.mwhrd.custom.items.WorldEditWand;
 import moe.seikimo.mwhrd.custom.items.armor.EnlightenedDiamondArmor;
-import moe.seikimo.mwhrd.custom.items.guns.PrototypeLauncher;
-import moe.seikimo.mwhrd.custom.items.guns.TestGun;
-import moe.seikimo.mwhrd.custom.items.guns.TurfGun;
+import moe.seikimo.mwhrd.custom.items.guns.*;
 import moe.seikimo.mwhrd.custom.items.tools.axe.EnlightenedDiamondAxe;
 import moe.seikimo.mwhrd.custom.items.tools.hoe.EnlightenedDiamondHoe;
 import moe.seikimo.mwhrd.custom.items.tools.pickaxe.EnlightenedDiamondPickaxe;
@@ -158,6 +156,8 @@ public interface CustomItems {
     Item TEST_GUN = Items.register(itemKey("test_gun"), TestGun::new);
     Item TURF_GUN = Items.register(itemKey("turf_gun"), TurfGun::new);
     Item PROTOTYPE_LAUNCHER = Items.register(itemKey("prototype_launcher"), PrototypeLauncher::new);
+    Item FRENZY = Items.register(itemKey("frenzy"), Frenzy::new);
+    Item OP_400 = Items.register(itemKey("op_400"), OP400::new);
 
     ItemGroup MY_WELL_HAS_RUN_DRY = PolymerItemGroupUtils.builder()
         .displayName(Text.translatable("itemGroup.mwhrd"))
@@ -205,6 +205,8 @@ public interface CustomItems {
             entries.add(TEST_GUN);
             entries.add(TURF_GUN);
             entries.add(PROTOTYPE_LAUNCHER);
+            entries.add(FRENZY);
+            entries.add(OP_400);
         })
         .build();
 

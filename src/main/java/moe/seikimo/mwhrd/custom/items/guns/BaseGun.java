@@ -15,11 +15,14 @@ import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
@@ -119,6 +122,10 @@ public abstract class BaseGun
         return gunData.baseDamage() - distance / 2.5f;
     }
 
+    public boolean isRapidFire() {
+        return false;
+    }
+
     /**
      * @return The sound that gets played when a bullet is fired.
      */
@@ -143,8 +150,15 @@ public abstract class BaseGun
     /**
      * @return The impact range of the bullet.
      */
-    private double getImpactRange() {
+    public double getImpactRange() {
         return 0.4d;
+    }
+
+    /**
+     * @return The amount to multiply the damage by when a critical hit is scored.
+     */
+    public float getCritMultiplier() {
+        return 2f;
     }
 
     /**
@@ -160,24 +174,27 @@ public abstract class BaseGun
     public boolean bulletImpact(
         ItemStack stack,
         int iteration,
-        LivingEntity shooter,
+        PlayerEntity shooter,
         Vec3d position,
         ServerWorld world
     ) {
+        var blockPos = Utils.blockPos(position);
+
         // Create the damage source.
+        var arrow = new ArrowEntity(EntityType.ARROW, world);
         var source = world.getDamageSources()
-            .magic();
+            .mobProjectile(arrow, shooter);
 
         // Check for entities within the impact range.
         for (var entity : BaseGun.otherEntities(world, shooter, position, this.getImpactRange())) {
             var damage = this.getDamage(stack, iteration);
 
             // Check if the collision was within the head range of the entity.
-            var headBox = Box.of(entity.getEyePos(), 1, 1, 1);
+            var headBox = Box.of(entity.getEyePos(), 0.6f, 0.6f, 0.6f);
             var bulletBox = Box.of(position, 0.1f, 0.1f, 0.1f);
 
             if (headBox.intersects(bulletBox)) {
-                damage *= 2;
+                damage *= this.getCritMultiplier();
             }
 
             entity.damage(world, source, damage);
@@ -186,7 +203,16 @@ public abstract class BaseGun
         }
 
         // If the bullet is on a wall, stop it.
-        var state = world.getBlockState(Utils.blockPos(position));
+        var state = world.getBlockState(blockPos);
+        if (state.isTransparent()) {
+            world.breakBlock(blockPos, true);
+        }
+
+        if (state.getHardness(world, blockPos) < 5 &&
+            Utils.random(0, 5) == 0) {
+            world.breakBlock(blockPos, false);
+        }
+
         return !state.isTransparent();
     }
 
@@ -203,7 +229,7 @@ public abstract class BaseGun
 
         // Play the shoot sound effect.
         world.playSound(
-            player,
+            null,
             player.getBlockPos(),
             this.getFireSound(),
             SoundCategory.PLAYERS,
@@ -230,12 +256,50 @@ public abstract class BaseGun
 
         // Play the impact sound.
         world.playSound(
-            player,
+            null,
             stopPosition,
             SoundEvents.BLOCK_STONE_BREAK,
             SoundCategory.BLOCKS,
-            1.0f, 2.0f
+            1.0f, 1.0f
         );
+    }
+
+    /**
+     * Method to shoot a bullet from the gun.
+     *
+     * @param world The world to shoot the bullet in.
+     * @param player The player that is shooting the bullet.
+     * @param stack The item stack of the gun.
+     */
+    public ActionResult shoot(ServerWorld world, ServerPlayerEntity player, ItemStack stack) {
+        if (!(player instanceof IGunWielder gunWielder)) return ActionResult.PASS;
+
+        // The player must not be in an existing cooldown.
+        if (!gunWielder.mwhrd$canFire()) return ActionResult.PASS;
+
+        // Get item stack data.
+        var gunData = stack.getOrDefault(CustomComponents.GUN, GunComponent.EMPTY);
+        var reloadData = stack.getOrDefault(CustomComponents.GUN_RELOAD, ReloadComponent.EMPTY);
+        var bullets = stack.getOrDefault(CustomComponents.GUN_BULLETS, 0);
+
+        // Check if the gun is reloading, or if the gun is empty.
+        if (reloadData.reloading() || bullets <= 0) {
+            return ActionResult.PASS;
+        }
+
+        // Subtract a bullet.
+        stack.set(CustomComponents.GUN_BULLETS, bullets - 1);
+
+        var progress = 1 - (float) (bullets - 1) / gunData.maxAmmo();
+        var displayedDamage = Math.round(Math.clamp(progress * 100, 0, 100));
+        stack.set(DataComponentTypes.DAMAGE, displayedDamage);
+
+        // Run the bullet loop.
+        this.bulletLoop(stack, player, world);
+        // Set the cooldown.
+        gunWielder.mwhrd$setCooldown(gunData.fireRate());
+
+        return ActionResult.SUCCESS;
     }
 
     @Override
@@ -275,39 +339,17 @@ public abstract class BaseGun
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!(world instanceof ServerWorld serverWorld)) return ActionResult.PASS;
-        if (!(user instanceof ServerPlayerEntity serverPlayer)) return ActionResult.PASS;
-        if (!(user instanceof IGunWielder gunWielder)) return ActionResult.PASS;
+        if (this.isRapidFire()) {
+            return ItemUsage.consumeHeldItem(world, user, hand);
+        } else {
+            if (!(world instanceof ServerWorld serverWorld)) return ActionResult.PASS;
+            if (!(user instanceof ServerPlayerEntity serverPlayer)) return ActionResult.PASS;
 
-        // The player must not be in an existing cooldown.
-        if (!gunWielder.mwhrd$canFire()) return ActionResult.PASS;
+            // Get the item stack being used.
+            var stack = user.getStackInHand(hand);
 
-        // Get the item stack being used.
-        var stack = user.getStackInHand(hand);
-
-        // Get item stack data.
-        var gunData = stack.getOrDefault(CustomComponents.GUN, GunComponent.EMPTY);
-        var reloadData = stack.getOrDefault(CustomComponents.GUN_RELOAD, ReloadComponent.EMPTY);
-        var bullets = stack.getOrDefault(CustomComponents.GUN_BULLETS, 0);
-
-        // Check if the gun is reloading, or if the gun is empty.
-        if (reloadData.reloading() || bullets <= 0) {
-            return ActionResult.PASS;
+            return this.shoot(serverWorld, serverPlayer, stack);
         }
-
-        // Subtract a bullet.
-        stack.set(CustomComponents.GUN_BULLETS, bullets - 1);
-
-        var progress = 1 - (float) bullets / gunData.maxAmmo();
-        var displayedDamage = Math.round(Math.clamp(progress * 100, 0, 100));
-        stack.set(DataComponentTypes.DAMAGE, displayedDamage);
-
-        // Run the bullet loop.
-        this.bulletLoop(stack, serverPlayer, serverWorld);
-        // Set the cooldown.
-        gunWielder.mwhrd$setCooldown(gunData.fireRate());
-
-        return ActionResult.SUCCESS;
     }
 
     @Override
@@ -318,6 +360,15 @@ public abstract class BaseGun
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         return ActionResult.FAIL;
+    }
+
+    @Override
+    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        if (this.isRapidFire() &&
+            user instanceof ServerPlayerEntity player &&
+            world instanceof ServerWorld serverWorld) {
+            this.shoot(serverWorld, player, stack);
+        }
     }
 
     @Override
