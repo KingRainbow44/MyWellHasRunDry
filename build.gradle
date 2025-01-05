@@ -20,6 +20,7 @@ repositories {
     // for more information about repositories.
 
     mavenLocal()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 
     maven { url "https://maven.nucleoid.xyz" }
     maven { url "https://repo.opencollab.dev/main" }
@@ -34,22 +35,26 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+    // Geyser API for Bedrock compatibility.
     compileOnly "org.geysermc.geyser:api:${project.geyser_version}"
 
-    // Server-side GUI creation
+    // Server-side GUI creation.
     shadow(modImplementation("eu.pb4:sgui:${project.sgui_version}"))
 
-    // Server-side item and block creation
+    // Server-side item and block creation.
     modImplementation("xyz.nucleoid:server-translations-api:${project.translations_version}")
     modImplementation("xyz.nucleoid:fantasy:${project.fantasy_version}")
 
     modImplementation("eu.pb4:polymer-core:${project.polymer_version}")
     modImplementation("eu.pb4:polymer-blocks:${project.polymer_version}")
 
-    // Database and storage
+    // Database and storage.
     shadow(implementation("dev.morphia.morphia:morphia-core:${project.morphia_version}"))
     shadow(implementation("de.bwaldvogel:mongo-java-server:${project.mongo_version}"))
     shadow(implementation("de.bwaldvogel:mongo-java-server-h2-backend:${project.mongo_version}"))
+
+    // Spark for server performance monitoring.
+    compileOnly "me.lucko:spark-api:0.1-SNAPSHOT"
 
     compileOnly "org.projectlombok:lombok:${project.lombok_version}"
     annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"

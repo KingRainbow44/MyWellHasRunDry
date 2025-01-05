@@ -39,6 +39,9 @@ public final class PartyCommand {
                 .executes(PartyCommand::warpParty))
             .then(literal("return")
                 .executes(PartyCommand::returnPlayer))
+            .then(literal("invite")
+                .then(argument("username", StringArgumentType.word())
+                    .executes(PartyCommand::invitePlayer)))
             .then(argument("username", StringArgumentType.word())
                 .executes(PartyCommand::invitePlayer))
             .executes(PartyCommand::usage));
@@ -98,8 +101,8 @@ public final class PartyCommand {
         // Check if the player has a party.
         var party = PartyManager.findParty(leader);
         if (party == null) {
-            context.getSource().sendError(Text.literal("You are not in a party."));
-            return 1;
+            // Create the party if it doesn't exist.
+            PartyManager.createParty(leader);
         }
 
         var username = StringArgumentType.getString(context, "username");

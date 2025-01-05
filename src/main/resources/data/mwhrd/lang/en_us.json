@@ -1,4 +1,6 @@
 {
+    "text.mwhrd.name": "My Well Has Run Dry",
+
     "itemGroup.mwhrd": "My Well Has Run Dry",
     "itemGroup.mwhrd.the_realm_of_light": "The Realm of Light",
     "itemGroup.mwhrd.luck_and_luxury": "Luck and Luxury",
@@ -61,5 +63,18 @@
 
     "text.mwhrd.inventory.stored": "You need to restore your inventory first!",
     "text.mwhrd.inventory.not_stored": "You do not have an inventory stored.",
-    "text.mwhrd.inventory.admin_override": "In spectator mode, you can override this limitation."
+    "text.mwhrd.inventory.admin_override": "In spectator mode, you can override this limitation.",
+
+    "text.mwhrd.player_list.header.1": "You are playing on ",
+    "text.mwhrd.player_list.header.2": "Powered by ",
+
+    "text.mwhrd.guild.disbanded": "The guild has been disbanded!",
+
+    "commands.guild.not_in_guild": "You are not in a guild.",
+    "commands.guild.no_permission": "You do not have permission to do this!",
+    "commands.guild.join.already_in_guild": "You are already in a guild!",
+    "commands.guild.join.invalid_guild": "Invalid guild name or color specified.",
+    "commands.guild.join.success": "Welcome to '%s'!",
+    "commands.guild.leave.success": "You have left the guild.",
+    "commands.guild.rename.success": "Successfully renamed the guild to '%s'!"
 }

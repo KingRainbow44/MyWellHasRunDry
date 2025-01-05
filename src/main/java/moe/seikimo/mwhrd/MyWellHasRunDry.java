@@ -13,6 +13,7 @@ import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.game.beacon.BeaconManager;
 import moe.seikimo.mwhrd.commands.*;
 import moe.seikimo.mwhrd.custom.*;
+import moe.seikimo.mwhrd.game.guilds.GuildManager;
 import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
@@ -67,11 +68,11 @@ import java.util.*;
 public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     public static final List<Text> CHANGELOG = List.of(
         Text.literal(" My Well Has Run Dry: ")
-            .formatted(Formatting.BOLD, Formatting.DARK_AQUA)
+            .formatted(Formatting.BOLD, Formatting.RED)
             .append(Text.literal("v" + BuildConfig.VERSION)
-                .formatted(Formatting.GOLD)),
+                .formatted(Formatting.AQUA)),
         Text.literal(" Allied Nations Align, Enemy Ideals Falter")
-            .formatted(Formatting.RED),
+            .formatted(Formatting.GOLD),
         Text.empty(),
         Text.literal("View the changelog at:")
             .formatted(Formatting.GRAY),
@@ -81,7 +82,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                     ClickEvent.Action.OPEN_URL,
                     "https://docs.seikimo.moe/mwhrd/changelog"
                 )))
-            .formatted(Formatting.AQUA)
+            .formatted(Formatting.DARK_GRAY)
     );
 
     public static final String MOD_ID = "mwhrd";
@@ -117,6 +118,15 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         var model = dbObj.mwhrd$getData();
         if (!(model instanceof PlayerModel data)) return ItemStorage.EMPTY;
         return data.getLoot();
+    }
+
+    /**
+     * @return The list of online players.
+     */
+    public static List<ServerPlayerEntity> getPlayers() {
+        return MyWellHasRunDry.server
+            .getPlayerManager()
+            .getPlayerList();
     }
 
     @Override
@@ -160,7 +170,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             ReturnCommand.register(dispatcher);
             HardcoreCommand.register(dispatcher);
             ChangelogCommand.register(dispatcher);
-
+            GuildCommand.register(dispatcher);
             SelectionCommands.register(dispatcher);
         });
 
@@ -171,15 +181,14 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
             // Resolve registry tables.
             MyWellHasRunDry.registry = server.getRegistryManager();
-
             MyWellHasRunDry.enchantmentRegistry = server
                 .getRegistryManager()
                 .getOrThrow(RegistryKeys.ENCHANTMENT);
-
             MyWellHasRunDry.itemRegistry = server
                 .getRegistryManager()
                 .getOrThrow(RegistryKeys.ITEM);
 
+            // Prepare predicates.
             var trialChamber = server
                 .getRegistryManager()
                 .getOrThrow(RegistryKeys.STRUCTURE)
@@ -190,6 +199,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                 .structure(RegistryEntryList.of(trialChamber))
                 .build();
 
+            // Find the default spawn.
             var overworld = server.getWorld(World.OVERWORLD);
             if (overworld == null) {
                 throw new IllegalStateException("Overworld is null.");
@@ -208,6 +218,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
                 log.info("Configured the scoreboard to show player health!");
             }
+
+            // Initialize guilds.
+            GuildManager.initialize();
 
             // Initialize custom dimensions.
             CustomWorlds.register();

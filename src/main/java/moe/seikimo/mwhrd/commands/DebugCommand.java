@@ -6,15 +6,19 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.game.beacon.BeaconManager;
-import moe.seikimo.mwhrd.game.lightrealm.RealmOfLightLogic;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.utils.BorderHelper;
 import moe.seikimo.mwhrd.utils.Debug;
+import moe.seikimo.mwhrd.utils.PlayerList;
+import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
@@ -40,6 +44,8 @@ public final class DebugCommand {
                 .then(argument("value", LongArgumentType.longArg(0))
                     .executes(DebugCommand::fuel)))
             .then(literal("custom")
+                .then(literal("tablist")
+                    .executes(DebugCommand::tablist))
                 .executes(DebugCommand::usage))
             .then(literal("inv")
                 .then(literal("restore")
@@ -192,6 +198,44 @@ public final class DebugCommand {
             context.getSource().sendMessage(Text.literal("Set world border"));
         } catch (Exception exception) {
             log.error("Failed to set world border", exception);
+        }
+
+        return 1;
+    }
+
+    private static int tablist(CommandContext<ServerCommandSource> context) {
+        var player = context.getSource().getPlayer();
+        if (player == null) {
+            context.getSource().sendError(Text.literal("Must be ran as a player"));
+            return 1;
+        }
+
+        try {
+            PlayerList.removeAllPlayers(player.networkHandler);
+
+            player.networkHandler.sendPacket(new PlayerListHeaderS2CPacket(
+                Text.literal("top text"),
+                Text.literal("bottom text")
+            ));
+
+            var entries = new ArrayList<PlayerListS2CPacket.Entry>();
+            for (var i = 0; i < 10; i++) {
+                entries.add(PlayerList.fakePlayer(
+                    "Player" + i,
+                    Text.literal("Player " + i)
+                        .formatted(i % 2 == 0 ? Formatting.BOLD : Formatting.GOLD, Formatting.YELLOW),
+                    10 - i,
+                    PlayerList.DARK_GRAY_HEAD, PlayerList.DARK_GRAY_SIGN
+                ));
+            }
+
+            player.networkHandler.sendPacket(PlayerList.create(
+                PlayerList.NEW_ACTIONS, entries
+            ));
+
+            context.getSource().sendMessage(Text.literal("Sent tab list update"));
+        } catch (Exception exception) {
+            log.error("Failed to send tab list update", exception);
         }
 
         return 1;

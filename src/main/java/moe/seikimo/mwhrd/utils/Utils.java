@@ -20,6 +20,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -32,10 +33,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
+import java.nio.ByteBuffer;
+import java.util.*;
 
 public interface Utils {
     Set<RegistryKey<World>> ALLOWED_WORLDS = Set.of(
@@ -369,5 +368,38 @@ public interface Utils {
             RegistryKeys.BLOCK,
             Identifier.of("mwhrd", id)
         );
+    }
+
+    /**
+     * Creates a new-line separated single-line text.
+     *
+     * @param texts The texts to concatenate.
+     * @return The concatenated text.
+     */
+    static Text list(Text... texts) {
+        var combined = Text.empty();
+
+        for (var i = 0; i < texts.length; i++) {
+            var text = texts[i];
+            combined
+                .append(text)
+                .append(i < texts.length - 1 ?
+                    Text.literal("\n") :
+                    Text.empty());
+        }
+
+        return combined;
+    }
+
+    /**
+     * Converts a number into a v4 UUID.
+     *
+     * @param index The index to convert.
+     * @return The UUID.
+     */
+    static UUID uuidFromIndex(int index) {
+        var buffer = ByteBuffer.allocate(Integer.BYTES);
+        buffer.putInt(index);
+        return UUID.nameUUIDFromBytes(buffer.array());
     }
 }

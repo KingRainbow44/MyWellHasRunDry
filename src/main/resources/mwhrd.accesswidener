@@ -27,3 +27,6 @@ accessible field net/minecraft/entity/mob/MobEntity persistent Z
 accessible field net/minecraft/server/world/ServerWorld entityList Lnet/minecraft/world/EntityList;
 
 accessible method net/minecraft/entity/LivingEntity setLivingFlag (IZ)V
+
+accessible field net/minecraft/network/packet/s2c/play/PlayerListS2CPacket entries Ljava/util/List;
+mutable field net/minecraft/network/packet/s2c/play/PlayerListS2CPacket entries Ljava/util/List;
