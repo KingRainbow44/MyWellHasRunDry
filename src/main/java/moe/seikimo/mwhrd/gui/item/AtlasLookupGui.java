@@ -24,7 +24,6 @@ import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public final class AtlasLookupGui extends SimpleGui {

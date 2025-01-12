@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.data.DatabaseObject;
 import moe.seikimo.general.JObject;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.game.guilds.GuildInstance;
+import moe.seikimo.mwhrd.game.guilds.GuildManager;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import moe.seikimo.mwhrd.utils.items.PlayerStorage;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -19,6 +21,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.time.Duration;
@@ -31,6 +34,7 @@ import java.util.List;
 @Entity("players")
 public final class PlayerModel implements DatabaseObject<PlayerModel> {
     @Id private String playerUuid;
+    private int guildId = -1;
 
     @ApiStatus.Internal
     private List<String> lootItems = new ArrayList<>();
@@ -48,6 +52,8 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     private boolean storedInventory = false;
 
     private transient ServerPlayerEntity handle;
+    private transient GuildInstance guild;
+
     private transient ItemStorage loot = new ItemStorage();
     private transient PlayerStorage storage = new PlayerStorage();
 
@@ -69,6 +75,11 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     public void afterLoad() {
         this.loot.deserialize(this.lootItems);
         this.storage.deserialize(this.storedItems);
+
+        if (this.guildId != -1) {
+            var guildColor = Formatting.byColorIndex(this.guildId);
+            this.guild = GuildManager.getGuild(guildColor);
+        }
     }
 
     /**
@@ -104,6 +115,23 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
         } else if (interactionManager.getGameMode() != GameMode.CREATIVE) {
             interactionManager.changeGameMode(GameMode.SURVIVAL);
         }
+    }
+
+    /**
+     * Sets the guild handle.
+     *
+     * @param handle The guild handle.
+     */
+    public void setGuild(@Nullable GuildInstance handle) {
+        if (handle == null) {
+            this.guildId = -1;
+            this.guild = null;
+        } else {
+            this.guildId = handle.getGuildId();
+            this.guild = handle;
+        }
+
+        this.save();
     }
 
     /// <editor-fold desc="Ban System">
@@ -234,6 +262,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     public JsonObject explain() {
         return JObject.c()
             .add("uuid", this.getPlayerUuid())
+            .add("guildId", this.getGuildId())
             .add("isBanned", this.isBanned())
             .add("bannedUntil", this.getBannedUntil())
             .gson();

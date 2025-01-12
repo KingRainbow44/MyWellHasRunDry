@@ -6,11 +6,16 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
 import dev.morphia.annotations.PostLoad;
+import dev.morphia.annotations.PrePersist;
 import lombok.Data;
 import moe.seikimo.data.DatabaseObject;
 import moe.seikimo.general.JObject;
+import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.models.BasicPlayerInfo;
+import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.utils.Maps;
+import moe.seikimo.mwhrd.utils.items.DynamicItemStorage;
+import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -53,12 +58,16 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     /** The members of the guild. */
     private List<BasicPlayerInfo> members = new ArrayList<>();
 
+    private DynamicItemStorage bank = new DynamicItemStorage(6, 8);
+
     private transient Formatting color;
 
     @VisibleForTesting
     @ApiStatus.Internal
     public GuildInstance() {
         this(Formatting.WHITE);
+
+        // For Morphia.
     }
 
     /**
@@ -150,6 +159,14 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         var info = BasicPlayerInfo.from(player);
         this.members.add(info);
 
+        // Set the guild for the player.
+        if (player instanceof IDBObject<?> dbObject) {
+            var model = dbObject.mwhrd$getData();
+            if (model instanceof PlayerModel playerModel) {
+                playerModel.setGuild(this);
+            }
+        }
+
         // If the guild has no owner, assign an owner.
         if (this.owner == null) {
             this.owner = info;
@@ -169,6 +186,14 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     public void removeMember(ServerPlayerEntity player) {
         this.members.removeIf(info -> info.uuid()
             .equals(player.getUuidAsString()));
+
+        // Unset the player's guild in the database.
+        if (player instanceof IDBObject<?> dbObject) {
+            var model = dbObject.mwhrd$getData();
+            if (model instanceof PlayerModel playerModel) {
+                playerModel.setGuild(null);
+            }
+        }
 
         // Check if the guild is vacant.
         if (this.members.isEmpty()) {
@@ -214,6 +239,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         this.members.clear();
         this.owner = null;
         this.name = DEFAULT_NAMES.getOrDefault(this.color, "Guild");
+        this.bank.clear();
 
         this.save();
 

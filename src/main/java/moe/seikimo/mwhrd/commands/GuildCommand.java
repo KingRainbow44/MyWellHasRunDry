@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import moe.seikimo.mwhrd.game.guilds.GuildManager;
+import moe.seikimo.mwhrd.gui.guild.GuildBankSelectorGui;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -33,6 +34,8 @@ public final class GuildCommand {
                     .executes(GuildCommand::renameGuild)))
             .then(literal("disband")
                 .executes(GuildCommand::disbandGuild))
+            .then(literal("bank")
+                .executes(GuildCommand::openGuildBank))
         );
 
         // Register '/g' alias.
@@ -148,6 +151,26 @@ public final class GuildCommand {
         }
 
         guild.disband();
+
+        return 1;
+    }
+
+    /**
+     * Opens the guild bank GUI for the player.
+     */
+    private static int openGuildBank(CommandContext<ServerCommandSource> context) {
+        var source = context.getSource();
+        var player = Objects.requireNonNull(source.getPlayer());
+
+        // Open the guild bank using the guild manager.
+        var guild = GuildManager.getGuild(player);
+        if (guild == null) {
+            source.sendMessage(Text.translatable("commands.guild.not_in_guild"));
+            return 0;
+        }
+
+        // Open the guild bank GUI.
+        GuildBankSelectorGui.open(guild, player);
 
         return 1;
     }

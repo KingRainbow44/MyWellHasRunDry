@@ -205,6 +205,10 @@ public final class ItemStorage implements Iterable<ItemStack> {
      * @param serialized The Base64 & JSON-encoded item storage.
      */
     public void deserialize(List<String> serialized) {
+        if (serialized == null) {
+            return;
+        }
+
         var registry = MyWellHasRunDry.getServer()
             .getRegistryManager();
 

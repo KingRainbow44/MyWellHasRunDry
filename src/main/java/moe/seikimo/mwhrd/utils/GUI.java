@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public interface GUI {
@@ -88,6 +89,39 @@ public interface GUI {
                 }
                 gui.setSlot(slot, element);
             }
+        }
+    }
+
+    /**
+     * Draws a line using the mapper.
+     *
+     * @param gui The GUI to draw the line on.
+     * @param start The starting index of the line.
+     * @param backing The backing list to draw.
+     * @param mapper The function to map the list elements to GUI elements.
+     * @param <T> The type of the backing list.
+     */
+    static <T> void drawLine(
+        SimpleGui gui, int start, List<T> backing, BiFunction<T, Integer, GuiElement> mapper
+    ) {
+        // Determine the max index to draw.
+        // Indexes start from '0', so we subtract one.
+        var maxIndex = gui.getWidth() * gui.getHeight() - 1;
+        if (maxIndex < 0) {
+            throw new IllegalArgumentException("GUI has an invalid size");
+        }
+
+        var currentIndex = 0;
+        var nextSlot = start;
+
+        // Continue drawing until we are out of bounds.
+        while (nextSlot <= maxIndex) {
+            // Otherwise, we should draw the element.
+            var index = currentIndex++;
+            var data = backing.get(index);
+            gui.setSlot(nextSlot, mapper.apply(data, index));
+
+            nextSlot += 9;
         }
     }
 

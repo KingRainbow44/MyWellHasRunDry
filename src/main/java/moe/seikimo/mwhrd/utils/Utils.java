@@ -402,4 +402,37 @@ public interface Utils {
         buffer.putInt(index);
         return UUID.nameUUIDFromBytes(buffer.array());
     }
+
+    /**
+     * Creates a new list with the given size.
+     *
+     * @param size The size of the list.
+     * @return The new list.
+     * @param <T> The type of the list.
+     */
+    static <T> List<T> newList(int size) {
+        var list = new ArrayList<T>(size);
+
+        // Fill the list with nulls.
+        for (var i = 0; i < size; i++) {
+            list.add(null);
+        }
+
+        return list;
+    }
+
+    /**
+     * Removes the italics formatting from a text.
+     *
+     * @param source The source text.
+     * @return The text without italics formatting.
+     */
+    static Text clearFormatting(Text source) {
+        return source
+            .copy()
+            .setStyle(
+                source.getStyle()
+                    .withItalic(false)
+            );
+    }
 }

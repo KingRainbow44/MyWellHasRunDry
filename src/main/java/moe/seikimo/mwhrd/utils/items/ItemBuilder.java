@@ -3,6 +3,7 @@ package moe.seikimo.mwhrd.utils.items;
 import lombok.RequiredArgsConstructor;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EquipmentSlot;
@@ -10,6 +11,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.text.Text;
+
+import java.util.ArrayList;
 
 @RequiredArgsConstructor(staticName = "of")
 public final class ItemBuilder {
@@ -24,6 +28,35 @@ public final class ItemBuilder {
     }
 
     private final ItemStack stack;
+
+    /**
+     * Sets the name of the stack.
+     *
+     * @param text The name to set.
+     * @return The builder for chaining.
+     */
+    public ItemBuilder name(Text text) {
+        this.stack.set(DataComponentTypes.CUSTOM_NAME, Utils.clearFormatting(text));
+        return this;
+    }
+
+    /**
+     * Sets the lore of the stack.
+     *
+     * @param text The lore to set.
+     * @return The builder for chaining.
+     */
+    public ItemBuilder lore(Text... text) {
+        var lore = new ArrayList<Text>();
+
+        // Clear the italics formatting from the lore.
+        for (var line : text) {
+            lore.add(Utils.clearFormatting(line));
+        }
+
+        this.stack.set(DataComponentTypes.LORE, new LoreComponent(lore));
+        return this;
+    }
 
     /**
      * Enchants the stack with the given enchantment at the given level.

@@ -1,6 +1,8 @@
 package moe.seikimo.mwhrd.utils;
 
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.interfaces.IDBObject;
+import moe.seikimo.mwhrd.models.PlayerModel;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
@@ -89,5 +91,23 @@ public interface Players {
         var connection = player.networkHandler.connection;
         connection.send(new DisconnectS2CPacket(text), PacketCallbacks.always(() -> connection.disconnect(text)));
         connection.tryDisableAutoRead();
+    }
+
+    /**
+     * Fetches the data model for the given player.
+     *
+     * @param player The player to fetch the model for.
+     * @return The player's data model.
+     */
+    static PlayerModel getModel(ServerPlayerEntity player) {
+        if (!(player instanceof IDBObject<?> dbObject)) {
+            throw new RuntimeException("Player is not instance of IDBObject.");
+        }
+
+        if (!(dbObject.mwhrd$getData() instanceof PlayerModel playerModel)) {
+            throw new RuntimeException("Player data is not instance of PlayerModel.");
+        }
+
+        return playerModel;
     }
 }

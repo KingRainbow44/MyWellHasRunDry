@@ -6,7 +6,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 
 @RequiredArgsConstructor
-public final class ShulkerListener implements ScreenHandlerListener {
+public final class FunctionalScreenListener implements ScreenHandlerListener {
     private final Listener listener;
 
     @Override

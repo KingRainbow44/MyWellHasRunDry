@@ -2,7 +2,7 @@ package moe.seikimo.mwhrd.mixin;
 
 import moe.seikimo.mwhrd.custom.interfaces.SwingHandListener;
 import moe.seikimo.mwhrd.events.PlayerSwingHandEvent;
-import moe.seikimo.mwhrd.impl.ShulkerListener;
+import moe.seikimo.mwhrd.impl.FunctionalScreenListener;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
@@ -130,7 +130,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
                     screen.setStackInSlot(a, 0, shulkerInventory.get(a));
                 }
 
-                screen.addListener(new ShulkerListener((_handler, _slot, stack) -> {
+                screen.addListener(new FunctionalScreenListener((_handler, _slot, stack) -> {
                     if (_slot == -999) return;
                     if (_slot > shulkerInventory.size() - 1) return;
 
