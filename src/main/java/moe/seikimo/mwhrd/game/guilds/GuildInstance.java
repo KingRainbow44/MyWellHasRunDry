@@ -15,18 +15,15 @@ import moe.seikimo.mwhrd.models.BasicPlayerInfo;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.utils.Maps;
 import moe.seikimo.mwhrd.utils.items.DynamicItemStorage;
-import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.VisibleForTesting;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Data
 @Entity("guilds")
@@ -59,8 +56,13 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     private List<BasicPlayerInfo> members = new ArrayList<>();
 
     private DynamicItemStorage bank = new DynamicItemStorage(6, 8);
+    private Map<Integer, String> pageNames = new HashMap<>();
+
+    @ApiStatus.Internal
+    private Map<Integer, Integer> bankIcons = new HashMap<>();
 
     private transient Formatting color;
+    private transient Map<Integer, Item> pageIcons = new HashMap<>();
 
     @VisibleForTesting
     @ApiStatus.Internal
@@ -84,6 +86,23 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     @PostLoad
     public void afterLoad() {
         this.color = Formatting.byColorIndex(this.guildId);
+
+        // Load all bank icons.
+        for (var entry : this.bankIcons.entrySet()) {
+            var item = Item.byRawId(entry.getValue());
+            if (item != null) {
+                this.pageIcons.put(entry.getKey(), item);
+            }
+        }
+    }
+
+    @PrePersist
+    public void beforeSave() {
+        // Serialize all bank icons.
+        this.bankIcons.clear();
+        for (var entry : this.pageIcons.entrySet()) {
+            this.bankIcons.put(entry.getKey(), Item.getRawId(entry.getValue()));
+        }
     }
 
     /**

@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.utils.items;
 
 import dev.morphia.annotations.*;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.utils.Triple;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -274,6 +275,88 @@ public final class DynamicItemStorage {
     }
 
     /**
+     * Removes up to one stack of the specified item from the storage.
+     *
+     * @param item The item to remove.
+     * @return The item stack removed from the storage.
+     */
+    public ItemStack remove(Item item) {
+        return this.remove(item, Math.min(item.getMaxCount(), this.count(item)));
+    }
+
+    /**
+     * Removes a quantity of items from the storage.
+     *
+     * @param item The item to remove.
+     * @param count The amount of items to remove.
+     * @return The item stack removed from the storage.
+     */
+    public ItemStack remove(Item item, int count) {
+        // Check if the item is stackable.
+        if (item.getMaxCount() <= 1) {
+            throw new IllegalArgumentException("Cannot remove items from a stack with a max count of 1.");
+        }
+
+        // Iterate over every page in the storage.
+        // Iterate over every item (index) in the page.
+        // If an item matches the type, add the page and index to a list.
+        // Add the count to a running tally.
+
+        // If the tally < count, throw an exception.
+        // Otherwise, remove items from the storage.
+        // If the count is 0, remove the stack from the page.
+        // If the count is less than the stack count, reduce the stack count.
+
+        var tally = 0;
+        var operations = new ArrayList<Triple<Integer, Integer, Integer>>();
+
+        for (var i = 0; i < this.backing.size(); i++) {
+            var page = this.backing.get(i);
+
+            for (var j = 0; j < page.size(); j++) {
+                var stack = page.get(j);
+
+                if (stack.getItem() != item) {
+                    continue;
+                }
+
+                if (tally + stack.getCount() < count) {
+                    tally += stack.getCount();
+
+                    operations.add(new Triple<>(i, j, stack.getCount()));
+                } else {
+                    var toRemove = count - tally;
+                    tally = count;
+
+                    operations.add(new Triple<>(i, j, toRemove));
+                    break;
+                }
+            }
+        }
+
+        // If the tally is less than the count, we cannot remove the items.
+        if (tally < count) {
+            throw new IllegalArgumentException("Cannot remove more items than are in the storage.");
+        }
+
+        // Perform the removal operations.
+        for (var operation : operations) {
+            var page = operation.first();
+            var index = operation.second();
+            var toRemove = operation.third();
+
+            var stack = this.backing.get(page).get(index);
+            if (toRemove == stack.getCount()) {
+                this.backing.get(page).set(index, ItemStack.EMPTY);
+            } else {
+                stack.setCount(stack.getCount() - toRemove);
+            }
+        }
+
+        return new ItemStack(item, count);
+    }
+
+    /**
      * Removes an item stack from the storage.
      *
      * @param page The page to remove the item from. (0-indexed)
@@ -372,6 +455,20 @@ public final class DynamicItemStorage {
 
         this.backing.add(page);
         return page;
+    }
+
+    /**
+     * @return A set containing every unique type of item in the storage.
+     */
+    public Set<Item> uniqueItems() {
+        var set = new HashSet<Item>();
+
+        this.backing.stream()
+            .flatMap(Collection::stream)
+            .map(ItemStack::getItem)
+            .forEach(set::add);
+
+        return set;
     }
 
     /**

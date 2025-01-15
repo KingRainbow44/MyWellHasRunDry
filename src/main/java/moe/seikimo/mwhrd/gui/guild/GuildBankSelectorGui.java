@@ -69,9 +69,7 @@ public final class GuildBankSelectorGui extends SimpleGui {
                     Text.literal("Click to withdraw stacks!")
                         .formatted(Formatting.YELLOW)
                 ))
-                .setCallback(() -> {
-                    this.getPlayer().sendMessage(Text.literal("you should probably withdraw"));
-                })
+                .setCallback(this::withdrawStacks)
         );
 
         this.setSlot(
@@ -103,9 +101,72 @@ public final class GuildBankSelectorGui extends SimpleGui {
                     Text.literal("Click to insert stacks!")
                         .formatted(Formatting.YELLOW)
                 ))
-                .setCallback(() -> {
-                    this.getPlayer().sendMessage(Text.literal("you should probably insert"));
-                })
+                .setCallback(this::insertStacks)
         );
+    }
+
+    /**
+     * Inserts stacks into the guild bank.
+     */
+    private void insertStacks() {
+        var inventory = this.getPlayer().getInventory();
+        var storage = this.guild.getBank();
+
+        // Get all items that are in the storage.
+        var storageTypes = storage.uniqueItems();
+
+        // Iterate through the player's inventory.
+        // If a stack's type matches, insert it into the storage.
+        for (var i = 9; i < 36; i++) {
+            var item = inventory.getStack(i);
+            if (item.isEmpty()) {
+                continue;
+            }
+
+            var type = item.getItem();
+            if (storageTypes.contains(type)) {
+                // Insert the stack into the storage.
+                storage.insert(item);
+                // Clear the player's stack.
+                item.setCount(0);
+            }
+        }
+
+        this.getPlayer().sendMessage(Text.translatable("text.mwhrd.guild.bank.insert")
+            .formatted(Formatting.GREEN));
+    }
+
+    /**
+     * Withdraws stacks from the guild bank.
+     */
+    private void withdrawStacks() {
+        var inventory = this.getPlayer().getInventory();
+        var storage = this.guild.getBank();
+
+        // Using the types in the inventory, match them to those of the storage.
+        for (var i = 9; i < 36; i++) {
+            var stack = inventory.getStack(i);
+            if (stack.isEmpty()) {
+                continue;
+            }
+
+            // Check if the stack is less than the max stack size.
+            var item = stack.getItem();
+            if (stack.getCount() >= item.getMaxCount()) {
+                continue;
+            }
+
+            // Otherwise, we should try to withdraw a stack from the storage.
+            var needed = item.getMaxCount() - stack.getCount();
+            try {
+                storage.remove(item, needed);
+                stack.setCount(item.getMaxCount());
+            } catch (IllegalArgumentException ignored) {
+                // When this occurs, we don't have enough of the stack.
+            }
+        }
+
+        this.getPlayer().sendMessage(Text.translatable("text.mwhrd.guild.bank.withdraw")
+            .formatted(Formatting.GREEN));
     }
 }

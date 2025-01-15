@@ -70,6 +70,12 @@
 
     "text.mwhrd.guild.disbanded": "The guild has been disbanded!",
     "text.mwhrd.guild.bank.skip_10": "Right click to skip to %s",
+    "text.mwhrd.guild.bank.insert": "Successfully inserted matching items!",
+    "text.mwhrd.guild.bank.withdraw": "Successfully withdrawn matching items!",
+    "text.mwhrd.guild.bank.update_icon": "Changed the icon for page %s to %s!",
+    "text.mwhrd.guild.bank.update_icon.clear": "Cleared the icon for page %s.",
+    "text.mwhrd.guild.bank.update_name": "Updated page %s to '%s'.",
+    "text.mwhrd.guild.bank.update_name.clear": "Reset page %s's name.",
 
     "commands.guild.not_in_guild": "You are not in a guild.",
     "commands.guild.no_permission": "You do not have permission to do this!",
