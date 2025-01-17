@@ -109,6 +109,8 @@ public final class MinecartBlaster extends BaseGun {
 
     @Override
     public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+        user.setGlowing(false);
+
         var remaining = this.getMaxUseTime(stack, user) - remainingUseTicks;
         if (remaining < 10) {
             return false;
