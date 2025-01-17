@@ -3,6 +3,7 @@ package moe.seikimo.mwhrd.custom.items.guns;
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.custom.CustomComponents;
+import moe.seikimo.mwhrd.custom.CustomDamageSources;
 import moe.seikimo.mwhrd.custom.components.GunComponent;
 import moe.seikimo.mwhrd.custom.components.ReloadComponent;
 import moe.seikimo.mwhrd.custom.interfaces.SwingHandListener;
@@ -20,10 +21,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
-import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -135,10 +133,33 @@ public abstract class BaseGun
     }
 
     /**
+     * NOTE: This value more controls the 'speed' rather than the 'pitch' of a noise.
+     *
+     * @return The pitch of the fire sound.
+     */
+    public float getFirePitch() {
+        return 2f;
+    }
+
+    /**
      * @return The particle to spawn at each step.
      */
     public SimpleParticleType getParticle() {
         return ParticleTypes.ELECTRIC_SPARK;
+    }
+
+    /**
+     * @return The item used for ammo.
+     */
+    public Item getMagazineItem() {
+        return Items.GHAST_TEAR;
+    }
+
+    /**
+     * @return The amount of ammo per item.
+     */
+    public int getMagazineCount() {
+        return 1;
     }
 
     /**
@@ -181,17 +202,10 @@ public abstract class BaseGun
     ) {
         var blockPos = Utils.blockPos(position);
 
-        // Create the damage source.
-        var arrow = new ArrowEntity(EntityType.ARROW, world);
-
-        var playerSource = world.getDamageSources()
-            .mobProjectile(arrow, shooter);
-        var mobSource = world.getDamageSources()
-            .indirectMagic(shooter, shooter);
-
         // Check for entities within the impact range.
         for (var entity : BaseGun.otherEntities(world, shooter, position, this.getImpactRange())) {
             var damage = this.getDamage(entity, stack, iteration);
+            var damageSource = CustomDamageSources.railgunExplosion(world, shooter);
 
             // Check if the collision was within the head range of the entity.
             var headBox = Box.of(entity.getEyePos(), 0.6f, 0.6f, 0.6f);
@@ -201,9 +215,7 @@ public abstract class BaseGun
                 damage *= this.getCritMultiplier();
             }
 
-            entity.damage(world,
-                entity instanceof PlayerEntity ? playerSource : mobSource,
-                damage);
+            entity.damage(world, damageSource, damage);
             entity.timeUntilRegen = 2;
             return true;
         }
@@ -239,7 +251,7 @@ public abstract class BaseGun
             player.getBlockPos(),
             this.getFireSound(),
             SoundCategory.PLAYERS,
-            1.0f, 2.0f
+            1.0f, this.getFirePitch()
         );
 
         var stopPosition = player.getBlockPos();
@@ -390,8 +402,28 @@ public abstract class BaseGun
             return;
         }
 
+        // Check if ammo is available to reload the gun.
+        var ammoItem = this.getMagazineItem();
+        var perAmmo = this.getMagazineCount();
+
+        var itemCount = player.getInventory().count(ammoItem);
+        if (itemCount == 0) {
+            return;
+        }
+
+        var ammoInInv = perAmmo * itemCount;
+        var newAmmo = Math.min(gunData.maxAmmo(), bullets + ammoInInv);
+        var itemsNeeded = Math.ceilDiv(gunData.maxAmmo() - bullets, perAmmo);
+
+        // Subtract the ammo from the player's inventory.
+        player.getInventory().remove(
+            s -> s.getItem() == ammoItem,
+            itemsNeeded,
+            player.playerScreenHandler.getCraftingInput()
+        );
+
         // Reload the gun.
-        stack.set(CustomComponents.GUN_RELOAD, ReloadComponent.of(gunData.reloadTime()));
+        stack.set(CustomComponents.GUN_RELOAD, ReloadComponent.of(gunData.reloadTime(), newAmmo));
     }
 
     @Override
@@ -420,7 +452,12 @@ public abstract class BaseGun
 
         // If the gun is fully reloaded, set the bullets.
         if (!reloadData.reloading()) {
-            stack.set(CustomComponents.GUN_BULLETS, gunData.maxAmmo());
+            var newAmmo = gunData.maxAmmo();
+            if (reloadData.newCount() != -1) {
+                newAmmo = reloadData.newCount();
+            }
+
+            stack.set(CustomComponents.GUN_BULLETS, newAmmo);
         }
     }
 }

@@ -12,14 +12,16 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  */
 public record ReloadComponent(
     boolean reloading,
-    int remainingTicks
+    int remainingTicks,
+    int newCount
 ) {
-    public static final ReloadComponent EMPTY = new ReloadComponent(false, 0);
+    public static final ReloadComponent EMPTY = new ReloadComponent(false, 0, -1);
 
     public static final Codec<ReloadComponent> CODEC = RecordCodecBuilder.create(builder ->
         builder.group(
             Codec.BOOL.fieldOf("reloading").forGetter(ReloadComponent::reloading),
-            Codec.INT.fieldOf("remainingTicks").forGetter(ReloadComponent::remainingTicks)
+            Codec.INT.fieldOf("remainingTicks").forGetter(ReloadComponent::remainingTicks),
+            Codec.INT.fieldOf("newCount").forGetter(ReloadComponent::newCount)
         ).apply(builder, ReloadComponent::new)
     );
 
@@ -27,10 +29,11 @@ public record ReloadComponent(
      * Creates a new reload component.
      *
      * @param ticks The number of ticks until the gun is reloaded.
+     * @param count The new ammo of the gun.
      * @return A new reload component.
      */
-    public static ReloadComponent of(int ticks) {
-        return new ReloadComponent(true, ticks);
+    public static ReloadComponent of(int ticks, int count) {
+        return new ReloadComponent(true, ticks, count);
     }
 
     /**
@@ -41,7 +44,8 @@ public record ReloadComponent(
     public ReloadComponent minus() {
         return new ReloadComponent(
             this.remainingTicks > 1,
-            this.remainingTicks - 1
+            this.remainingTicks - 1,
+            this.newCount
         );
     }
 }

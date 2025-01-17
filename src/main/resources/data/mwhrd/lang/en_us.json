@@ -38,8 +38,15 @@
     "item.mwhrd.prototype_launcher": "Prototype 3000 Launcher",
     "item.mwhrd.frenzy": "Frenzy © 2025",
     "item.mwhrd.op_400": "OPERATOR 400",
+    "item.mwhrd.minecart_blaster": "The Minecart®",
 
     "entity.mwhrd.guardian_of_light": "Guardian of Light",
+
+    "death.attack.gun": "%1$s got shot",
+    "death.attack.gun.player": "%1$s got shot by %2$s",
+    "death.attack.gun.player.item": "%1$s got shot by %2$s using %3$s",
+    "death.attack.gun.railgun.explosion": "%1$s took the bullet of a railgun",
+    "death.attack.gun.railgun.explosion.player": "%1$s took the bullet of %2$s",
 
     "text.mwhrd.beacon.item_applied_to": "When Applied to a Beacon:",
     "text.mwhrd.gun.base_damage": " %s Base Damage",

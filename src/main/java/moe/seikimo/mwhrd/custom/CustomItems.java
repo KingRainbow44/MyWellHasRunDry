@@ -158,6 +158,7 @@ public interface CustomItems {
     Item PROTOTYPE_LAUNCHER = Items.register(itemKey("prototype_launcher"), PrototypeLauncher::new);
     Item FRENZY = Items.register(itemKey("frenzy"), Frenzy::new);
     Item OP_400 = Items.register(itemKey("op_400"), OP400::new);
+    Item MINECART_BLASTER = Items.register(itemKey("minecart_blaster"), MinecartBlaster::new);
 
     ItemGroup MY_WELL_HAS_RUN_DRY = PolymerItemGroupUtils.builder()
         .displayName(Text.translatable("itemGroup.mwhrd"))
@@ -207,6 +208,7 @@ public interface CustomItems {
             entries.add(PROTOTYPE_LAUNCHER);
             entries.add(FRENZY);
             entries.add(OP_400);
+            entries.add(MINECART_BLASTER);
         })
         .build();
 
