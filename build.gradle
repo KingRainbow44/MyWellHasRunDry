@@ -56,10 +56,17 @@ dependencies {
     // Spark for server performance monitoring.
     compileOnly "me.lucko:spark-api:0.1-SNAPSHOT"
 
+    // LuaJ for embedding of the Lua scripting language.
+    shadow(implementation("org.luaj:luaj-jse:3.0.1"))
+
+    // Reflect ASM for faster reflection.
+    shadow(implementation("com.esotericsoftware:reflectasm:1.11.9"))
+
+    // Lombok for Java bytecode manipulation.
     compileOnly "org.projectlombok:lombok:${project.lombok_version}"
     annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
 
-    // Testing dependencines.
+    // Testing dependencies.
     testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
 }
 

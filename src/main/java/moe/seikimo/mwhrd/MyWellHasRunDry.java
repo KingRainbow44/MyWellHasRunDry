@@ -20,6 +20,7 @@ import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.BuffManager;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
+import moe.seikimo.mwhrd.script.ScriptLoader;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import moe.seikimo.mwhrd.game.worldedit.AsyncPool;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -155,6 +156,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
         // Create the async pool.
         AsyncPool.initialize();
+
+        // Initialize the script engine.
+        ScriptLoader.initialize();
 
         // Register registry entries.
         MyWellHasRunDry.PLAYER_VAULT = Registry.register(

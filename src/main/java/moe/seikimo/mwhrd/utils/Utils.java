@@ -29,11 +29,10 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public interface Utils {
