@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 public interface CustomDamageSources {
     RegistryKey<DamageType> GUNSHOT = RegistryKey.of(
         RegistryKeys.DAMAGE_TYPE,
-        Identifier.of(MyWellHasRunDry.MOD_ID, "gun")
+        Identifier.of(MyWellHasRunDry.MOD_ID, "gunshot")
     );
 
     RegistryKey<DamageType> RAILGUN_EXPLOSION = RegistryKey.of(
