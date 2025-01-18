@@ -2,7 +2,9 @@ package moe.seikimo.mwhrd.game.beacon;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import moe.seikimo.mwhrd.custom.CustomItems;
 import moe.seikimo.mwhrd.game.beacon.powers.*;
+import moe.seikimo.mwhrd.utils.Maps;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -17,17 +19,27 @@ import java.util.Map;
 @RequiredArgsConstructor
 public enum BeaconEffect {
     // These are all effects which are applied but not displayed as a 'primary power'.
-    DISABLE_SPAWNS("disable_spawns", "Disable Spawns", BeaconLevel.TIER_1, Items.ZOMBIE_SPAWN_EGG, SpawnControlPower::new, false),
-    UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", BeaconLevel.TIER_2, Items.EXPERIENCE_BOTTLE, UnbreakableToolsPower::new, false),
-    EFFECTS("effects", "Effects", BeaconLevel.TIER_1, Items.POTION, EffectsPower::new, false),
+    DISABLE_SPAWNS("disable_spawns", "Disable Spawns", BeaconLevel.TIER_1, Items.ZOMBIE_SPAWN_EGG, SpawnControlPower::new, false, Items.AIR),
+    UNBREAKING_TOOLS("unbreakable_tools", "Unbreakable Tools", BeaconLevel.TIER_2, Items.EXPERIENCE_BOTTLE, UnbreakableToolsPower::new, false, Items.AIR),
+    EFFECTS("effects", "Effects", BeaconLevel.TIER_1, Items.POTION, EffectsPower::new, false, Items.AIR),
 
     // These are all effects which are displayed as a 'primary power'.
-    PLOT_PURGER("plot_purger", "Plot Purger", BeaconLevel.TIER_4, Items.WITHER_SKELETON_SKULL, PlotPurgePower::new, true),
-    PIXEL_PRINTER("pixel_printer", "Pixel Printer", BeaconLevel.TIER_1, Items.CRAFTER, PixelPrinterPower::new, true),
-    FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", BeaconLevel.TIER_3, Items.ELYTRA, FlightPower::new, true),
-    EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", BeaconLevel.TIER_2, Items.ENDER_EYE, TeleportationPower::new, true),
-    WORLDEDIT("worldedit", "Builder's Grace", BeaconLevel.TIER_4, Items.WOODEN_AXE, BeaconPower.Empty::new, true)
+    PLOT_PURGER("plot_purger", "Plot Purger", BeaconLevel.TIER_4, Items.WITHER_SKELETON_SKULL, PlotPurgePower::new, true, CustomItems.PLOT_PURGER_UPGRADE),
+    PIXEL_PRINTER("pixel_printer", "Pixel Printer", BeaconLevel.TIER_1, Items.CRAFTER, PixelPrinterPower::new, true, CustomItems.PIXEL_PRINTER_UPGRADE),
+    FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", BeaconLevel.TIER_3, Items.ELYTRA, FlightPower::new, true, CustomItems.FLIGHT_CRYSTAL_UPGRADE),
+    EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", BeaconLevel.TIER_2, Items.ENDER_EYE, TeleportationPower::new, true, CustomItems.TELEPORT_EYE_UPGRADE),
+    WORLDEDIT("worldedit", "Builder's Grace", BeaconLevel.TIER_4, Items.WOODEN_AXE, BeaconPower.Empty::new, true, CustomItems.WORLDEDIT_UPGRADE)
     ;
+
+    public static final Map<Class<? extends BeaconPower>, BeaconEffect> POWERS = Maps.beaconPower()
+        .put(SpawnControlPower.class, DISABLE_SPAWNS)
+        .put(UnbreakableToolsPower.class, UNBREAKING_TOOLS)
+        .put(EffectsPower.class, EFFECTS)
+        .put(PlotPurgePower.class, PLOT_PURGER)
+        .put(PixelPrinterPower.class, PIXEL_PRINTER)
+        .put(FlightPower.class, FLIGHT_CRYSTAL)
+        .put(TeleportationPower.class, EYE_OF_TELEPORTATION)
+        .build();
 
     private static final Map<String, BeaconEffect> idMap = new HashMap<>();
 
@@ -49,6 +61,7 @@ public enum BeaconEffect {
     final Item displayItem;
     final BeaconPower.Initializer callbacks;
     final boolean draw;
+    final Item item;
 
     /**
      * @return A new instance of the BeaconPower.

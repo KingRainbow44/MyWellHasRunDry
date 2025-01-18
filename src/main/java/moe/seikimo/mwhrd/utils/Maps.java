@@ -1,6 +1,8 @@
 package moe.seikimo.mwhrd.utils;
 
 import moe.seikimo.general.MapBuilder;
+import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
+import moe.seikimo.mwhrd.game.beacon.BeaconPower;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 
@@ -33,6 +35,13 @@ public interface Maps {
      * @return A map of guild names.
      */
     static MapBuilder<Formatting, String> guildNames() {
+        return MapBuilder.create();
+    }
+
+    /**
+     * @return A map of beacon powers.
+     */
+    static MapBuilder<Class<? extends BeaconPower>, BeaconEffect> beaconPower() {
         return MapBuilder.create();
     }
 }

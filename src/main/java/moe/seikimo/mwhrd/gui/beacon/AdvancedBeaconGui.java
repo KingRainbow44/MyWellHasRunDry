@@ -233,9 +233,15 @@ public final class AdvancedBeaconGui extends SimpleGui {
                             var power = this.beacon
                                 .mwhrd$getEffectMap()
                                 .remove(upgrade);
+
                             if (power != null) {
                                 power.delete();
                                 this.beacon.mwhrd$save();
+
+                                // Add the power to the player's inventory.
+                                var item = BeaconEffect.POWERS.get(power.getClass());
+                                this.getPlayer().getInventory().offerOrDrop(
+                                    item.getItem().getDefaultStack());
                             }
                         } else {
                             var power = this.beacon.mwhrd$getEffectMap().get(upgrade);
