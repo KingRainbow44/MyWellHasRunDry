@@ -336,6 +336,8 @@ public abstract class BaseGun
 
         // Append lines relating to the gun statistics.
         lore.addAll(List.of(
+            Text.translatable("text.mwhrd.gun.uses", this.getMagazineItem().getName())
+                .formatted(Formatting.DARK_GRAY),
             Text.empty(),
             Text.translatable("item.modifiers.mainhand")
                 .setStyle(GUI.CLEAR)

@@ -1,6 +1,8 @@
 package moe.seikimo.mwhrd.custom.items.guns;
 
+import moe.seikimo.mwhrd.custom.CustomItems;
 import moe.seikimo.mwhrd.custom.components.GunComponent;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
@@ -14,6 +16,16 @@ public final class Frenzy extends BaseGun {
             new GunComponent(6, 40, 5, 0, 10),
             Items.DIAMOND_HORSE_ARMOR
         );
+    }
+
+    @Override
+    public Item getMagazineItem() {
+        return CustomItems.LIGHT_CRYSTAL;
+    }
+
+    @Override
+    public int getMagazineCount() {
+        return 3;
     }
 
     @Override

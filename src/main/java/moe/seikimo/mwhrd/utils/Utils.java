@@ -22,6 +22,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -433,5 +434,22 @@ public interface Utils {
                 source.getStyle()
                     .withItalic(false)
             );
+    }
+
+    /**
+     * Returns a rarity-adjusted name of the item.
+     *
+     * @param item The item to get the name of.
+     * @return The rarity-adjusted name of the item.
+     */
+    static Text nameOf(Item item) {
+        var name = item.getName();
+
+        // Check if the item has a rarity.
+        if (item.getComponents().get(DataComponentTypes.RARITY) instanceof Rarity rarity) {
+            name = name.copy().formatted(rarity.getFormatting());
+        }
+
+        return name;
     }
 }

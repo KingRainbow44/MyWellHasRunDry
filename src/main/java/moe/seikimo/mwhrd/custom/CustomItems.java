@@ -159,6 +159,10 @@ public interface CustomItems {
     Item FRENZY = Items.register(itemKey("frenzy"), Frenzy::new);
     Item OP_400 = Items.register(itemKey("op_400"), OP400::new);
     Item MINECART_BLASTER = Items.register(itemKey("minecart_blaster"), MinecartBlaster::new);
+    Item LIGHT_CRYSTAL = Items.register(itemKey("light_crystal"), settings -> new SimplePolymerItem(settings, Items.STONE_BUTTON));
+    Item MEDIUM_CRYSTAL = Items.register(itemKey("medium_crystal"), settings -> new SimplePolymerItem(settings, Items.IRON_NUGGET));
+    Item HEAVY_CRYSTAL = Items.register(itemKey("heavy_crystal"), settings -> new SimplePolymerItem(settings, Items.GHAST_TEAR));
+    Item EXPLOSIVE_CRYSTAL = Items.register(itemKey("explosive_crystal"), settings -> new SimplePolymerItem(settings, Items.FIREWORK_STAR));
 
     ItemGroup MY_WELL_HAS_RUN_DRY = PolymerItemGroupUtils.builder()
         .displayName(Text.translatable("itemGroup.mwhrd"))
@@ -209,6 +213,10 @@ public interface CustomItems {
             entries.add(FRENZY);
             entries.add(OP_400);
             entries.add(MINECART_BLASTER);
+            entries.add(LIGHT_CRYSTAL);
+            entries.add(MEDIUM_CRYSTAL);
+            entries.add(HEAVY_CRYSTAL);
+            entries.add(EXPLOSIVE_CRYSTAL);
         })
         .build();
 

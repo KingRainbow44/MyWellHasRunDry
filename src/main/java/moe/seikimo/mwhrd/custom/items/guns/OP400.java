@@ -1,6 +1,7 @@
 package moe.seikimo.mwhrd.custom.items.guns;
 
 import moe.seikimo.mwhrd.custom.CustomComponents;
+import moe.seikimo.mwhrd.custom.CustomItems;
 import moe.seikimo.mwhrd.custom.components.GunComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,6 +29,16 @@ public final class OP400 extends BaseGun {
             new GunComponent(100, 6, 500, 75, 30),
             Items.SPYGLASS
         );
+    }
+
+    @Override
+    public Item getMagazineItem() {
+        return CustomItems.HEAVY_CRYSTAL;
+    }
+
+    @Override
+    public int getMagazineCount() {
+        return 6;
     }
 
     @Override

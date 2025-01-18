@@ -9,4 +9,12 @@ import net.minecraft.item.Item;
  * @param quantity The quantity of the item.
  */
 public record ItemPair(Item item, int quantity) {
+    /**
+     * Default constructor for a single item.
+     *
+     * @param item The item.
+     */
+    public ItemPair(Item item) {
+        this(item, 1);
+    }
 }

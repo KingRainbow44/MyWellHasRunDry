@@ -6,6 +6,7 @@ import eu.pb4.sgui.api.gui.SimpleGui;
 import moe.seikimo.mwhrd.crafting.CustomSmithingRecipe;
 import moe.seikimo.mwhrd.game.impl.CustomSmithing;
 import moe.seikimo.mwhrd.utils.GUI;
+import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -89,24 +90,52 @@ public final class SmithingCraftingGui extends SimpleGui {
                 player.incrementStat(Stats.INTERACT_WITH_SMITHING_TABLE);
             }));
 
-        this.setSlot(UPGRADE, new GuiElementBuilder(Items.ANVIL)
-            .setName(Text.literal("Open Upgrade Menu")
-                .formatted(Formatting.GREEN))
-            .addLoreLine(Text.literal("This will open the custom upgrade menu.")
-                .formatted(Formatting.GRAY))
-            .addLoreLine(Text.empty())
-            .addLoreLine(Text.literal("Click to open!")
-                .formatted(Formatting.YELLOW))
-            .setCallback(() -> {
-                var world = player.getWorld();
+        // TODO: Implement item upgrade system.
+        // this.setSlot(UPGRADE, new GuiElementBuilder(Items.ANVIL)
+        //     .setName(Text.literal("Open Upgrade Menu")
+        //         .formatted(Formatting.GREEN))
+        //     .addLoreLine(Text.literal("This will open the custom upgrade menu.")
+        //         .formatted(Formatting.GRAY))
+        //     .addLoreLine(Text.empty())
+        //     .addLoreLine(Text.literal("Click to open!")
+        //         .formatted(Formatting.YELLOW))
+        //     .setCallback(() -> {
+        //         var world = player.getWorld();
+        //
+        //         player.openHandledScreen(this.state.createScreenHandlerFactory(world, this.position));
+        //         player.incrementStat(Stats.INTERACT_WITH_SMITHING_TABLE);
+        //     }));
 
-                player.openHandledScreen(this.state.createScreenHandlerFactory(world, this.position));
-                player.incrementStat(Stats.INTERACT_WITH_SMITHING_TABLE);
-            }));
-
-        this.setSlot(INFO, new GuiElementBuilder(Items.KNOWLEDGE_BOOK)
+        var information = new GuiElementBuilder(Items.KNOWLEDGE_BOOK)
             .setName(Text.literal("Information")
-                .formatted(Formatting.GREEN)));
+                .formatted(Formatting.GREEN));
+
+        if (this.selected == null) {
+            information
+                .addLoreLine(Text.empty())
+                .addLoreLine(Text.literal("Select a recipe to view its information.")
+                    .formatted(Formatting.GRAY));
+        } else {
+            var selected = this.selected.getRight();
+
+            var dummy = selected.dummy(this.getPlayer());
+            var info = selected.information();
+
+            if (info == null) {
+                information
+                    .addLoreLine(Text.empty())
+                    .addLoreLine(Text.literal("No information available.")
+                        .formatted(Formatting.GRAY));
+            } else {
+                var name = Utils.nameOf(dummy.getItem());
+
+                information.addLoreLine(Text.empty());
+                information.addLoreLine(name);
+                info.forEach(information::addLoreLine);
+            }
+        }
+
+        this.setSlot(INFO, information);
 
         this.setSlot(NAVIGATE, new GuiElementBuilder(Items.ARROW)
             .setName(Text.literal("Navigate Pages")

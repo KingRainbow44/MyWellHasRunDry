@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.custom.items.guns;
 
 import moe.seikimo.mwhrd.custom.CustomComponents;
 import moe.seikimo.mwhrd.custom.CustomDamageSources;
+import moe.seikimo.mwhrd.custom.CustomItems;
 import moe.seikimo.mwhrd.custom.components.GunComponent;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -36,6 +37,11 @@ public final class MinecartBlaster extends BaseGun {
     }
 
     @Override
+    public Item getMagazineItem() {
+        return CustomItems.EXPLOSIVE_CRYSTAL;
+    }
+
+    @Override
     public SoundEvent getFireSound() {
         return SoundEvents.BLOCK_ANVIL_LAND;
     }
@@ -43,11 +49,6 @@ public final class MinecartBlaster extends BaseGun {
     @Override
     public SimpleParticleType getParticle() {
         return ParticleTypes.WAX_ON;
-    }
-
-    @Override
-    public Item getMagazineItem() {
-        return Items.END_CRYSTAL;
     }
 
     @Override
