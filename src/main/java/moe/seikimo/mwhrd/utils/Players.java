@@ -3,7 +3,11 @@ package moe.seikimo.mwhrd.utils;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.models.PlayerModel;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.enchantment.EnchantmentEffectContext;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.registry.RegistryKey;
@@ -13,6 +17,7 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public interface Players {
@@ -109,5 +114,48 @@ public interface Players {
         }
 
         return playerModel;
+    }
+
+    /**
+     * Repairs the player's gear.
+     * This is a recursive function.
+     *
+     * @param player The player to repair the gear for.
+     * @param amount The amount of experience to repair the gear with.
+     * @return The amount of experience left after repairing the gear.
+     */
+    static int repairPlayerGears(ServerPlayerEntity player, int amount) {
+        var optional = EnchantmentHelper.chooseEquipmentWith(EnchantmentEffectComponentTypes.REPAIR_WITH_XP, player, ItemStack::isDamaged);
+        if (optional.isPresent()) {
+            int experience;
+
+            var itemStack = optional.get().stack();
+
+            int newDamage = EnchantmentHelper.getRepairWithExperience(player.getServerWorld(), itemStack, amount);
+            int damage = Math.min(newDamage, itemStack.getDamage());
+
+            itemStack.setDamage(itemStack.getDamage() - damage);
+            if (damage > 0 && (experience = amount - damage * amount / newDamage) > 0) {
+                return Players.repairPlayerGears(player, experience);
+            }
+
+            return 0;
+        }
+
+        return amount;
+    }
+
+    /**
+     * Adds experience to the player.
+     * This will recursively repair the player's gear first.
+     *
+     * @param player The player to add experience to.
+     * @param experience The amount of experience to add.
+     */
+    static void addExperience(ServerPlayerEntity player, int experience) {
+        var remaining = Players.repairPlayerGears(player, experience);
+        if (remaining > 0) {
+            player.addExperience(remaining);
+        }
     }
 }

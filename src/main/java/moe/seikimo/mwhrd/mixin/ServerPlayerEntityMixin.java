@@ -60,9 +60,6 @@ public abstract class ServerPlayerEntityMixin
     @Shadow
     public abstract void sendMessage(Text message, boolean overlay);
 
-    @Shadow
-    protected abstract void worldChanged(ServerWorld origin);
-
     @Unique private PlayerModel model;
     @Unique private boolean unbreakable = false;
 
@@ -109,7 +106,7 @@ public abstract class ServerPlayerEntityMixin
         }
     }
 
-    @Inject(method = "teleportTo", at = @At("HEAD"))
+    @Inject(method = "teleportTo*", at = @At("HEAD"))
     public void onTeleport(TeleportTarget teleportTarget, CallbackInfoReturnable<Entity> cir) {
         // Remove all beacon effects when a player teleports.
         Arrays.stream(BeaconEffect.values())

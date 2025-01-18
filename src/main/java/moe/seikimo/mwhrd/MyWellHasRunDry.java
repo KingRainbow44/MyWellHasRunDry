@@ -241,17 +241,6 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             }
         });
 
-        // Listen for block breaking.
-        PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, entity) -> {
-            if (!(player instanceof IDBObject<?> dbObj)) return;
-            var model = dbObj.mwhrd$getData();
-            if (!(model instanceof PlayerModel playerModel)) return;
-            if (!playerModel.isSurvivedHardcore()) return;
-
-            // Spawn an experience orb at the block's position.
-            ExperienceOrbEntity.spawn((ServerWorld) world, pos.toCenterPos(), 4);
-        });
-
         // Prevent blocks from being broken/placed.
         UseBlockCallback.EVENT.register(BuffManager::blockPlaceCheck);
         PlayerBlockBreakEvents.BEFORE.register(BuffManager::blockBreakCheck);
