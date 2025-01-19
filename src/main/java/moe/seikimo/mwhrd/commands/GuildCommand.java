@@ -215,8 +215,8 @@ public final class GuildCommand {
         model.setGuildSplit(amount);
         model.save();
 
-        source.sendMessage(Text.translatable("commands.guild.split.set", amount)
-            .formatted(Formatting.DARK_AQUA));
+        source.sendMessage(Text.translatable("commands.guild.split.set", String.valueOf(amount))
+            .formatted(Formatting.AQUA));
 
         return 1;
     }

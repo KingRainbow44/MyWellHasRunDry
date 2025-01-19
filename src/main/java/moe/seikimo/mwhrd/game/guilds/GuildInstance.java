@@ -82,8 +82,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
      */
     public static int calculateLevel(long experience) {
         var level = 0;
-        while (experience >= experienceNeeded(level)) {
-            experience -= experienceNeeded(level);
+        while (experience >= experienceNeeded(level + 1)) {
             level++;
         }
 
@@ -118,7 +117,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     private transient Formatting color;
     private transient Map<Integer, Item> pageIcons = new HashMap<>();
 
-    private transient ServerBossBar experienceBar = null;
+    private transient ServerBossBar experienceBar;
 
     @VisibleForTesting
     @ApiStatus.Internal
@@ -137,6 +136,15 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         this.guildId = color.getColorIndex();
         this.color = color;
         this.name = DEFAULT_NAMES.getOrDefault(color, "Guild");
+
+        // Create a new experience bar.
+        this.experienceBar = new ServerBossBar(
+            Text.empty(),
+            COLOR_MAP.get(this.color),
+            BossBar.Style.NOTCHED_10
+        );
+
+        this.updateExperienceBar();
     }
 
     @PostLoad
@@ -151,12 +159,8 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
             }
         }
 
-        // Create a new experience bar.
-        this.experienceBar = new ServerBossBar(
-            Text.empty(),
-            COLOR_MAP.get(this.color),
-            BossBar.Style.NOTCHED_10
-        );
+        // Set experience bar color.
+        this.experienceBar.setColor(COLOR_MAP.get(this.color));
 
         this.updateExperienceBar();
     }
@@ -200,11 +204,10 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         var current = this.experience - experienceNeeded(this.level);
         var total = experienceRemaining(this.level + 1);
 
-        return Text.literal(this.level + " (")
+        return Text.literal(this.level + " ")
             .formatted(Formatting.DARK_AQUA)
-            .append(Text.literal(current + " / " + total)
-                .formatted(Formatting.DARK_AQUA))
-            .append(Text.literal(")"));
+            .append(Text.literal("(" + current + " / " + total + ")")
+                .formatted(Formatting.AQUA));
     }
 
     /**
@@ -393,7 +396,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
      */
     public void addExperience(int experience) {
         this.experience += experience;
-        var newLevel = GuildInstance.calculateLevel(experience);
+        var newLevel = GuildInstance.calculateLevel(this.experience);
 
         // If the level has changed, broadcast the message.
         if (newLevel > this.level) {
@@ -414,8 +417,9 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         this.experienceBar.setName(this.getBarName());
 
         // Set the experience bar progress.
-        var progress = (float) (this.experience / experienceNeeded(this.level + 1));
-        this.experienceBar.setPercent(progress);
+        var current = this.experience - experienceNeeded(this.level);
+        var total = experienceRemaining(this.level + 1);
+        this.experienceBar.setPercent((float) current / total);
     }
 
     @Override

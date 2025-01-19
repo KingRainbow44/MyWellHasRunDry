@@ -23,6 +23,15 @@ public abstract class ExperienceOrbEntityMixin extends Entity {
 
     /**
      * @author KingRainbow44
+     * @reason Always allow experience orbs to merge.
+     */
+    @Overwrite
+    private boolean isMergeable(ExperienceOrbEntity other) {
+        return other != (Object) this && !other.isRemoved() && other.getExperienceAmount() == this.amount;
+    }
+
+    /**
+     * @author KingRainbow44
      * @reason Use {@link Players#addExperience(ServerPlayerEntity, int)} instead.
      */
     @Overwrite
@@ -32,15 +41,11 @@ public abstract class ExperienceOrbEntityMixin extends Entity {
         }
 
         if (player.experiencePickUpDelay == 0) {
-            player.experiencePickUpDelay = 1;
-            player.sendPickup(this, 1);
+            player.experiencePickUpDelay = 2;
+            player.sendPickup(this, this.pickingCount);
+            Players.addExperience(serverPlayer, this.pickingCount * this.amount);
 
-            Players.addExperience(serverPlayer, this.amount);
-
-            --this.pickingCount;
-            if (this.pickingCount == 0) {
-                this.discard();
-            }
+            this.discard();
         }
     }
 }

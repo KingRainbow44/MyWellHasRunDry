@@ -105,6 +105,6 @@
     "commands.guild.leave.success": "You have left the guild.",
     "commands.guild.rename.success": "Successfully renamed the guild to '%s'!",
     "commands.guild.bank.not_allowed": "Unable to open the bank in this world.",
-    "commands.guild.split.set": "Set guild/player experience split to %s%",
+    "commands.guild.split.set": "Set guild/player experience split to %s percent.",
     "commands.guild.split.invalid_amount": "Invalid experience split."
 }

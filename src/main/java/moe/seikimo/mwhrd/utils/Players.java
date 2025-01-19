@@ -176,7 +176,7 @@ public interface Players {
         // ,and they have experience split enabled...
         if (guild != null && model.getGuildSplit() > 0) {
             /// ...add experience to the guild.
-            var guildExperience = experience * (model.getGuildSplit() / 100);
+            var guildExperience = (int) Math.max(1, Math.floor(experience * (model.getGuildSplit() / 100f)));
             guild.addExperience(guildExperience);
 
             experience -= guildExperience;
