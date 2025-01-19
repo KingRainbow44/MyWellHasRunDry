@@ -101,5 +101,6 @@
     "commands.guild.join.invalid_guild": "Invalid guild name or color specified.",
     "commands.guild.join.success": "Welcome to '%s'!",
     "commands.guild.leave.success": "You have left the guild.",
-    "commands.guild.rename.success": "Successfully renamed the guild to '%s'!"
+    "commands.guild.rename.success": "Successfully renamed the guild to '%s'!",
+    "commands.guild.bank.not_allowed": "Unable to open the bank in this world."
 }

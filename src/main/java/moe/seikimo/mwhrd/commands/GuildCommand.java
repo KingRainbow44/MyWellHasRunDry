@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import moe.seikimo.mwhrd.game.guilds.GuildManager;
 import moe.seikimo.mwhrd.gui.guild.GuildBankSelectorGui;
+import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -161,6 +162,13 @@ public final class GuildCommand {
     private static int openGuildBank(CommandContext<ServerCommandSource> context) {
         var source = context.getSource();
         var player = Objects.requireNonNull(source.getPlayer());
+
+        // Check if the player is in an allowed dimension.
+        if (!Players.inAllowedWorld(player)) {
+            source.sendMessage(Text.translatable("commands.guild.bank.not_allowed")
+                .formatted(Formatting.RED));
+            return 0;
+        }
 
         // Open the guild bank using the guild manager.
         var guild = GuildManager.getGuild(player);

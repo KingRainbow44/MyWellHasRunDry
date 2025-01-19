@@ -173,4 +173,15 @@ public interface Players {
             player.addExperience(remaining);
         }
     }
+
+    /**
+     * Checks if the player is in an allowed world.
+     *
+     * @param player The player to check.
+     * @return Whether the player is in an allowed world.
+     */
+    static boolean inAllowedWorld(ServerPlayerEntity player) {
+        var world = player.getWorld().getRegistryKey();
+        return Utils.ALLOWED_WORLDS.contains(world);
+    }
 }
