@@ -3,6 +3,8 @@ package moe.seikimo.mwhrd.mixin;
 import me.lucko.spark.api.SparkProvider;
 import me.lucko.spark.api.statistic.StatisticWindow;
 import moe.seikimo.mwhrd.game.guilds.GuildManager;
+import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
+import moe.seikimo.mwhrd.utils.Time;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.Packet;
@@ -103,10 +105,17 @@ public abstract class PlayerManagerMixin {
         var mspt = Objects.requireNonNull(spark.mspt(), "MSPT is null");
         var cpu = spark.cpuSystem();
 
+        var rolTicks = TheRealmOfLight.MAX_TICKS - TheRealmOfLight.getWorld().getTicksAlive();
+
         this.sendToAll(
             new PlayerListHeaderS2CPacket(
                 HEADER,
                 Utils.list(
+                    Text.empty(),
+                    Text.literal("The Realm of Light Resets in")
+                        .formatted(Formatting.BOLD, Formatting.LIGHT_PURPLE),
+                    Time.toString(rolTicks).copy()
+                        .formatted(Formatting.WHITE),
                     Text.empty(),
                     Text.literal("TPS (1m): ")
                         .formatted(Formatting.GRAY)
