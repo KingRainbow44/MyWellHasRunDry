@@ -94,7 +94,7 @@
     "text.mwhrd.guild.bank.update_icon.clear": "Cleared the icon for page %s.",
     "text.mwhrd.guild.bank.update_name": "Updated page %s to '%s'.",
     "text.mwhrd.guild.bank.update_name.clear": "Reset page %s's name.",
-    "text.mwhrd.guild.bank.level": "The guild must be level 5 to use the bank!",
+    "text.mwhrd.guild.bank.level": "The guild must be level 15 to use the bank!",
     "text.mwhrd.guild.bank.permission": "You must be at least a Member of the guild to use the bank!",
     "text.mwhrd.guild.level.next": "Congratulations! Your guild, %s, has leveled up to level %s!",
     "text.mwhrd.guild.permission.set": "%s has been %s to %s!",
