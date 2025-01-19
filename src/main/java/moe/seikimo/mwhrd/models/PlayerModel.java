@@ -59,6 +59,10 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
 
     private boolean storedInventory = false;
 
+    private boolean
+        simplePlayerList = true,
+        showExperienceBar = false;
+
     /**
      * The percentage of experience to allocate to the guild.
      */
@@ -142,7 +146,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
         }
 
         // Add the player to the experience bar.
-        if (this.guild != null) {
+        if (this.guild != null && this.showExperienceBar) {
             this.guild.getExperienceBar().addPlayer(handle);
         }
     }

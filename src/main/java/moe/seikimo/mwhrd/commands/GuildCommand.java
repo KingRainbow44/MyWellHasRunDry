@@ -57,6 +57,11 @@ public final class GuildCommand {
                     .executes(GuildCommand::demotePlayer)))
             .then(literal("info")
                 .executes(GuildCommand::info))
+            .then(literal("toggle")
+                .then(literal("xpbar")
+                    .executes(GuildCommand::toggleXpBar))
+                .then(literal("list")
+                    .executes(GuildCommand::toggleList)))
         );
 
         // Register '/g' alias.
@@ -367,6 +372,9 @@ public final class GuildCommand {
         return 1;
     }
 
+    /**
+     * Opens the guild info menu.
+     */
     private static int info(CommandContext<ServerCommandSource> context) {
         var source = context.getSource();
         var player = Objects.requireNonNull(source.getPlayer());
@@ -380,6 +388,55 @@ public final class GuildCommand {
 
         // Open the guild info GUI.
         GuildInfoGui.open(guild, player);
+
+        return 1;
+    }
+
+    /**
+     * Toggles the experience boss bar.
+     */
+    private static int toggleXpBar(CommandContext<ServerCommandSource> context) {
+        var source = context.getSource();
+        var player = Objects.requireNonNull(source.getPlayer());
+        var model = Players.getModel(player);
+
+        var newState = !model.isShowExperienceBar();
+        model.setShowExperienceBar(newState);
+        model.save();
+
+        // Resolve the guild.
+        var guild = GuildManager.getGuild(player);
+        if (guild != null) {
+            if (newState) {
+                guild.getExperienceBar().addPlayer(player);
+            } else {
+                guild.getExperienceBar().removePlayer(player);
+            }
+        }
+
+        source.sendMessage(Text.literal("You will now " + (newState ? "see" : "not see") + " the experience bar.")
+            .formatted(newState ? Formatting.GREEN : Formatting.RED));
+
+        return 1;
+    }
+
+    /**
+     * Toggles the player list.
+     */
+    private static int toggleList(CommandContext<ServerCommandSource> context) {
+        var source = context.getSource();
+        var player = Objects.requireNonNull(source.getPlayer());
+        var model = Players.getModel(player);
+
+        var newState = !model.isSimplePlayerList();
+        model.setSimplePlayerList(newState);
+        model.save();
+
+        source.sendMessage(Text.literal("You will now " + (newState ? "see" : "not see") + " a simple player list.")
+            .formatted(newState ? Formatting.GREEN : Formatting.RED));
+
+        source.sendMessage(Text.literal("You may need to re-log to see the changes.")
+            .formatted(Formatting.ITALIC, Formatting.GRAY));
 
         return 1;
     }

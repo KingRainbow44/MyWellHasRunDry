@@ -5,6 +5,7 @@ import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.models.BasicPlayerInfo;
 import moe.seikimo.mwhrd.utils.Maps;
 import moe.seikimo.mwhrd.utils.PlayerList;
+import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.text.Text;
@@ -184,7 +185,8 @@ public final class GuildManager {
         var usedIndexes = new HashSet<Integer>();
         var addedPlayers = new HashSet<PlayerEntity>();
 
-        var playerEntries = new ArrayList<PlayerListS2CPacket.Entry>();
+        var simplePlayerEntries = new ArrayList<PlayerListS2CPacket.Entry>();
+        var advancedPlayerEntries = new ArrayList<PlayerListS2CPacket.Entry>();
 
         // Insert guild headers.
         for (var entry : GUILD_ICONS.entrySet()) {
@@ -196,7 +198,7 @@ public final class GuildManager {
             // Get the guild instance.
             var guild = GUILDS.get(color);
 
-            playerEntries.add(PlayerList.fakePlayer(
+            advancedPlayerEntries.add(PlayerList.fakePlayer(
                 color.getName(),
                 guild.getDisplayName(),
                 index,
@@ -233,11 +235,15 @@ public final class GuildManager {
                     addedPlayers.add(player.toOnline());
                 }
 
-                playerEntries.add(
-                    player.isOnline() ?
-                        PlayerList.realPlayer(player.toOnline(), displayName, index) :
+                if (player.isOnline()) {
+                    var realPlayer = PlayerList.realPlayer(player.toOnline(), displayName, index);
+                    simplePlayerEntries.add(realPlayer);
+                    advancedPlayerEntries.add(realPlayer);
+                } else {
+                    advancedPlayerEntries.add(
                         PlayerList.fakePlayer(player.username(), displayName, index, PlayerList.DARK_GRAY_HEAD, PlayerList.DARK_GRAY_SIGN)
-                );
+                    );
+                }
 
                 usedIndexes.add(index);
             }
@@ -250,7 +256,7 @@ public final class GuildManager {
                 continue;
             }
 
-            playerEntries.add(PlayerList.fakePlayer(
+            advancedPlayerEntries.add(PlayerList.fakePlayer(
                 Formatting.WHITE.getName(),
                 Text.empty(),
                 i,
@@ -265,24 +271,34 @@ public final class GuildManager {
                 continue;
             }
 
-            playerEntries.add(PlayerList.realPlayer(
+            var realPlayer = PlayerList.realPlayer(
                 player,
                 Objects.requireNonNull(player.getDisplayName()).copy()
                     .formatted(Formatting.DARK_GRAY),
                 -1
-            ));
+            );
+
+            simplePlayerEntries.add(realPlayer);
+            advancedPlayerEntries.add(realPlayer);
         }
 
         // Send the player list to all online players.
-        var playerList = PlayerList.create(PlayerList.NEW_ACTIONS, playerEntries);
+        var simplePlayerList = PlayerList.create(PlayerList.NEW_ACTIONS, simplePlayerEntries);
+        var advancedPlayerList = PlayerList.create(PlayerList.NEW_ACTIONS, advancedPlayerEntries);
+
         for (var player : MyWellHasRunDry.getPlayers()) {
+            var model = Players.getModel(player);
             var networkHandler = player.networkHandler;
 
             // Clear existing entries.
             PlayerList.removeAllPlayers(networkHandler);
 
             // Send the updated player list.
-            networkHandler.sendPacket(playerList);
+            if (model.isSimplePlayerList()) {
+                networkHandler.sendPacket(simplePlayerList);
+            } else {
+                networkHandler.sendPacket(advancedPlayerList);
+            }
         }
     }
 }
