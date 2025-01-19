@@ -1,13 +1,18 @@
 package moe.seikimo.mwhrd.utils;
 
+import com.mojang.authlib.GameProfile;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.player.IPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
+import moe.seikimo.mwhrd.utils.items.ItemBuilder;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.registry.RegistryKey;
@@ -17,6 +22,7 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public interface Players {
@@ -195,5 +201,28 @@ public interface Players {
     static boolean inAllowedWorld(ServerPlayerEntity player) {
         var world = player.getWorld().getRegistryKey();
         return Utils.ALLOWED_WORLDS.contains(world);
+    }
+
+    /**
+     * Creates a head item stack for the player with the specified UUID.
+     *
+     * @param uuid The UUID of the player to create the head for.
+     * @return The head item stack.
+     */
+    static ItemStack headOf(UUID uuid) {
+        var result = MyWellHasRunDry.getServer()
+            .getSessionService()
+            .fetchProfile(uuid, false);
+
+        if (result == null) {
+            return Items.PLAYER_HEAD.getDefaultStack();
+        }
+
+        return ItemBuilder.of(Items.PLAYER_HEAD)
+            .component(
+                DataComponentTypes.PROFILE,
+                new ProfileComponent(result.profile())
+            )
+            .build();
     }
 }

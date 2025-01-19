@@ -452,4 +452,16 @@ public interface Utils {
 
         return name;
     }
+
+
+    /**
+     * Returns a number in the format:
+     * x,xxx,xxx (as needed)
+     *
+     * @param number The number to format.
+     * @return The formatted number.
+     */
+    static String pretty(long number) {
+        return String.format("%,d", number);
+    }
 }

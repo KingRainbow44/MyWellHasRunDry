@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.utils.items;
 
 import lombok.RequiredArgsConstructor;
 import moe.seikimo.mwhrd.utils.Utils;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.UnbreakableComponent;
@@ -37,6 +38,19 @@ public final class ItemBuilder {
      */
     public ItemBuilder name(Text text) {
         this.stack.set(DataComponentTypes.CUSTOM_NAME, Utils.clearFormatting(text));
+        return this;
+    }
+
+    /**
+     * Sets the component of the stack.
+     *
+     * @param type The type of the component.
+     * @param value The value of the component.
+     * @param <T> The type of the component.
+     * @return The builder for chaining.
+     */
+    public <T> ItemBuilder component(ComponentType<T> type, T value) {
+        this.stack.set(type, value);
         return this;
     }
 

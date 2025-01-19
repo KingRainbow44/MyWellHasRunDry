@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import moe.seikimo.mwhrd.game.guilds.GuildManager;
 import moe.seikimo.mwhrd.game.guilds.GuildPermission;
 import moe.seikimo.mwhrd.gui.guild.GuildBankSelectorGui;
+import moe.seikimo.mwhrd.gui.guild.GuildInfoGui;
 import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
@@ -54,6 +55,8 @@ public final class GuildCommand {
                     .then(argument("rank", greedyString())
                         .executes(GuildCommand::demotePlayer))
                     .executes(GuildCommand::demotePlayer)))
+            .then(literal("info")
+                .executes(GuildCommand::info))
         );
 
         // Register '/g' alias.
@@ -360,6 +363,23 @@ public final class GuildCommand {
 
         // Promote the player.
         guild.setPermission(target, newTargetRank);
+
+        return 1;
+    }
+
+    private static int info(CommandContext<ServerCommandSource> context) {
+        var source = context.getSource();
+        var player = Objects.requireNonNull(source.getPlayer());
+
+        // Resolve the guild.
+        var guild = GuildManager.getGuild(player);
+        if (guild == null) {
+            source.sendMessage(Text.translatable("commands.guild.not_in_guild"));
+            return 0;
+        }
+
+        // Open the guild info GUI.
+        GuildInfoGui.open(guild, player);
 
         return 1;
     }

@@ -309,6 +309,16 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     }
 
     /**
+     * Retrieves the permission of a player.
+     *
+     * @param player The player to check.
+     * @return The permission of the player.
+     */
+    public GuildPermission getPermission(BasicPlayerInfo player) {
+        return this.permissions.getOrDefault(player.uuid(), GuildPermission.RECRUIT);
+    }
+
+    /**
      * Sets the permission of a player.
      *
      * @param player The player to set the permission for.

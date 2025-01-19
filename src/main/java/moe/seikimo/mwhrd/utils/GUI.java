@@ -101,7 +101,7 @@ public interface GUI {
      * @param mapper The function to map the list elements to GUI elements.
      * @param <T> The type of the backing list.
      */
-    static <T> void drawLine(
+    static <T> void drawVerticalLine(
         SimpleGui gui, int start, List<T> backing, BiFunction<T, Integer, GuiElement> mapper
     ) {
         // Determine the max index to draw.
@@ -122,6 +122,33 @@ public interface GUI {
             gui.setSlot(nextSlot, mapper.apply(data, index));
 
             nextSlot += 9;
+        }
+    }
+
+    /**
+     * Draws a line using the mapper.
+     *
+     * @param gui The GUI to draw the line on.
+     * @param start The starting index of the line.
+     * @param backing The backing list to draw.
+     * @param mapper The function to map the list elements to GUI elements.
+     * @param <T> The type of the backing list.
+     */
+    static <T> void drawHorizontalLine(
+        SimpleGui gui, int start, List<T> backing, BiFunction<T, Integer, GuiElement> mapper
+    ) {
+        // Determine the max index to draw.
+        // Indexes start from '0', so we subtract one.
+        var maxIndex = gui.getWidth() * gui.getHeight() - 1;
+        if (maxIndex < 0) {
+            throw new IllegalArgumentException("GUI has an invalid size");
+        }
+
+        // Continue drawing until we are out of bounds.
+        for (var i = 0; i < backing.size(); i++) {
+            // Otherwise, we should draw the element.
+            var data = backing.get(i);
+            gui.setSlot(start + i, mapper.apply(data, i));
         }
     }
 
