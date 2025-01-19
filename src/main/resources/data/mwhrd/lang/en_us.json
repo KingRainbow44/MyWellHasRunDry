@@ -95,9 +95,12 @@
     "text.mwhrd.guild.bank.update_name": "Updated page %s to '%s'.",
     "text.mwhrd.guild.bank.update_name.clear": "Reset page %s's name.",
     "text.mwhrd.guild.bank.level": "The guild must be level 5 to use the bank!",
+    "text.mwhrd.guild.bank.permission": "You must be at least a Member of the guild to use the bank!",
     "text.mwhrd.guild.level.next": "Congratulations! Your guild, %s, has leveled up to level %s!",
+    "text.mwhrd.guild.permission.set": "%s has been %s to %s!",
 
     "commands.guild.not_in_guild": "You are not in a guild.",
+    "commands.guild.not_in_guild.other": "The target player is not in this guild!",
     "commands.guild.no_permission": "You do not have permission to do this!",
     "commands.guild.join.already_in_guild": "You are already in a guild!",
     "commands.guild.join.invalid_guild": "Invalid guild name or color specified.",
@@ -106,5 +109,11 @@
     "commands.guild.rename.success": "Successfully renamed the guild to '%s'!",
     "commands.guild.bank.not_allowed": "Unable to open the bank in this world.",
     "commands.guild.split.set": "Set guild/player experience split to %s percent.",
-    "commands.guild.split.invalid_amount": "Invalid experience split."
+    "commands.guild.split.invalid_amount": "Invalid experience split.",
+    "commands.guild.promote.cannot_promote": "You cannot promote that player!",
+    "commands.guild.promote.lower": "You cannot promote that player to a lower (or same) rank!",
+    "commands.guild.promote.self": "You cannot promote yourself!",
+    "commands.guild.demote.self": "You cannot demote yourself!",
+    "commands.guild.demote.cannot_demote": "You cannot promote that player!",
+    "commands.guild.demote.higher": "You cannot demote that player to a higher (or same) rank!"
 }

@@ -4,6 +4,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import lombok.experimental.ExtensionMethod;
 import moe.seikimo.mwhrd.game.guilds.GuildInstance;
+import moe.seikimo.mwhrd.game.guilds.GuildPermission;
 import moe.seikimo.mwhrd.utils.GUI;
 import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.item.Items;
@@ -30,6 +31,13 @@ public final class GuildBankSelectorGui extends SimpleGui {
         // Check if the guild is the appropriate level.
         if (guild.getLevel() < 5) {
             player.sendMessage(Text.translatable("text.mwhrd.guild.bank.level")
+                .formatted(Formatting.RED));
+            return;
+        }
+
+        // Check if the player has permission.
+        if (!guild.hasPermission(player, GuildPermission.MEMBER)) {
+            player.sendMessage(Text.translatable("text.mwhrd.guild.bank.permission")
                 .formatted(Formatting.RED));
             return;
         }

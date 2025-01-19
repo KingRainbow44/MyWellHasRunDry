@@ -4,8 +4,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import moe.seikimo.mwhrd.game.guilds.GuildManager;
+import moe.seikimo.mwhrd.game.guilds.GuildPermission;
 import moe.seikimo.mwhrd.gui.guild.GuildBankSelectorGui;
 import moe.seikimo.mwhrd.utils.Players;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -14,6 +16,7 @@ import java.util.Objects;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static net.minecraft.command.argument.EntityArgumentType.player;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -41,6 +44,16 @@ public final class GuildCommand {
             .then(literal("split")
                 .then(argument("amount", integer())
                     .executes(GuildCommand::experienceSplit)))
+            .then(literal("promote")
+                .then(argument("player", player())
+                    .then(argument("rank", greedyString())
+                        .executes(GuildCommand::promotePlayer))
+                    .executes(GuildCommand::promotePlayer)))
+            .then(literal("demote")
+                .then(argument("player", player())
+                    .then(argument("rank", greedyString())
+                        .executes(GuildCommand::demotePlayer))
+                    .executes(GuildCommand::demotePlayer)))
         );
 
         // Register '/g' alias.
@@ -122,7 +135,7 @@ public final class GuildCommand {
         }
 
         // Check if the player is the guild owner.
-        if (!guild.isOwner(player)) {
+        if (!guild.hasPermission(player, GuildPermission.OFFICER)) {
             source.sendError(Text.translatable("commands.guild.no_permission"));
             return 0;
         }
@@ -217,6 +230,136 @@ public final class GuildCommand {
 
         source.sendMessage(Text.translatable("commands.guild.split.set", String.valueOf(amount))
             .formatted(Formatting.AQUA));
+
+        return 1;
+    }
+
+    /**
+     * Promotes a player. They cannot be demoted using this command.
+     */
+    private static int promotePlayer(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        var source = context.getSource();
+        var executor = Objects.requireNonNull(source.getPlayer());
+
+        var target = EntityArgumentType.getPlayer(context, "player");
+
+        // Resolve the guild.
+        var guild = GuildManager.getGuild(executor);
+        if (guild == null) {
+            source.sendMessage(Text.translatable("commands.guild.not_in_guild"));
+            return 0;
+        }
+
+        // Check if the player is the guild owner.
+        if (!guild.hasPermission(executor, GuildPermission.OFFICER)) {
+            source.sendError(Text.translatable("commands.guild.no_permission"));
+            return 0;
+        }
+
+        // Check if the target is the executor.
+        if (executor.getUuid().equals(target.getUuid())) {
+            source.sendMessage(Text.translatable("commands.guild.promote.self"));
+            return 0;
+        }
+
+        // Check if the target is in the guild.
+        if (!guild.isMember(target)) {
+            source.sendMessage(Text.translatable("commands.guild.not_in_guild.other"));
+            return 0;
+        }
+
+        // Parse the rank.
+        var executorRank = guild.getPermission(executor);
+        var targetRank = guild.getPermission(target);
+
+        var newTargetRank = targetRank.getNext();
+
+        // Try to get the new rank.
+        try {
+            var rankArgument = context.getArgument("rank", String.class).toUpperCase();
+            newTargetRank = GuildPermission.valueOf(rankArgument);
+        } catch (IllegalArgumentException ignored) {
+            // Ignore the exception.
+        }
+
+        if (newTargetRank == null || !executorRank.canPromote(newTargetRank)) {
+            source.sendMessage(Text.translatable("commands.guild.promote.cannot_promote"));
+            return 0;
+        }
+
+        // Check if the rank is lower than the current rank.
+        if (targetRank.ordinal() >= newTargetRank.ordinal()) {
+            source.sendMessage(Text.translatable("commands.guild.promote.lower"));
+            return 0;
+        }
+
+        // Promote the player.
+        guild.setPermission(target, newTargetRank);
+
+        return 1;
+    }
+
+    /**
+     * Demotes a player. They cannot be promoted using this command.
+     */
+    private static int demotePlayer(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        var source = context.getSource();
+        var executor = Objects.requireNonNull(source.getPlayer());
+
+        var target = EntityArgumentType.getPlayer(context, "player");
+
+        // Resolve the guild.
+        var guild = GuildManager.getGuild(executor);
+        if (guild == null) {
+            source.sendMessage(Text.translatable("commands.guild.not_in_guild"));
+            return 0;
+        }
+
+        // Check if the player is the guild owner.
+        if (!guild.hasPermission(executor, GuildPermission.OFFICER)) {
+            source.sendError(Text.translatable("commands.guild.no_permission"));
+            return 0;
+        }
+
+        // Check if the target is the executor.
+        if (executor.getUuid().equals(target.getUuid())) {
+            source.sendMessage(Text.translatable("commands.guild.demote.self"));
+            return 0;
+        }
+
+        // Check if the target is in the guild.
+        if (!guild.isMember(target)) {
+            source.sendMessage(Text.translatable("commands.guild.not_in_guild.other"));
+            return 0;
+        }
+
+        // Parse the rank.
+        var executorRank = guild.getPermission(executor);
+        var targetRank = guild.getPermission(target);
+
+        var newTargetRank = targetRank.getPrevious();
+
+        // Try to get the new rank.
+        try {
+            var rankArgument = context.getArgument("rank", String.class).toUpperCase();
+            newTargetRank = GuildPermission.valueOf(rankArgument);
+        } catch (IllegalArgumentException ignored) {
+            // Ignore the exception.
+        }
+
+        if (newTargetRank == null || !executorRank.canPromote(newTargetRank)) {
+            source.sendMessage(Text.translatable("commands.guild.demote.cannot_demote"));
+            return 0;
+        }
+
+        // Check if the rank is lower than the current rank.
+        if (targetRank.ordinal() >= newTargetRank.ordinal()) {
+            source.sendMessage(Text.translatable("commands.guild.demote.higher"));
+            return 0;
+        }
+
+        // Promote the player.
+        guild.setPermission(target, newTargetRank);
 
         return 1;
     }

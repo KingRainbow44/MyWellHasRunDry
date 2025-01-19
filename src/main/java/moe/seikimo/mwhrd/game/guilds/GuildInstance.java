@@ -102,6 +102,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
 
     /** The members of the guild. */
     private List<BasicPlayerInfo> members = new ArrayList<>();
+    private Map<String, GuildPermission> permissions = new HashMap<>();
 
     /** The guild's level. */
     private int level = 0;
@@ -261,6 +262,71 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     }
 
     /**
+     * Checks if a player is a member of the guild.
+     *
+     * @param player The player to check.
+     * @return If the player is a member of the guild.
+     */
+    public boolean isMember(PlayerEntity player) {
+        return this.members.stream()
+            .anyMatch(info -> info.uuid().equals(player.getUuidAsString()));
+    }
+
+    /**
+     * Checks if a player has a specific permission.
+     *
+     * @param player The player to check.
+     * @param permission The permission to check.
+     * @return If the player has the permission.
+     */
+    public boolean hasPermission(PlayerEntity player, GuildPermission permission) {
+        return this.permissions
+            .getOrDefault(player.getUuidAsString(), GuildPermission.RECRUIT)
+            .hasPermission(permission);
+    }
+
+    /**
+     * Checks if a player has a specific permission.
+     *
+     * @param player The player to check.
+     * @param permission The permission to check.
+     * @return If the player has the permission.
+     */
+    public boolean hasPermission(BasicPlayerInfo player, GuildPermission permission) {
+        return this.permissions
+            .getOrDefault(player.uuid(), GuildPermission.RECRUIT)
+            .hasPermission(permission);
+    }
+
+    /**
+     * Retrieves the permission of a player.
+     *
+     * @param player The player to check.
+     * @return The permission of the player.
+     */
+    public GuildPermission getPermission(PlayerEntity player) {
+        return this.permissions.getOrDefault(player.getUuidAsString(), GuildPermission.RECRUIT);
+    }
+
+    /**
+     * Sets the permission of a player.
+     *
+     * @param player The player to set the permission for.
+     * @param permission The permission to set.
+     */
+    public void setPermission(PlayerEntity player, GuildPermission permission) {
+        var oldPermission = this.permissions.put(player.getUuidAsString(), permission);
+        var demoted = oldPermission != null && oldPermission.ordinal() > permission.ordinal();
+
+        this.broadcast(Text.translatable(
+            "text.mwhrd.guild.permission.set",
+            player.getDisplayName(),
+            demoted ? "demoted" : "promoted",
+            permission.toString()
+        ).formatted(Formatting.AQUA));
+    }
+
+    /**
      * Adds a new member to the guild.
      *
      * @param player The player to add.
@@ -274,6 +340,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         // Add the member.
         var info = BasicPlayerInfo.from(player);
         this.members.add(info);
+        this.permissions.put(info.uuid(), GuildPermission.RECRUIT);
 
         // Set the guild for the player.
         if (player instanceof IDBObject<?> dbObject) {
@@ -303,8 +370,10 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
      * @param player The player to remove.
      */
     public void removeMember(ServerPlayerEntity player) {
-        this.members.removeIf(info -> info.uuid()
-            .equals(player.getUuidAsString()));
+        var uuid = player.getUuidAsString();
+
+        this.members.removeIf(info -> info.uuid().equals(uuid));
+        this.permissions.remove(uuid);
 
         // Unset the player's guild in the database.
         if (player instanceof IDBObject<?> dbObject) {
@@ -369,6 +438,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
      */
     public void reset() {
         this.members.clear();
+        this.permissions.clear();
         this.owner = null;
         this.name = DEFAULT_NAMES.getOrDefault(this.color, "Guild");
         this.bank.clear();
