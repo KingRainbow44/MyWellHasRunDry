@@ -114,6 +114,6 @@
     "commands.guild.promote.lower": "You cannot promote that player to a lower (or same) rank!",
     "commands.guild.promote.self": "You cannot promote yourself!",
     "commands.guild.demote.self": "You cannot demote yourself!",
-    "commands.guild.demote.cannot_demote": "You cannot promote that player!",
+    "commands.guild.demote.cannot_demote": "You cannot demote that player!",
     "commands.guild.demote.higher": "You cannot demote that player to a higher (or same) rank!"
 }

@@ -75,7 +75,7 @@ public final class GuildBankItemGui extends SimpleGui {
         // Calculate the starting page index.
         var startingPage = (int) Math.floor(this.currentPage / 6f) * 6;
 
-        GUI.drawLine(this, 8, Utils.<Void>newList(6), (element, i) -> {
+        GUI.drawVerticalLine(this, 8, Utils.<Void>newList(6), (element, i) -> {
             var index = i + startingPage;
             var selected = this.currentPage % 6 == i;
 

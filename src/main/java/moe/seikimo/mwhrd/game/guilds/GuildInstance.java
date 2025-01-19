@@ -356,6 +356,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         // If the guild has no owner, assign an owner.
         if (this.owner == null) {
             this.owner = info;
+            this.permissions.put(info.uuid(), GuildPermission.OWNER);
         }
 
         this.save();
@@ -394,6 +395,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         } else if (this.isOwner(player)) {
             // Transfer ownership to the next member.
             this.owner = this.members.getFirst();
+            this.permissions.put(this.owner.uuid(), GuildPermission.OWNER);
         }
 
         this.save();
@@ -445,6 +447,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         this.level = 0;
         this.experience = 0;
         this.experienceBar.clearPlayers();
+        this.updateExperienceBar();
     }
 
     /**

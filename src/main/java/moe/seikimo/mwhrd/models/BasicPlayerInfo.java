@@ -15,6 +15,15 @@ public record BasicPlayerInfo(
     String username
 ) {
     /**
+     * Gets the UUID of the player.
+     *
+     * @return The UUID of the player.
+     */
+    public UUID getUUID() {
+        return UUID.fromString(this.uuid);
+    }
+
+    /**
      * Checks if the player is online.
      *
      * @return {@code true} if the player is online, {@code false} otherwise.

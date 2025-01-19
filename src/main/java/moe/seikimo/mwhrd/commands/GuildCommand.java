@@ -282,13 +282,13 @@ public final class GuildCommand {
             // Ignore the exception.
         }
 
-        if (newTargetRank == null || !executorRank.canPromote(newTargetRank)) {
+        if (newTargetRank == null || newTargetRank.ordinal() >= executorRank.ordinal()) {
             source.sendMessage(Text.translatable("commands.guild.promote.cannot_promote"));
             return 0;
         }
 
         // Check if the rank is lower than the current rank.
-        if (targetRank.ordinal() >= newTargetRank.ordinal()) {
+        if (!targetRank.canPromote(newTargetRank)) {
             source.sendMessage(Text.translatable("commands.guild.promote.lower"));
             return 0;
         }
@@ -347,13 +347,13 @@ public final class GuildCommand {
             // Ignore the exception.
         }
 
-        if (newTargetRank == null || !executorRank.canPromote(newTargetRank)) {
+        if (newTargetRank == null || newTargetRank.ordinal() >= executorRank.ordinal()) {
             source.sendMessage(Text.translatable("commands.guild.demote.cannot_demote"));
             return 0;
         }
 
         // Check if the rank is lower than the current rank.
-        if (targetRank.ordinal() >= newTargetRank.ordinal()) {
+        if (!targetRank.canDemote(newTargetRank)) {
             source.sendMessage(Text.translatable("commands.guild.demote.higher"));
             return 0;
         }

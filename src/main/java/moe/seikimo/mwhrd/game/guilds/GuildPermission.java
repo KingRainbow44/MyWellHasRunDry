@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum GuildPermission {
-    RECRUIT(null), // Assigned when a member joins the guild.
-    MEMBER(RECRUIT), // Assigned via a command; first tier of permission.
-    OFFICER(MEMBER), // Assigned via a command; second tier of permission.
-    OWNER(OFFICER); // Assigned when being the first to join a guild. Cannot be changed.
+    RECRUIT(null, "Recruit"), // Assigned when a member joins the guild.
+    MEMBER(RECRUIT, "Member"), // Assigned via a command; first tier of permission.
+    OFFICER(MEMBER, "Officer"), // Assigned via a command; second tier of permission.
+    OWNER(OFFICER, "Owner"); // Assigned when being the first to join a guild. Cannot be changed.
 
     final GuildPermission previousPermission;
+    final String displayName;
 
     /**
      * @return The next permission in the hierarchy.
@@ -49,7 +50,7 @@ public enum GuildPermission {
     public boolean canPromote(GuildPermission newRank) {
         return newRank != OWNER &&
             this != newRank &&
-            this.ordinal() > newRank.ordinal();
+            this.ordinal() < newRank.ordinal();
     }
 
     /**
@@ -61,6 +62,11 @@ public enum GuildPermission {
     public boolean canDemote(GuildPermission newRank) {
         return newRank != OWNER &&
             this != newRank &&
-            this.ordinal() < newRank.ordinal();
+            this.ordinal() > newRank.ordinal();
+    }
+
+    @Override
+    public String toString() {
+        return this.displayName;
     }
 }
