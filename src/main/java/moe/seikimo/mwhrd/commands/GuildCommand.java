@@ -12,6 +12,7 @@ import net.minecraft.util.Formatting;
 
 import java.util.Objects;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -37,6 +38,9 @@ public final class GuildCommand {
                 .executes(GuildCommand::disbandGuild))
             .then(literal("bank")
                 .executes(GuildCommand::openGuildBank))
+            .then(literal("split")
+                .then(argument("amount", integer())
+                    .executes(GuildCommand::experienceSplit)))
         );
 
         // Register '/g' alias.
@@ -173,12 +177,46 @@ public final class GuildCommand {
         // Open the guild bank using the guild manager.
         var guild = GuildManager.getGuild(player);
         if (guild == null) {
-            source.sendMessage(Text.translatable("commands.guild.not_in_guild"));
+            source.sendMessage(Text.translatable("commands.guild.not_in_guild")
+                .formatted(Formatting.RED));
             return 0;
         }
 
         // Open the guild bank GUI.
         GuildBankSelectorGui.open(guild, player);
+
+        return 1;
+    }
+
+    /**
+     * Sets the amount of experience to split between guild members.
+     */
+    private static int experienceSplit(CommandContext<ServerCommandSource> context) {
+        var source = context.getSource();
+        var player = Objects.requireNonNull(source.getPlayer());
+        var model = Players.getModel(player);
+
+        // Open the guild bank using the guild manager.
+        var guild = GuildManager.getGuild(player);
+        if (guild == null) {
+            source.sendMessage(Text.translatable("commands.guild.not_in_guild")
+                .formatted(Formatting.RED));
+            return 0;
+        }
+
+        // Parse the split.
+        var amount = context.getArgument("amount", Integer.class);
+        if (amount < 0 || amount > 100) {
+            source.sendMessage(Text.translatable("commands.guild.split.invalid_amount")
+                .formatted(Formatting.RED));
+            return 0;
+        }
+
+        model.setGuildSplit(amount);
+        model.save();
+
+        source.sendMessage(Text.translatable("commands.guild.split.set", amount)
+            .formatted(Formatting.DARK_AQUA));
 
         return 1;
     }

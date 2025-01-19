@@ -59,6 +59,11 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
 
     private boolean storedInventory = false;
 
+    /**
+     * The percentage of experience to allocate to the guild.
+     */
+    private int guildSplit = 0;
+
     private transient ServerPlayerEntity handle;
     private transient GuildInstance guild;
 

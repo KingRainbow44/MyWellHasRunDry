@@ -16,6 +16,7 @@
         "beacon.BeaconBlockEntityMixin",
         "beacon.BeaconBlockMixin",
         "block.SmithingTableBlockMixin",
+        "entity.ExperienceOrbEntityMixin",
         "event.BlockMixin",
         "event.ItemStackMixin",
         "event.LivingEntityMixin",

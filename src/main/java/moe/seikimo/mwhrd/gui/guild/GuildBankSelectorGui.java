@@ -27,6 +27,13 @@ public final class GuildBankSelectorGui extends SimpleGui {
      * @param player The player instance.
      */
     public static void open(GuildInstance guild, ServerPlayerEntity player) {
+        // Check if the guild is the appropriate level.
+        if (guild.getLevel() < 5) {
+            player.sendMessage(Text.translatable("text.mwhrd.guild.bank.level")
+                .formatted(Formatting.RED));
+            return;
+        }
+
         var gui = new GuildBankSelectorGui(guild, player);
         gui.open();
     }

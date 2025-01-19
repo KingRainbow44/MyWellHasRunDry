@@ -94,6 +94,8 @@
     "text.mwhrd.guild.bank.update_icon.clear": "Cleared the icon for page %s.",
     "text.mwhrd.guild.bank.update_name": "Updated page %s to '%s'.",
     "text.mwhrd.guild.bank.update_name.clear": "Reset page %s's name.",
+    "text.mwhrd.guild.bank.level": "The guild must be level 5 to use the bank!",
+    "text.mwhrd.guild.level.next": "Congratulations! Your guild, %s, has leveled up to level %s!",
 
     "commands.guild.not_in_guild": "You are not in a guild.",
     "commands.guild.no_permission": "You do not have permission to do this!",
@@ -102,5 +104,7 @@
     "commands.guild.join.success": "Welcome to '%s'!",
     "commands.guild.leave.success": "You have left the guild.",
     "commands.guild.rename.success": "Successfully renamed the guild to '%s'!",
-    "commands.guild.bank.not_allowed": "Unable to open the bank in this world."
+    "commands.guild.bank.not_allowed": "Unable to open the bank in this world.",
+    "commands.guild.split.set": "Set guild/player experience split to %s%",
+    "commands.guild.split.invalid_amount": "Invalid experience split."
 }

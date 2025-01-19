@@ -168,6 +168,20 @@ public interface Players {
      * @param experience The amount of experience to add.
      */
     static void addExperience(ServerPlayerEntity player, int experience) {
+        // Try getting the player's guild.
+        var model = Players.getModel(player);
+        var guild = model.getGuild();
+
+        // If the player is in a guild
+        // ,and they have experience split enabled...
+        if (guild != null && model.getGuildSplit() > 0) {
+            /// ...add experience to the guild.
+            var guildExperience = experience * (model.getGuildSplit() / 100);
+            guild.addExperience(guildExperience);
+
+            experience -= guildExperience;
+        }
+
         var remaining = Players.repairPlayerGears(player, experience);
         if (remaining > 0) {
             player.addExperience(remaining);

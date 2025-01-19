@@ -42,6 +42,42 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         .build();
 
     /**
+     * Calculates the experience needed for the next level.
+     *
+     * @param level The current level.
+     * @return The experience needed for the next level.
+     */
+    public static int experienceNeeded(int level) {
+        return (int) (100 * Math.pow(level, 2));
+    }
+
+    /**
+     * Calculates the experience required to level up.
+     *
+     * @param level The current level.
+     * @return The experience required to level up.
+     */
+    public static int experienceRemaining(int level) {
+        return experienceNeeded(level) - experienceNeeded(level - 1);
+    }
+
+    /**
+     * Calculates the level from the experience.
+     *
+     * @param experience The experience to calculate.
+     * @return The level.
+     */
+    public static int calculateLevel(long experience) {
+        var level = 0;
+        while (experience >= experienceNeeded(level)) {
+            experience -= experienceNeeded(level);
+            level++;
+        }
+
+        return level;
+    }
+
+    /**
      * This is a color code which identifies the guild.
      */
     @Id private Integer guildId;
@@ -55,6 +91,11 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     /** The members of the guild. */
     private List<BasicPlayerInfo> members = new ArrayList<>();
 
+    /** The guild's level. */
+    private int level = 0;
+    private long experience = 0;
+
+    /** Bank item storage. */
     private DynamicItemStorage bank = new DynamicItemStorage(6, 8);
     private Map<Integer, String> pageNames = new HashMap<>();
 
@@ -248,22 +289,57 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
      */
     public void disband() {
         // Broadcast the message to all online members.
-        this.members.stream()
-            .map(BasicPlayerInfo::toOnline)
-            .filter(Objects::nonNull)
-            .forEach(player -> player.sendMessage(Text.translatable("text.mwhrd.guild.disbanded")
-                .formatted(Formatting.RED)));
+        this.broadcast(Text.translatable("text.mwhrd.guild.disbanded")
+            .formatted(Formatting.RED));
 
         // Reset the guild.
-        this.members.clear();
-        this.owner = null;
-        this.name = DEFAULT_NAMES.getOrDefault(this.color, "Guild");
-        this.bank.clear();
-
+        this.reset();
         this.save();
 
         // Update the player list.
         GuildManager.doPlayerListUpdate();
+    }
+
+    /**
+     * Resets the guild.
+     */
+    public void reset() {
+        this.members.clear();
+        this.owner = null;
+        this.name = DEFAULT_NAMES.getOrDefault(this.color, "Guild");
+        this.bank.clear();
+        this.level = 0;
+        this.experience = 0;
+    }
+
+    /**
+     * Broadcasts a message to all online members.
+     *
+     * @param message The message to broadcast.
+     */
+    public void broadcast(Text message) {
+        this.members.stream()
+            .map(BasicPlayerInfo::toOnline)
+            .filter(Objects::nonNull)
+            .forEach(player -> player.sendMessage(message));
+    }
+
+    /**
+     * Adds experience to the guild.
+     *
+     * @param experience The experience to add.
+     */
+    public void addExperience(int experience) {
+        this.experience += experience;
+        var newLevel = GuildInstance.calculateLevel(experience);
+
+        // If the level has changed, broadcast the message.
+        if (newLevel > this.level) {
+            this.level = newLevel;
+
+            this.broadcast(Text.translatable("text.mwhrd.guild.level.next", this.getDisplayName(), newLevel)
+                .formatted(Formatting.AQUA));
+        }
     }
 
     @Override
@@ -271,6 +347,8 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         return JObject.c()
             .add("color", this.guildId)
             .add("name", this.name)
+            .add("level", this.level)
+            .add("experience", this.experience)
             .gson();
     }
 }
