@@ -243,7 +243,10 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
 
     @Override
     public boolean mwhrd$finishedHardcore() {
-        return this.model != null && this.model.isSurvivedHardcore();
+        return this.model != null && (
+            this.model.isSurvivedHardcore() ||
+                this.model.isSurvivedHardcoreV2()
+            );
     }
 
     /// </editor-fold>
