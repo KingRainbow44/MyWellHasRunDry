@@ -5,7 +5,6 @@ import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.player.IPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.enchantment.EnchantmentEffectContext;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -18,7 +17,6 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public interface Players {
