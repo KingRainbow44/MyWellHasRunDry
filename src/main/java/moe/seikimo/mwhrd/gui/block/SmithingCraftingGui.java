@@ -63,12 +63,6 @@ public final class SmithingCraftingGui extends SimpleGui {
         this.drawOptions();
     }
 
-    @Override
-    public boolean onAnyClick(int index, ClickType type, SlotActionType action) {
-        this.getPlayer().sendMessage(Text.literal("clicked " + index));
-        return super.onAnyClick(index, type, action);
-    }
-
     /**
      * Draws the buttons for the GUI.
      */

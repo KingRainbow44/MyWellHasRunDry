@@ -19,6 +19,8 @@
         "event.BlockMixin",
         "event.ItemStackMixin",
         "event.LivingEntityMixin",
+        "game.hardcore.HardcoreEntityMixin",
+        "game.hardcore.HardcorePlayerMixin",
         "mwhrd.MobEntityMixin",
         "trial.ItemEntityMixin",
         "trial.MobEntityMixin",

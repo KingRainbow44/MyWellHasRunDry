@@ -8,10 +8,14 @@ import dev.morphia.annotations.PrePersist;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.data.DatabaseObject;
+import moe.seikimo.general.Async;
 import moe.seikimo.general.JObject;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.game.Hardcore;
 import moe.seikimo.mwhrd.game.guilds.GuildInstance;
 import moe.seikimo.mwhrd.game.guilds.GuildManager;
+import moe.seikimo.mwhrd.managers.TickManager;
+import moe.seikimo.mwhrd.utils.Players;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import moe.seikimo.mwhrd.utils.items.PlayerStorage;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -46,6 +50,10 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     private boolean hardcore = false;
     private long hardcoreUntil = -1;
 
+    private boolean hardcoreV2 = false;
+    private boolean survivedHardcoreV2 = false;
+    private long aliveTicks = 0;
+
     private boolean banned = false;
     private long bannedUntil = -1;
 
@@ -69,6 +77,15 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
         this.lootItems.addAll(this.loot.serialize());
 
         this.storedItems = this.storage.serialize();
+
+        if (this.handle != null) {
+            var player = Players.extend(this.handle);
+
+            // Add the player's session ticks.
+            if (this.isHardcoreV2()) {
+                this.aliveTicks += player.mwhrd$getSessionTicks();
+            }
+        }
     }
 
     @PostLoad
@@ -90,9 +107,12 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     public void setHandle(ServerPlayerEntity handle) {
         this.handle = handle;
 
-        if (this.isBanned() &&
-            System.currentTimeMillis() > this.bannedUntil) {
+        // Handle hardcore mode.
+        Hardcore.onLogin(handle, this);
+
+        if (this.isBanned() && System.currentTimeMillis() > this.bannedUntil) {
             this.unbanPlayer();
+
             handle.sendMessage(Text.literal("You are now unbanned!")
                 .formatted(Formatting.GREEN));
         }
@@ -163,17 +183,19 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
         this.save();
 
         if (this.handle != null) {
-            new Thread(() -> {
-                try {
-                    Thread.sleep((long) 1e3);
-                } catch (InterruptedException ignored) { }
+            TickManager.schedule((server, ticks, data) -> {
+                if (ticks < 20) {
+                    return true; // Continue executing.
+                }
 
                 var world = this.handle.getServerWorld();
                 var pos = world.getSpawnPos();
                 this.handle.teleport(world, pos.getX(), pos.getY(), pos.getZ(), Collections.emptySet(), 0.0F, 0.0F, true);
 
                 this.handle.interactionManager.changeGameMode(GameMode.SURVIVAL);
-            }).start();
+
+                return false;
+            });
         }
     }
 
@@ -234,6 +256,43 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     }
 
     /**
+     * Sets the player as hardcore.
+     * This is for V2 of hardcore mode.
+     */
+    public void startHardcore() {
+        this.hardcoreV2 = true;
+        this.aliveTicks = 0;
+
+        // Reset the player's alive ticks.
+        var player = Players.extend(this.handle);
+        player.mwhrd$resetSessionTicks();
+
+        this.save();
+
+        if (this.handle != null) {
+            // Broadcast to the server.
+            MyWellHasRunDry.getServer().getPlayerManager().broadcast(
+                this.handle.getName().copy()
+                    .formatted(Formatting.RED)
+                    .append(Text.literal(" has enabled ")
+                        .formatted(Formatting.RED))
+                    .append(Text.literal("hardcode mode")
+                        .formatted(Formatting.BOLD, Formatting.DARK_RED))
+                    .append(Text.literal(".")
+                        .formatted(Formatting.RED)),
+                false
+            );
+
+            var maxHealth = this.handle.getAttributeInstance(EntityAttributes.MAX_HEALTH);
+            if (maxHealth == null) {
+                throw new IllegalStateException("Max health attribute is null.");
+            }
+
+            maxHealth.setBaseValue(40);
+        }
+    }
+
+    /**
      * Unsets the player as hardcore.
      */
     public void unsetHardcore(boolean survived) {
@@ -243,6 +302,34 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
 
         this.save();
 
+        if (this.handle != null) {
+            if (survived) {
+                this.handle.sendMessage(Text.literal("You survived hardcore mode!")
+                    .formatted(Formatting.GREEN));
+            }
+
+            var maxHealth = this.handle.getAttributeInstance(EntityAttributes.MAX_HEALTH);
+            if (maxHealth == null) throw new IllegalStateException("Max health attribute is null.");
+
+            maxHealth.setBaseValue(20);
+        }
+    }
+
+    /**
+     * Changes the player's hardcore state.
+     * This is for V2 of hardcore mode.
+     *
+     * @param survived Whether the player survived hardcore mode.
+     */
+    public void finishHardcore(boolean survived) {
+        // Unset hardcore values.
+        this.setHardcoreV2(false);
+        this.setSurvivedHardcoreV2(survived);
+        this.setAliveTicks(0);
+
+        this.save();
+
+        // Reset player instance.
         if (this.handle != null) {
             if (survived) {
                 this.handle.sendMessage(Text.literal("You survived hardcore mode!")

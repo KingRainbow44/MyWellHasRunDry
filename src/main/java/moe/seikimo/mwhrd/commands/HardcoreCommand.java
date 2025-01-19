@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.models.PlayerModel;
+import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -33,6 +34,8 @@ public final class HardcoreCommand {
         Text.empty(),
         Text.literal("Hardcode mode is enabled for 100 real-world hours.")
             .formatted(Formatting.GRAY),
+        Text.literal("Kamikaze mode is enabled for 100 Minecraft days.")
+            .formatted(Formatting.ITALIC, Formatting.DARK_GRAY),
         Text.literal("Once enabled, it cannot be turned off.")
             .formatted(Formatting.GRAY),
         Text.empty(),
@@ -49,10 +52,25 @@ public final class HardcoreCommand {
         Text.literal(" - Player debuffs are disabled.")
             .formatted(Formatting.GREEN),
         Text.empty(),
+        Text.literal("In Kamikaze mode, the following also applies:")
+            .formatted(Formatting.GRAY),
+        Text.literal(" - You must remain online to pass the time.")
+            .formatted(Formatting.RED),
+        Text.literal(" - Logging out during combat will kill you.")
+            .formatted(Formatting.RED),
+        Text.literal(" - Experience gained is tripled.")
+            .formatted(Formatting.GREEN),
+        Text.empty(),
         Text.literal("To enable hardcore mode, type ")
             .formatted(Formatting.GRAY)
             .append(Text.literal("/hardcore enable")
                 .formatted(Formatting.YELLOW))
+            .append(Text.literal(".")
+                .formatted(Formatting.GRAY)),
+        Text.literal("To enable kamikaze mode, type ")
+            .formatted(Formatting.DARK_GRAY)
+            .append(Text.literal("/hardcore kamikaze")
+                .formatted(Formatting.DARK_RED))
             .append(Text.literal(".")
                 .formatted(Formatting.GRAY))
     );
@@ -62,8 +80,11 @@ public final class HardcoreCommand {
      */
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("hardcore")
+            .requires(ServerCommandSource::isExecutedByPlayer)
             .then(literal("enable")
                 .executes(HardcoreCommand::enable))
+            .then(literal("kamikaze")
+                .executes(HardcoreCommand::enableV2))
             .executes(HardcoreCommand::usage));
     }
 
@@ -75,11 +96,24 @@ public final class HardcoreCommand {
             var dataPlayer = (IDBObject<PlayerModel>) player;
             var data = dataPlayer.mwhrd$getData();
 
-            if (data.isBanned() || data.isHardcore()) {
+            if (data.isBanned() || data.isHardcore() || data.isHardcoreV2()) {
                 context.getSource().sendError(Text.literal("You cannot toggle hardcore mode."));
             } else {
                 data.setHardcore(Duration.ofHours(100));
             }
+        }
+
+        return 1;
+    }
+
+    private static int enableV2(CommandContext<ServerCommandSource> context) {
+        var player = context.getSource().getPlayer();
+        var model = Players.getModel(player);
+
+        if (model.isBanned() || model.isHardcore() || model.isHardcoreV2()) {
+            context.getSource().sendError(Text.literal("You cannot toggle hardcore mode."));
+        } else {
+            model.startHardcore();
         }
 
         return 1;

@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.data.DatabaseUtils;
+import moe.seikimo.mwhrd.game.Hardcore;
 import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.game.beacon.BeaconManager;
 import moe.seikimo.mwhrd.commands.*;
@@ -154,11 +155,11 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             Morphia.createDatastore(MongoClients.create("mongodb://localhost:8018"), "mwhrd");
         DatabaseUtils.DATASTORE.set(store);
 
-        // Create the async pool.
+        // Initialize systems.
         AsyncPool.initialize();
-
-        // Initialize the script engine.
         ScriptLoader.initialize();
+
+        Hardcore.initialize();
 
         // Register registry entries.
         MyWellHasRunDry.PLAYER_VAULT = Registry.register(

@@ -4,9 +4,7 @@ import com.mojang.authlib.GameProfile;
 import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.events.PlayerMoveEvent;
-import moe.seikimo.mwhrd.interfaces.*;
-import moe.seikimo.mwhrd.interfaces.player.ICallbackPlayer;
-import moe.seikimo.mwhrd.interfaces.player.IGunWielder;
+import moe.seikimo.mwhrd.interfaces.player.IPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.block.Portal;
@@ -39,15 +37,7 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 @Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin
-    extends PlayerEntity
-    implements IPlayerConditions,
-    IDBObject<PlayerModel>,
-    ISelectionPlayer,
-    ITrialPlayer,
-    ITimeTraveler,
-    ICallbackPlayer,
-    IGunWielder {
+public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IPlayer {
     @Shadow
     public abstract void sendMessage(Text message);
 
@@ -73,7 +63,7 @@ public abstract class ServerPlayerEntityMixin
     public boolean canFoodHeal() {
         return super.canFoodHeal() &&
             !(this.mwhrd$isInTrialChamber() && this.mwhrd$isOminous()) &&
-            (this.model == null || !this.model.isHardcore());
+            !this.mwhrd$isHardcore();
     }
 
     @Override
@@ -96,13 +86,22 @@ public abstract class ServerPlayerEntityMixin
                 this.model.unsetHardcore(true);
             }
         }
+
+        this.sessionTicks++;
     }
 
     @Inject(method = "onDeath", at = @At("RETURN"))
     public void onDeath(DamageSource source, CallbackInfo ci) {
-        if (this.mwhrd$isHardcore()) {
-            this.model.banPlayer(Duration.ofHours(24));
-            this.model.unsetHardcore(false);
+        var model = this.model;
+
+        if (model.isHardcore()) {
+            model.banPlayer(Duration.ofHours(24));
+            model.unsetHardcore(false);
+        }
+
+        if (model.isHardcoreV2()) {
+            model.banPlayer(Duration.ofHours(24));
+            model.finishHardcore(false);
         }
     }
 
@@ -236,7 +235,10 @@ public abstract class ServerPlayerEntityMixin
 
     @Override
     public boolean mwhrd$isHardcore() {
-        return this.model != null && this.model.isHardcore();
+        return this.model != null && (
+            this.model.isHardcore() ||
+                this.model.isHardcoreV2()
+        );
     }
 
     @Override
@@ -386,6 +388,22 @@ public abstract class ServerPlayerEntityMixin
     @Override
     public void mwhrd$setCooldown(int cooldown) {
         this.cooldown = cooldown;
+    }
+
+    /// </editor-fold>
+
+    /// <editor-fold desc="IHardcorePlayer">
+
+    @Unique private long sessionTicks = 0;
+
+    @Override
+    public long mwhrd$getSessionTicks() {
+        return this.sessionTicks;
+    }
+
+    @Override
+    public void mwhrd$resetSessionTicks() {
+        this.sessionTicks = 0;
     }
 
     /// </editor-fold>

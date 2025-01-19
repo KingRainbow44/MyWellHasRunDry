@@ -59,6 +59,7 @@
 
     "text.mwhrd.tier_upgrade": "You've upgraded %s to Tier %d!",
     "text.mwhrd.max_tier": "This item is already at its max upgrade tier!",
+    "text.mwhrd.survived": "You have survived %.2f Minecraft days.",
 
     "text.mwhrd.gui.select": "Click to select!",
     "text.mwhrd.gui.selected": "Selected!",

@@ -12,6 +12,7 @@ import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.utils.BorderHelper;
 import moe.seikimo.mwhrd.utils.Debug;
 import moe.seikimo.mwhrd.utils.PlayerList;
+import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
@@ -37,6 +38,8 @@ public final class DebugCommand {
                 .then(argument("value", StringArgumentType.word())
                     .executes(DebugCommand::set)))
             .then(literal("hardcore")
+                .then(literal("v2")
+                    .executes(DebugCommand::unsetHardcoreV2))
                 .executes(DebugCommand::unsetHardcore))
             .then(literal("unban")
                 .executes(DebugCommand::unban))
@@ -117,6 +120,22 @@ public final class DebugCommand {
                 "Player data is not a PlayerModel"
             ));
             return 1;
+        }
+
+        return 1;
+    }
+
+    private static int unsetHardcoreV2(CommandContext<ServerCommandSource> context) {
+        var player = context.getSource().getPlayer();
+        var model = Players.getModel(player);
+
+        if (!model.isHardcoreV2()) {
+            context.getSource().sendError(Text.literal("not in hardcore v2"));
+        } else {
+            model.setAliveTicks(2_399_900);
+            model.save();
+
+            context.getSource().sendMessage(Text.literal("added 2,399,900 ticks"));
         }
 
         return 1;

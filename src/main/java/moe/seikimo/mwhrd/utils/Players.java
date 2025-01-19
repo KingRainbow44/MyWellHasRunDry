@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.utils;
 
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
+import moe.seikimo.mwhrd.interfaces.player.IPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentEffectContext;
@@ -114,6 +115,20 @@ public interface Players {
         }
 
         return playerModel;
+    }
+
+    /**
+     * Casts the player to the IPlayer interface.
+     *
+     * @param player The player to cast.
+     * @return The player as an IPlayer.
+     */
+    static IPlayer extend(ServerPlayerEntity player) {
+        if (!(player instanceof IPlayer customPlayer)) {
+            throw new RuntimeException("Player does not have MWHRD mixins.");
+        }
+
+        return customPlayer;
     }
 
     /**
