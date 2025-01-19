@@ -294,6 +294,12 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                 model.mwhrd$getData().save();
             }
 
+            // Get the player's guild.
+            var guild = GuildManager.getGuild(player);
+            if (guild != null) {
+                guild.getExperienceBar().removePlayer(player);
+            }
+
             // Remove all beacon effects on disconnect.
             Arrays.stream(BeaconEffect.values())
                 .forEach(e -> e.remove(player.getWorld(), player));

@@ -140,6 +140,11 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
         } else if (interactionManager.getGameMode() != GameMode.CREATIVE) {
             interactionManager.changeGameMode(GameMode.SURVIVAL);
         }
+
+        // Add the player to the experience bar.
+        if (this.guild != null) {
+            this.guild.getExperienceBar().addPlayer(handle);
+        }
     }
 
     /**

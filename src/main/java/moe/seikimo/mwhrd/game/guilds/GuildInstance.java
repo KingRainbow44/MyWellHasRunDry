@@ -15,6 +15,8 @@ import moe.seikimo.mwhrd.models.BasicPlayerInfo;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.utils.Maps;
 import moe.seikimo.mwhrd.utils.items.DynamicItemStorage;
+import net.minecraft.entity.boss.BossBar;
+import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -39,6 +41,17 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         .put(Formatting.BLUE, "Blue Team")
         .put(Formatting.LIGHT_PURPLE, "Light Purple Team")
         .put(Formatting.WHITE, "White Team")
+        .build();
+
+    private static final Map<Formatting, BossBar.Color> COLOR_MAP = Maps.bossBarColors()
+        .put(Formatting.RED, BossBar.Color.RED)
+        .put(Formatting.GOLD, BossBar.Color.YELLOW)
+        .put(Formatting.YELLOW, BossBar.Color.YELLOW)
+        .put(Formatting.GREEN, BossBar.Color.GREEN)
+        .put(Formatting.AQUA, BossBar.Color.BLUE)
+        .put(Formatting.BLUE, BossBar.Color.BLUE)
+        .put(Formatting.LIGHT_PURPLE, BossBar.Color.PURPLE)
+        .put(Formatting.WHITE, BossBar.Color.WHITE)
         .build();
 
     /**
@@ -105,6 +118,8 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     private transient Formatting color;
     private transient Map<Integer, Item> pageIcons = new HashMap<>();
 
+    private transient ServerBossBar experienceBar = null;
+
     @VisibleForTesting
     @ApiStatus.Internal
     public GuildInstance() {
@@ -135,6 +150,15 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
                 this.pageIcons.put(entry.getKey(), item);
             }
         }
+
+        // Create a new experience bar.
+        this.experienceBar = new ServerBossBar(
+            Text.empty(),
+            COLOR_MAP.get(this.color),
+            BossBar.Style.NOTCHED_10
+        );
+
+        this.updateExperienceBar();
     }
 
     @PrePersist
@@ -152,6 +176,35 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     public Text getDisplayName() {
         return Text.literal(this.name)
             .formatted(Formatting.BOLD, this.color);
+    }
+
+    /**
+     * @return The text component for the boss bar display.
+     */
+    private Text getBarName() {
+        var displayName = Text.literal(this.name)
+            .formatted(this.color);
+
+        return displayName
+            .append(Text.literal(" Lv")
+                .formatted(Formatting.DARK_AQUA))
+            .append(this.getBarLevel());
+    }
+
+    /**
+     * Formats the level and experience for the boss bar.
+     *
+     * @return The formatted text.
+     */
+    private Text getBarLevel() {
+        var current = this.experience - experienceNeeded(this.level);
+        var total = experienceRemaining(this.level + 1);
+
+        return Text.literal(this.level + " (")
+            .formatted(Formatting.DARK_AQUA)
+            .append(Text.literal(current + " / " + total)
+                .formatted(Formatting.DARK_AQUA))
+            .append(Text.literal(")"));
     }
 
     /**
@@ -227,6 +280,9 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
             }
         }
 
+        // Add the player to the experience bar.
+        this.experienceBar.addPlayer(player);
+
         // If the guild has no owner, assign an owner.
         if (this.owner == null) {
             this.owner = info;
@@ -255,6 +311,9 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
             }
         }
 
+        // Remove the player from the experience bar.
+        this.experienceBar.removePlayer(player);
+
         // Check if the guild is vacant.
         if (this.members.isEmpty()) {
             // Reset the guild.
@@ -279,6 +338,8 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     public void rename(String newName) {
         this.name = newName;
         this.save();
+
+        this.updateExperienceBar();
 
         // Update the player list.
         GuildManager.doPlayerListUpdate();
@@ -310,6 +371,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         this.bank.clear();
         this.level = 0;
         this.experience = 0;
+        this.experienceBar.clearPlayers();
     }
 
     /**
@@ -340,6 +402,20 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
             this.broadcast(Text.translatable("text.mwhrd.guild.level.next", this.getDisplayName(), newLevel)
                 .formatted(Formatting.AQUA));
         }
+
+        this.updateExperienceBar();
+    }
+
+    /**
+     * Updates the boss bar.
+     */
+    public void updateExperienceBar() {
+        // Update the experience bar name.
+        this.experienceBar.setName(this.getBarName());
+
+        // Set the experience bar progress.
+        var progress = (float) (this.experience / experienceNeeded(this.level + 1));
+        this.experienceBar.setPercent(progress);
     }
 
     @Override
