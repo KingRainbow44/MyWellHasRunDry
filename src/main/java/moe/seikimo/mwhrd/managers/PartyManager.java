@@ -278,6 +278,10 @@ public final class PartyManager {
 
         // Store the last location of each player.
         for (var member : party) {
+            if (!Utils.ALLOWED_WORLDS.contains(member.getWorld().getRegistryKey())) {
+                continue;
+            }
+
             if (lastLocations.containsKey(member.getUuid())) {
                 continue;
             }
@@ -293,6 +297,10 @@ public final class PartyManager {
         var server = MyWellHasRunDry.getServer();
 
         for (var member : party) {
+            if (!Utils.ALLOWED_WORLDS.contains(member.getWorld().getRegistryKey())) {
+                continue;
+            }
+
             if (!member.equals(leader)) {
                 member.sendMessage(Text.literal("You have been warped to the party leader.")
                     .withColor(Color.GREEN.getRGB()));
