@@ -274,7 +274,7 @@ public final class GuildManager {
             var realPlayer = PlayerList.realPlayer(
                 player,
                 Objects.requireNonNull(player.getDisplayName()).copy()
-                    .formatted(Formatting.DARK_GRAY),
+                    .formatted(Formatting.GRAY),
                 -1
             );
 
