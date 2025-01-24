@@ -17,6 +17,9 @@
         "server": [
             "moe.seikimo.mwhrd.MyWellHasRunDry"
         ],
+        "client": [
+            "moe.seikimo.mwhrd.client.MyWellHasRunDry"
+        ],
         "fabric-datagen": [
             "moe.seikimo.mwhrd.DataGenerator"
         ]
