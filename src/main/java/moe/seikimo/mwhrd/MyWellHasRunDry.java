@@ -14,6 +14,7 @@ import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.game.beacon.BeaconManager;
 import moe.seikimo.mwhrd.commands.*;
 import moe.seikimo.mwhrd.custom.*;
+import moe.seikimo.mwhrd.game.botw.BreathOfTheWild;
 import moe.seikimo.mwhrd.game.guilds.GuildManager;
 import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
@@ -32,7 +33,6 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.loot.provider.number.LootNumberProviderType;
@@ -48,7 +48,6 @@ import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -107,7 +106,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     @Getter private static Registry<Item> itemRegistry;
 
     @Getter @Setter
-    private static RuntimeWorldHandle realmOfLight;
+    private static RuntimeWorldHandle realmOfLight, overworldExpanse;
 
     /**
      * Gets or creates the loot set for the player.
@@ -231,6 +230,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             CustomWorlds.register();
 
             MyWellHasRunDry.realmOfLight = TheRealmOfLight.open(fantasy);
+            MyWellHasRunDry.overworldExpanse = BreathOfTheWild.open(server, fantasy);
         });
 
         // Wait for server ticks.
