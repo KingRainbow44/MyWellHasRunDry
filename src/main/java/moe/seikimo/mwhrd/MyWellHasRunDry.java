@@ -23,6 +23,7 @@ import moe.seikimo.mwhrd.managers.BuffManager;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
 import moe.seikimo.mwhrd.script.ScriptLoader;
+import moe.seikimo.mwhrd.utils.Paths;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import moe.seikimo.mwhrd.game.worldedit.AsyncPool;
 import net.fabricmc.api.DedicatedServerModInitializer;
@@ -61,8 +62,6 @@ import org.geysermc.geyser.api.GeyserApi;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 @Slf4j
@@ -138,12 +137,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         CustomItems.register();
         CustomEntities.register();
 
-        try {
-            // Create the mod configuration directory.
-            Files.createDirectories(Path.of("config/mwhrd"));
-        } catch (Exception ignored) {
-            log.debug("Unable to create configuration directory.");
-        }
+        // Setup server.
+        Paths.ensurePaths();
 
         // Initialize MongoDB.
         MyWellHasRunDry.mongoServer = new MongoServer(new H2Backend("config/mwhrd/database.mv"));
@@ -171,10 +166,11 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             LootCommand.register(dispatcher);
             DebugCommand.register(dispatcher);
             PartyCommand.register(dispatcher);
+            GuildCommand.register(dispatcher);
+            ScriptCommand.register(dispatcher);
             ReturnCommand.register(dispatcher);
             HardcoreCommand.register(dispatcher);
             ChangelogCommand.register(dispatcher);
-            GuildCommand.register(dispatcher);
             SelectionCommands.register(dispatcher);
         });
 

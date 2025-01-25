@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.utils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.Channels;
@@ -33,6 +34,32 @@ public interface IO {
             outputStream.close();
         } catch (URISyntaxException ignored) {
             throw new RuntimeException("Invalid URL provided");
+        }
+    }
+
+    /**
+     * Opens a stream to the given URL.
+     *
+     * @param url The URL to open a stream to.
+     * @return The input stream.
+     * @throws IOException If an I/O error occurs.
+     */
+    static InputStream streamUrl(String url) throws IOException, URISyntaxException {
+        return new URI(url).toURL().openStream();
+    }
+
+    /**
+     * Extracts a zip file to the given destination.
+     *
+     * @param url The URL to download from.
+     * @return True if the URL is valid, false otherwise.
+     */
+    static boolean isUrl(String url) {
+        try {
+            new URI(url);
+            return true;
+        } catch (URISyntaxException e) {
+            return false;
         }
     }
 

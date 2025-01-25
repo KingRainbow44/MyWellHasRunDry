@@ -3,6 +3,8 @@ package moe.seikimo.mwhrd.script;
 import lombok.SneakyThrows;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import moe.seikimo.mwhrd.utils.IO;
+import moe.seikimo.mwhrd.utils.Paths;
 import moe.seikimo.mwhrd.utils.Utils;
 import org.jetbrains.annotations.CheckReturnValue;
 import org.jetbrains.annotations.Nullable;
@@ -12,11 +14,12 @@ import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.script.LuajContext;
 
 import javax.script.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,6 +75,41 @@ public final class ScriptLoader {
     }
 
     /**
+     * Attempts to resolve a script from all available sources.
+     *
+     * @param path The path to the script.
+     * @return The input stream of the script.
+     */
+    @Nullable
+    @CheckReturnValue
+    public static InputStream getScript(String path) {
+        // Source 1: The file system.
+        var filePath = Paths.SCRIPTS.resolve(path);
+        if (Files.exists(filePath)) try {
+            return new FileInputStream(filePath.toFile());
+        } catch (FileNotFoundException ignored) {
+            // This should never happen.
+        }
+
+        // Source 2: The classpath/resources.
+        var resource = ScriptLoader.class.getResourceAsStream("/scripts/%s".formatted(path));
+        if (resource != null) {
+            return resource;
+        }
+
+        // Source 3: By URL.
+        if (IO.isUrl(path)) try {
+            return IO.streamUrl(path);
+        } catch (IOException ex) {
+            log.warn("Failed to download script from URL.", ex);
+        } catch (URISyntaxException ignored) {
+            // This should never happen.
+        }
+
+        return null;
+    }
+
+    /**
      * Registers an enum.
      *
      * @param type The class of the enum.
@@ -82,7 +120,7 @@ public final class ScriptLoader {
 
         // Enumerate over all enum values.
         // Add them to the Lua table.
-        EnumSet.allOf(type).forEach(value -> {
+        EnumSet.allOf(type).forEach((value) -> {
             var name = value.name();
             table.set(name, value.ordinal());
             table.set(name.toUpperCase(), value.ordinal());
@@ -100,7 +138,14 @@ public final class ScriptLoader {
      * @return The compiled script.
      */
     public static Bindings invoke(InputStream stream) {
-        return ScriptLoader.invoke(new SimpleBindings(), stream);
+        var bindings = new SimpleBindings();
+
+        try {
+            return ScriptLoader.invoke(bindings, stream);
+        } catch (NoSuchAlgorithmException ex) {
+            log.warn("Failed to load script from input stream.", ex);
+            return bindings;
+        }
     }
 
     /**
@@ -112,9 +157,8 @@ public final class ScriptLoader {
      * @return The compiled script.
      */
     @Nullable
-    @SneakyThrows
     @CheckReturnValue
-    public static Bindings invoke(Bindings bindings, InputStream stream) {
+    public static Bindings invoke(Bindings bindings, InputStream stream) throws NoSuchAlgorithmException {
         var sha256 = MessageDigest.getInstance("SHA-256");
 
         try (var digest = new DigestInputStream(stream, sha256)) {

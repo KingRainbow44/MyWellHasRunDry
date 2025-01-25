@@ -115,5 +115,9 @@
     "commands.guild.promote.self": "You cannot promote yourself!",
     "commands.guild.demote.self": "You cannot demote yourself!",
     "commands.guild.demote.cannot_demote": "You cannot demote that player!",
-    "commands.guild.demote.higher": "You cannot demote that player to a higher (or same) rank!"
+    "commands.guild.demote.higher": "You cannot demote that player to a higher (or same) rank!",
+
+    "commands.script.invalid": "Invalid script '%s'!",
+    "commands.script.close": "Failed to close script stream: '%s'",
+    "commands.script.run": "Script '%s' finished running"
 }

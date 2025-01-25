@@ -33,4 +33,11 @@ public final class ScriptLib {
     public void error(String message) {
         log.error(message);
     }
+
+    /**
+     * Teleports the specified player to the given position.
+     */
+    public void teleport() {
+
+    }
 }
