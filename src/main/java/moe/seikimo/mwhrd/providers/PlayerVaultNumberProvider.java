@@ -3,7 +3,7 @@ package moe.seikimo.mwhrd.providers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.custom.CustomProviders;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.interfaces.ITrialPlayer;
 import net.minecraft.loot.context.LootContext;
@@ -57,6 +57,6 @@ public record PlayerVaultNumberProvider(
 
     @Override
     public LootNumberProviderType getType() {
-        return MyWellHasRunDry.PLAYER_VAULT;
+        return CustomProviders.PLAYER_VAULT_PROVIDER;
     }
 }

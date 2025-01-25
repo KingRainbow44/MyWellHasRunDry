@@ -21,7 +21,6 @@ import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.BuffManager;
 import moe.seikimo.mwhrd.models.PlayerModel;
-import moe.seikimo.mwhrd.providers.PlayerVaultNumberProvider;
 import moe.seikimo.mwhrd.script.ScriptLoader;
 import moe.seikimo.mwhrd.utils.Paths;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
@@ -41,7 +40,6 @@ import net.minecraft.predicate.LightPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -54,7 +52,6 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureKeys;
@@ -88,8 +85,6 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     public static final String MOD_ID = "mwhrd";
 
     @Getter private static final Random random = new Random();
-
-    public static LootNumberProviderType PLAYER_VAULT;
 
     @Getter private static MinecraftServer server;
     @Getter private static Fantasy fantasy;
@@ -136,6 +131,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         CustomComponents.register();
         CustomItems.register();
         CustomEntities.register();
+        CustomProviders.register();
 
         // Setup server.
         Paths.ensurePaths();
@@ -154,12 +150,6 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         ScriptLoader.initialize();
 
         Hardcore.initialize();
-
-        // Register registry entries.
-        MyWellHasRunDry.PLAYER_VAULT = Registry.register(
-            Registries.LOOT_NUMBER_PROVIDER_TYPE,
-            Identifier.of("mwhrd", "player_vault"),
-            new LootNumberProviderType(PlayerVaultNumberProvider.CODEC));
 
         // Register commands.
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, env) -> {
