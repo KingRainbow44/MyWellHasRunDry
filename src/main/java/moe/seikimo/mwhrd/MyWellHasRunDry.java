@@ -5,6 +5,7 @@ import de.bwaldvogel.mongo.MongoServer;
 import de.bwaldvogel.mongo.backend.h2.H2Backend;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
+import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -132,6 +133,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         CustomItems.register();
         CustomEntities.register();
         CustomProviders.register();
+
+        // Mark mod as resource provider.
+        PolymerResourcePackUtils.addModAssets(MyWellHasRunDry.MOD_ID);
 
         // Setup server.
         Paths.ensurePaths();

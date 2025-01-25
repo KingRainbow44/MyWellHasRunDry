@@ -11,7 +11,7 @@
         "repo": "https://github.com/KingRainbow44/MyWellHasRunDry"
     },
     "license": "All-Rights-Reserved",
-    "icon": "assets/mwhrd/icon.png",
+    "icon": "mod_icon.png",
     "environment": "server",
     "entrypoints": {
         "server": [
