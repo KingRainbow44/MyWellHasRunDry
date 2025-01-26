@@ -47,6 +47,8 @@ dependencies {
 
     modImplementation("eu.pb4:polymer-core:${project.polymer_version}")
     modImplementation("eu.pb4:polymer-blocks:${project.polymer_version}")
+    modImplementation("eu.pb4:polymer-resource-pack:${project.polymer_version}")
+    modImplementation("eu.pb4:polymer-virtual-entity:${project.polymer_version}")
 
     // Database and storage.
     shadow(implementation("dev.morphia.morphia:morphia-core:${project.morphia_version}"))
