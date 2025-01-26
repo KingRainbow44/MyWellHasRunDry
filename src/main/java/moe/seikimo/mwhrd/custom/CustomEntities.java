@@ -1,6 +1,7 @@
 package moe.seikimo.mwhrd.custom;
 
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
+import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.custom.entities.GuardianOfLight;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -13,7 +14,7 @@ import net.minecraft.util.Identifier;
 public interface CustomEntities {
     EntityType<GuardianOfLight> GUARDIAN_OF_LIGHT = Registry.register(
         Registries.ENTITY_TYPE,
-        Identifier.of("mwhrd", "guardian_of_light"),
+        Identifier.of(MyWellHasRunDry.MOD_ID, "guardian_of_light"),
         EntityType.Builder.create(GuardianOfLight::new, SpawnGroup.MONSTER)
             .build(Utils.entityKey("guardian_of_light"))
     );
