@@ -1,11 +1,16 @@
 package moe.seikimo.mwhrd.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import eu.pb4.polymer.virtualentity.api.ElementHolder;
+import eu.pb4.polymer.virtualentity.api.attachment.EntityAttachment;
+import eu.pb4.polymer.virtualentity.api.elements.TextDisplayElement;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.game.beacon.BeaconManager;
+import moe.seikimo.mwhrd.impl.PlayerNpcElement;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.models.PlayerModel;
@@ -18,6 +23,7 @@ import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -58,6 +64,8 @@ public final class DebugCommand {
                 .executes(DebugCommand::usage))
             .then(literal("border")
                 .executes(DebugCommand::border))
+            .then(literal("player")
+                .executes(DebugCommand::newPlayer))
             .executes(DebugCommand::usage));
     }
 
@@ -65,7 +73,7 @@ public final class DebugCommand {
         context.getSource().sendError(Text.literal(
             "Usage: /debug <property> <value>"
         ));
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int set(CommandContext<ServerCommandSource> context) {
@@ -86,7 +94,7 @@ public final class DebugCommand {
                 context.getSource().sendError(Text.literal(
                     "Unsupported property type: " + field.getType().getName()
                 ));
-                return 1;
+                return Command.SINGLE_SUCCESS;
             }
 
             field.setAccessible(false);
@@ -97,10 +105,10 @@ public final class DebugCommand {
             context.getSource().sendError(Text.literal(
                 "Unknown property: " + property
             ));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int unsetHardcore(CommandContext<ServerCommandSource> context) {
@@ -109,7 +117,7 @@ public final class DebugCommand {
             context.getSource().sendError(Text.literal(
                 "Player is not an IDBObject"
             ));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
         var data = dbObject.mwhrd$getData();
@@ -119,10 +127,10 @@ public final class DebugCommand {
             context.getSource().sendError(Text.literal(
                 "Player data is not a PlayerModel"
             ));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int unsetHardcoreV2(CommandContext<ServerCommandSource> context) {
@@ -138,7 +146,7 @@ public final class DebugCommand {
             context.getSource().sendMessage(Text.literal("added 2,399,900 ticks"));
         }
 
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int unban(CommandContext<ServerCommandSource> context) {
@@ -147,7 +155,7 @@ public final class DebugCommand {
             context.getSource().sendError(Text.literal(
                 "Player is not an IDBObject"
             ));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
         var data = dbObject.mwhrd$getData();
@@ -157,10 +165,10 @@ public final class DebugCommand {
             context.getSource().sendError(Text.literal(
                 "Player data is not a PlayerModel"
             ));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int fuel(CommandContext<ServerCommandSource> context) {
@@ -168,14 +176,14 @@ public final class DebugCommand {
         BeaconManager.FUEL_TIME = value;
         context.getSource().sendMessage(Text.literal(
             "Set fuel time to " + value));
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int restoreInv(CommandContext<ServerCommandSource> context) {
         var player = context.getSource().getPlayer();
         if (player == null) {
             context.getSource().sendError(Text.literal("Must be ran as a player"));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
         var target = getString(context, "player");
@@ -184,12 +192,12 @@ public final class DebugCommand {
             .getPlayer(target);
         if (targetPlayer == null) {
             context.getSource().sendError(Text.literal("Player not found"));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
         if (!(targetPlayer instanceof ITimeTraveler traveler)) {
             context.getSource().sendError(Text.literal("Player is not an ITimeTraveler"));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
         try {
@@ -199,14 +207,14 @@ public final class DebugCommand {
             log.error("Failed to restore inventory for {}", target, exception);
         }
 
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int border(CommandContext<ServerCommandSource> context) {
         var player = context.getSource().getPlayer();
         if (player == null) {
             context.getSource().sendError(Text.literal("Must be ran as a player"));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
         var center = player.getBlockPos();
@@ -219,14 +227,14 @@ public final class DebugCommand {
             log.error("Failed to set world border", exception);
         }
 
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 
     private static int tablist(CommandContext<ServerCommandSource> context) {
         var player = context.getSource().getPlayer();
         if (player == null) {
             context.getSource().sendError(Text.literal("Must be ran as a player"));
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
         try {
@@ -257,6 +265,35 @@ public final class DebugCommand {
             log.error("Failed to send tab list update", exception);
         }
 
-        return 1;
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int newPlayer(CommandContext<ServerCommandSource> context) {
+        try {
+            var player = Objects.requireNonNull(context.getSource().getPlayer());
+
+            var element = new PlayerNpcElement();
+            element.setGlowing(true);
+            element.setOffset(new Vec3d(0, 3, 0));
+            element.setSkin(PlayerList.DARK_GRAY_HEAD, PlayerList.DARK_GRAY_SIGN);
+
+            var text = new TextDisplayElement();
+            text.setText(Text.literal("hello world"));
+            text.setOffset(new Vec3d(0, 2, 0));
+
+            var holder = new ElementHolder();
+            holder.addElement(element);
+            holder.addElement(text);
+
+            EntityAttachment.ofTicking(holder, player);
+            holder.startWatching(player);
+
+            context.getSource().sendMessage(Text.literal("Created player NPC"));
+
+            return Command.SINGLE_SUCCESS;
+        } catch (Exception ex) {
+            log.error("Failed to create player NPC", ex);
+            return 0;
+        }
     }
 }
