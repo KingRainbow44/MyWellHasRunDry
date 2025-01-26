@@ -98,45 +98,49 @@ public abstract class PlayerManagerMixin {
 
     @Unique
     private void doPlayerListUpdate() {
-        // Update the player list header.
-        var spark = SparkProvider.get();
+        try {
+            // Update the player list header.
+            var spark = SparkProvider.get();
 
-        var tps = Objects.requireNonNull(spark.tps(), "TPS is null");
-        var mspt = Objects.requireNonNull(spark.mspt(), "MSPT is null");
-        var cpu = spark.cpuSystem();
+            var tps = Objects.requireNonNull(spark.tps(), "TPS is null");
+            var mspt = Objects.requireNonNull(spark.mspt(), "MSPT is null");
+            var cpu = spark.cpuSystem();
 
-        var rolTicks = TheRealmOfLight.MAX_TICKS - TheRealmOfLight.getWorld().getTicksAlive();
+            var rolTicks = TheRealmOfLight.MAX_TICKS - TheRealmOfLight.getWorld().getTicksAlive();
 
-        this.sendToAll(
-            new PlayerListHeaderS2CPacket(
-                HEADER,
-                Utils.list(
-                    Text.empty(),
-                    Text.literal("The Realm of Light Resets in")
-                        .formatted(Formatting.BOLD, Formatting.LIGHT_PURPLE),
-                    Time.toString(rolTicks).copy()
-                        .formatted(Formatting.WHITE),
-                    Text.empty(),
-                    Text.literal("TPS (1m): ")
-                        .formatted(Formatting.GRAY)
-                        .append(Text.literal(
-                            "%.2f".formatted(tps.poll(StatisticWindow.TicksPerSecond.SECONDS_10))
-                        ).formatted(Formatting.GREEN))
-                        .append(Text.literal(" | MSPT (95th): ")
+            this.sendToAll(
+                new PlayerListHeaderS2CPacket(
+                    HEADER,
+                    Utils.list(
+                        Text.empty(),
+                        Text.literal("The Realm of Light Resets in")
+                            .formatted(Formatting.BOLD, Formatting.LIGHT_PURPLE),
+                        Time.toString(rolTicks).copy()
+                            .formatted(Formatting.WHITE),
+                        Text.empty(),
+                        Text.literal("TPS (1m): ")
                             .formatted(Formatting.GRAY)
                             .append(Text.literal(
-                                "%.2f".formatted(mspt.poll(StatisticWindow.MillisPerTick.SECONDS_10)
-                                    .percentile95th())
+                                "%.2f".formatted(tps.poll(StatisticWindow.TicksPerSecond.SECONDS_10))
                             ).formatted(Formatting.GREEN))
-                        )
-                        .append(Text.literal(" | CPU (1m): ")
-                            .formatted(Formatting.GRAY)
-                            .append(Text.literal(
-                                "%.2f%%".formatted(cpu.poll(StatisticWindow.CpuUsage.SECONDS_10) * 100)
-                            ).formatted(Formatting.GREEN))
-                        )
+                            .append(Text.literal(" | MSPT (95th): ")
+                                .formatted(Formatting.GRAY)
+                                .append(Text.literal(
+                                    "%.2f".formatted(mspt.poll(StatisticWindow.MillisPerTick.SECONDS_10)
+                                        .percentile95th())
+                                ).formatted(Formatting.GREEN))
+                            )
+                            .append(Text.literal(" | CPU (1m): ")
+                                .formatted(Formatting.GRAY)
+                                .append(Text.literal(
+                                    "%.2f%%".formatted(cpu.poll(StatisticWindow.CpuUsage.SECONDS_10) * 100)
+                                ).formatted(Formatting.GREEN))
+                            )
+                    )
                 )
-            )
-        );
+            );
+        } catch (IllegalStateException ignored) {
+            // This occurs if Spark has not loaded.
+        }
     }
 }
