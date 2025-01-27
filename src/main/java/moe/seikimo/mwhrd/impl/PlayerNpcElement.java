@@ -4,13 +4,21 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.pb4.polymer.virtualentity.api.elements.GenericEntityElement;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.impl.script.ScriptActor;
+import moe.seikimo.mwhrd.impl.script.ScriptContext;
+import moe.seikimo.mwhrd.script.ScriptLoader;
+import moe.seikimo.mwhrd.script.ScriptManager;
+import moe.seikimo.mwhrd.script.ScriptObject;
+import moe.seikimo.mwhrd.script.Scriptable;
 import moe.seikimo.mwhrd.utils.PlayerList;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.world.GameMode;
 
 import java.util.List;
@@ -18,7 +26,23 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-public final class PlayerNpcElement extends GenericEntityElement {
+public final class PlayerNpcElement extends GenericEntityElement implements Scriptable {
+    private final ScriptManager scriptManager = new ScriptManager();
+    private final ScriptActor scriptObject = new ScriptActor(this);
+
+    /** Handles player-to-entity interactions. */
+    private final InteractionHandler interactionHandler = new InteractionHandler() {
+        @Override
+        public void interact(ServerPlayerEntity player, Hand hand) {
+            PlayerNpcElement.this.onInteract(player, hand);
+        }
+
+        @Override
+        public void attack(ServerPlayerEntity player) {
+            PlayerNpcElement.this.onInteract(player, Hand.MAIN_HAND);
+        }
+    };
+
     private final GameProfile profile;
 
     /**
@@ -35,11 +59,23 @@ public final class PlayerNpcElement extends GenericEntityElement {
      */
     public PlayerNpcElement(String username) {
         this.profile = new GameProfile(this.getUuid(), username);
+
+        this.dataTracker.set(PlayerEntity.PLAYER_MODEL_PARTS, (byte) 127);
     }
 
     @Override
     protected EntityType<? extends Entity> getEntityType() {
         return EntityType.PLAYER;
+    }
+
+    @Override
+    public InteractionHandler getInteractionHandler(ServerPlayerEntity player) {
+        return this.interactionHandler;
+    }
+
+    @Override
+    public ScriptObject intoScript() {
+        return this.scriptObject;
     }
 
     @Override
@@ -113,6 +149,27 @@ public final class PlayerNpcElement extends GenericEntityElement {
         this.profile.getProperties().put("textures", property);
 
         this.refresh();
+    }
+
+    /**
+     * Loads a script by its location.
+     *
+     * @param location The location of the script.
+     */
+    public void loadScript(String location) {
+        this.scriptManager.load(location);
+    }
+
+    /**
+     * Invoked when a player interacts with the NPC.
+     *
+     * @param player The player interacting with the NPC.
+     * @param hand The hand used to interact with the NPC.
+     */
+    private void onInteract(ServerPlayerEntity player, Hand hand) {
+        // Invoke the script manager.
+        var context = ScriptContext.interact(this, player, hand);
+        this.scriptManager.invoke("on_interact", context);
     }
 
     /**

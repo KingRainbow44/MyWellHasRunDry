@@ -119,5 +119,9 @@
 
     "commands.script.invalid": "Invalid script '%s'!",
     "commands.script.close": "Failed to close script stream: '%s'",
-    "commands.script.run": "Script '%s' finished running"
+    "commands.script.run": "Script '%s' finished running",
+    "commands.script.rebake": "Scripts reloaded!",
+
+    "commands.quest.not_involved": "You have not participated in any quests yet!",
+    "commands.quest.reset.success": "Quest progress has been wiped"
 }

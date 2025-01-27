@@ -1,11 +1,12 @@
 package moe.seikimo.mwhrd.script;
 
-import lombok.SneakyThrows;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import moe.seikimo.mwhrd.events.ScriptCachePurgeEvent;
 import moe.seikimo.mwhrd.utils.IO;
 import moe.seikimo.mwhrd.utils.Paths;
 import moe.seikimo.mwhrd.utils.Utils;
+import net.minecraft.util.Hand;
 import org.jetbrains.annotations.CheckReturnValue;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.*;
@@ -14,14 +15,12 @@ import org.luaj.vm2.script.LuajContext;
 
 import javax.script.*;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.EnumSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -40,6 +39,11 @@ public final class ScriptLoader {
      * This dictionary caches the script's hash to the compiled script.
      */
     private static final Map<byte[], CompiledScript> cache = new ConcurrentHashMap<>();
+
+    /**
+     * This set contains paths to all loaded scripts.
+     */
+    private static final Set<String> loaded = Collections.synchronizedSet(new HashSet<>());
 
     static {
         manager = new ScriptEngineManager();
@@ -71,7 +75,33 @@ public final class ScriptLoader {
         // Prepare global context.
         context.globals.set("ScriptLib", ScriptLoader.$scriptLib);
 
+        // Register enums.
+        ScriptLoader.register(Hand.class);
+
         log.info("Initialized Lua script engine.");
+    }
+
+    /**
+     * Reloads all scripts.
+     * This is done by caching scripts which have been previously loaded.
+     */
+    public static synchronized void reload() {
+        for (var path : ScriptLoader.loaded) try {
+            var stream = ScriptLoader.getScript(path);
+            if (stream == null) {
+                log.warn("Failed to reload script: {}", path);
+                continue;
+            }
+
+            ScriptLoader.compile(stream);
+            stream.close();
+
+            log.debug("Reloaded script '{}'", path);
+        } catch (Exception ex) {
+            log.warn("Failed to reload script: {}", path, ex);
+        }
+
+        ScriptCachePurgeEvent.EVENT.invoker().onPurge();
     }
 
     /**
@@ -149,6 +179,38 @@ public final class ScriptLoader {
     }
 
     /**
+     * Compiles the script.
+     * This will overwrite any existing script with the same hash.
+     *
+     * @param stream The input stream.
+     */
+    public static void compile(InputStream stream) throws NoSuchAlgorithmException {
+        var sha256 = MessageDigest.getInstance("SHA-256");
+
+        try (var digest = new DigestInputStream(stream, sha256)) {
+            var reader = new InputStreamReader(digest);
+
+            // Check if the script is already cached.
+            var hash = sha256.digest();
+            var compiled = ScriptLoader.cache.get(hash);
+
+            // Otherwise, compile the script.
+            if (compiled == null) {
+                if (!(ScriptLoader.engine instanceof Compilable compilable)) {
+                    throw new IllegalStateException("Invalid Lua script engine specified");
+                }
+
+                compiled = compilable.compile(reader);
+                ScriptLoader.cache.put(hash, compiled);
+            }
+        } catch (IOException ex) {
+            log.warn("Failed to read script from input stream.", ex);
+        } catch (ScriptException ex) {
+            throw new RuntimeException("Failed to compile script", ex);
+        }
+    }
+
+    /**
      * Loads a script from an input stream.
      * This should be used for loading multiple scripts.
      *
@@ -205,23 +267,29 @@ public final class ScriptLoader {
         }
 
         try {
-            var encoded = new LuaValue[arguments.length + 1];
-            encoded[0] = function;
-            System.arraycopy(arguments, 0, encoded, 1, arguments.length);
+//            var encoded = new LuaValue[arguments.length + 1];
+//            encoded[0] = function;
+//            System.arraycopy(arguments, 0, encoded, 1, arguments.length);
+//
+//            // Reflection call to the Lua function.
+//            var resolveFunc = LuaValue.class.getDeclaredMethod("callmt");
+//            resolveFunc.setAccessible(true);
+//
+//            if (!(resolveFunc.invoke(luaFunc) instanceof LuaValue retVal)) {
+//                return LuaValue.NIL;
+//            }
+//            return retVal.invoke(encoded).arg1();
 
-            // Reflection call to the Lua function.
-            var resolveFunc = LuaValue.class.getDeclaredMethod("callmt");
-            resolveFunc.setAccessible(true);
-
-            if (!(resolveFunc.invoke(encoded) instanceof Varargs retVal)) {
-                return LuaValue.NIL;
-            }
-            return retVal.arg1();
+            return switch (arguments.length) {
+                case 0 -> function.call();
+                case 1 -> function.call(arguments[0]);
+                case 2 -> function.call(arguments[0], arguments[1]);
+                case 3 -> function.call(arguments[0], arguments[1], arguments[2]);
+                default -> throw new IllegalArgumentException("No support for >3 arguments currently");
+            };
         } catch (LuaError error) {
             log.warn("Failed to call lua function", error);
             return LuaValue.NIL;
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
         }
     }
 }

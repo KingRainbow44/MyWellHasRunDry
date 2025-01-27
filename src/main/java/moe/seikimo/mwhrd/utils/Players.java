@@ -1,10 +1,10 @@
 package moe.seikimo.mwhrd.utils;
 
-import com.mojang.authlib.GameProfile;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.player.IPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
+import moe.seikimo.mwhrd.models.PlayerQuestData;
 import moe.seikimo.mwhrd.utils.items.ItemBuilder;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
@@ -119,6 +119,16 @@ public interface Players {
         }
 
         return playerModel;
+    }
+
+    /**
+     * Fetches the quest data for the given player.
+     *
+     * @param player The player to fetch the quest data for.
+     * @return The player's quest data.
+     */
+    static PlayerQuestData getQuestData(ServerPlayerEntity player) {
+        return Players.getModel(player).getQuestData();
     }
 
     /**

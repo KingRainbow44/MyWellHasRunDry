@@ -10,7 +10,7 @@ public record ScriptPlayer(ServerPlayerEntity handle) implements ScriptObject {
      *
      * @param message The message to send.
      */
-    public void sendMessage(String message) {
+    public void message(String message) {
         this.handle.sendMessage(Text.literal(message), false);
     }
 
@@ -20,7 +20,7 @@ public record ScriptPlayer(ServerPlayerEntity handle) implements ScriptObject {
      *
      * @param key The key of the message to send.
      */
-    public void send(String key) {
+    public void hint(String key) {
         this.handle.sendMessage(Text.translatable(key), false);
     }
 }

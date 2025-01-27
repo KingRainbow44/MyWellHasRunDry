@@ -14,10 +14,7 @@ import moe.seikimo.mwhrd.impl.PlayerNpcElement;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.models.PlayerModel;
-import moe.seikimo.mwhrd.utils.BorderHelper;
-import moe.seikimo.mwhrd.utils.Debug;
-import moe.seikimo.mwhrd.utils.PlayerList;
-import moe.seikimo.mwhrd.utils.Players;
+import moe.seikimo.mwhrd.utils.*;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
@@ -29,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -66,6 +64,9 @@ public final class DebugCommand {
                 .executes(DebugCommand::border))
             .then(literal("player")
                 .executes(DebugCommand::newPlayer))
+            .then(literal("text")
+                .then(argument("input", greedyString())
+                    .executes(DebugCommand::text)))
             .executes(DebugCommand::usage));
     }
 
@@ -295,5 +296,12 @@ public final class DebugCommand {
             log.error("Failed to create player NPC", ex);
             return 0;
         }
+    }
+
+    private static int text(CommandContext<ServerCommandSource> context) {
+        var text = getString(context, "input");
+        context.getSource().sendMessage(Utils.fromLegacy(text));
+
+        return Command.SINGLE_SUCCESS;
     }
 }

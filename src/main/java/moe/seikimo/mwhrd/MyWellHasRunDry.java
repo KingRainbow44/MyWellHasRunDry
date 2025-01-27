@@ -21,6 +21,7 @@ import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.managers.BuffManager;
+import moe.seikimo.mwhrd.managers.GlobalQuestManager;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.script.ScriptLoader;
 import moe.seikimo.mwhrd.utils.Paths;
@@ -36,7 +37,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.predicate.LightPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.LocationPredicate;
@@ -137,6 +137,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         // Mark mod as resource provider.
         PolymerResourcePackUtils.addModAssets(MyWellHasRunDry.MOD_ID);
 
+        // Register early event listeners.
+        ServerLifecycleEvents.SERVER_STARTED.register(MyWellHasRunDry::onServerStart);
+
         // Setup server.
         Paths.ensurePaths();
 
@@ -154,6 +157,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         ScriptLoader.initialize();
 
         Hardcore.initialize();
+        GlobalQuestManager.initialize();
 
         // Register commands.
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, env) -> {
@@ -161,66 +165,12 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             DebugCommand.register(dispatcher);
             PartyCommand.register(dispatcher);
             GuildCommand.register(dispatcher);
+            QuestCommand.register(dispatcher);
             ScriptCommand.register(dispatcher);
             ReturnCommand.register(dispatcher);
             HardcoreCommand.register(dispatcher);
             ChangelogCommand.register(dispatcher);
             SelectionCommands.register(dispatcher);
-        });
-
-        // Wait for the server to start.
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            MyWellHasRunDry.server = server;
-            var fantasy = MyWellHasRunDry.fantasy = Fantasy.get(server);
-
-            // Resolve registry tables.
-            MyWellHasRunDry.registry = server.getRegistryManager();
-            MyWellHasRunDry.enchantmentRegistry = server
-                .getRegistryManager()
-                .getOrThrow(RegistryKeys.ENCHANTMENT);
-            MyWellHasRunDry.itemRegistry = server
-                .getRegistryManager()
-                .getOrThrow(RegistryKeys.ITEM);
-
-            // Prepare predicates.
-            var trialChamber = server
-                .getRegistryManager()
-                .getOrThrow(RegistryKeys.STRUCTURE)
-                .getOrThrow(StructureKeys.TRIAL_CHAMBERS);
-            MyWellHasRunDry.trialChamberPredicate = LocationPredicate.Builder.create()
-                .light(LightPredicate.Builder.create()
-                    .light(NumberRange.IntRange.atLeast(1)))
-                .structure(RegistryEntryList.of(trialChamber))
-                .build();
-
-            // Find the default spawn.
-            var overworld = server.getWorld(World.OVERWORLD);
-            if (overworld == null) {
-                throw new IllegalStateException("Overworld is null.");
-            }
-            MyWellHasRunDry.defaultSpawn = overworld.getSpawnPos();
-
-            // Register the health scoreboard.
-            var scoreboard = server.getScoreboard();
-            if (scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.LIST) == null) {
-                var objective = scoreboard.addObjective(
-                    "health", ScoreboardCriterion.HEALTH,
-                    Text.literal("Health"), ScoreboardCriterion.RenderType.HEARTS,
-                    true, null
-                );
-                scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.LIST, objective);
-
-                log.info("Configured the scoreboard to show player health!");
-            }
-
-            // Initialize guilds.
-            GuildManager.initialize();
-
-            // Initialize custom dimensions.
-            CustomWorlds.register();
-
-            MyWellHasRunDry.realmOfLight = TheRealmOfLight.open(fantasy);
-            MyWellHasRunDry.overworldExpanse = BreathOfTheWild.open(server, fantasy);
         });
 
         // Wait for server ticks.
@@ -294,6 +244,65 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             Arrays.stream(BeaconEffect.values())
                 .forEach(e -> e.remove(player.getWorld(), player));
         });
+    }
+
+    /**
+     * Invoked when the server starts.
+     *
+     * @param server The server that started.
+     */
+    private static void onServerStart(MinecraftServer server) {
+        MyWellHasRunDry.server = server;
+        var fantasy = MyWellHasRunDry.fantasy = Fantasy.get(server);
+
+        // Resolve registry tables.
+        MyWellHasRunDry.registry = server.getRegistryManager();
+        MyWellHasRunDry.enchantmentRegistry = server
+            .getRegistryManager()
+            .getOrThrow(RegistryKeys.ENCHANTMENT);
+        MyWellHasRunDry.itemRegistry = server
+            .getRegistryManager()
+            .getOrThrow(RegistryKeys.ITEM);
+
+        // Prepare predicates.
+        var trialChamber = server
+            .getRegistryManager()
+            .getOrThrow(RegistryKeys.STRUCTURE)
+            .getOrThrow(StructureKeys.TRIAL_CHAMBERS);
+        MyWellHasRunDry.trialChamberPredicate = LocationPredicate.Builder.create()
+            .light(LightPredicate.Builder.create()
+                .light(NumberRange.IntRange.atLeast(1)))
+            .structure(RegistryEntryList.of(trialChamber))
+            .build();
+
+        // Find the default spawn.
+        var overworld = server.getWorld(World.OVERWORLD);
+        if (overworld == null) {
+            throw new IllegalStateException("Overworld is null.");
+        }
+        MyWellHasRunDry.defaultSpawn = overworld.getSpawnPos();
+
+        // Register the health scoreboard.
+        var scoreboard = server.getScoreboard();
+        if (scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.LIST) == null) {
+            var objective = scoreboard.addObjective(
+                "health", ScoreboardCriterion.HEALTH,
+                Text.literal("Health"), ScoreboardCriterion.RenderType.HEARTS,
+                true, null
+            );
+            scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.LIST, objective);
+
+            log.info("Configured the scoreboard to show player health!");
+        }
+
+        // Initialize guilds.
+        GuildManager.initialize();
+
+        // Initialize custom dimensions.
+        CustomWorlds.register();
+
+        MyWellHasRunDry.realmOfLight = TheRealmOfLight.open(fantasy);
+        MyWellHasRunDry.overworldExpanse = BreathOfTheWild.open(server, fantasy);
     }
 
     /**

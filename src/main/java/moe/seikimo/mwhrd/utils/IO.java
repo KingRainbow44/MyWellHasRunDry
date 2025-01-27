@@ -55,6 +55,11 @@ public interface IO {
      * @return True if the URL is valid, false otherwise.
      */
     static boolean isUrl(String url) {
+        // Check if the string matches a regex.
+        if (!url.matches("^(http|https)://.*$")) {
+            return false;
+        }
+
         try {
             new URI(url);
             return true;

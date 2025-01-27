@@ -29,7 +29,9 @@ public final class ScriptCommand {
         var script = dispatcher.register(literal("script")
             .then(literal("run")
                 .then(argument("script", greedyString())
-                    .executes(ScriptCommand::runScript))));
+                    .executes(ScriptCommand::runScript)))
+            .then(literal("rebake")
+                .executes(ScriptCommand::reloadScripts)));
         dispatcher.register(literal("lua").redirect(script));
     }
 
@@ -60,6 +62,17 @@ public final class ScriptCommand {
         }
 
         context.getSource().sendFeedback(() -> Text.translatable("commands.script.run", script), true);
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    /**
+     * Reloads all scripts.
+     */
+    private static int reloadScripts(CommandContext<ServerCommandSource> context) {
+        ScriptLoader.reload();
+
+        context.getSource().sendFeedback(() -> Text.translatable("commands.script.rebake"), true);
 
         return Command.SINGLE_SUCCESS;
     }

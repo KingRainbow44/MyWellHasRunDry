@@ -2,7 +2,6 @@ package moe.seikimo.mwhrd.custom.entities;
 
 import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import moe.seikimo.mwhrd.custom.entities.goals.GuardianAttackGoal;
-import moe.seikimo.mwhrd.game.lightrealm.RealmOfLightLogic;
 import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

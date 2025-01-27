@@ -1,10 +1,7 @@
 package moe.seikimo.mwhrd.models;
 
 import com.google.gson.JsonObject;
-import dev.morphia.annotations.Entity;
-import dev.morphia.annotations.Id;
-import dev.morphia.annotations.PostLoad;
-import dev.morphia.annotations.PrePersist;
+import dev.morphia.annotations.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.data.DatabaseObject;
@@ -67,6 +64,8 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
      * The percentage of experience to allocate to the guild.
      */
     private int guildSplit = 0;
+
+    private PlayerQuestData questData = new PlayerQuestData();
 
     private transient ServerPlayerEntity handle;
     private transient GuildInstance guild;

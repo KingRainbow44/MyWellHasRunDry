@@ -1,7 +1,5 @@
 package moe.seikimo.mwhrd.impl.script;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
 import moe.seikimo.mwhrd.impl.PlayerNpcElement;
 import moe.seikimo.mwhrd.script.ScriptObject;
 import moe.seikimo.mwhrd.utils.Players;
@@ -12,12 +10,10 @@ import net.minecraft.util.Hand;
  * Fields in this class are potentially null.
  * They store the context of the script that is being executed.
  */
-@Data
-@Accessors(fluent = true)
 public final class ScriptContext implements ScriptObject {
-    private ScriptObject actor, player;
+    public ScriptObject actor, player;
 
-    private Hand interact$hand;
+    public Hand interact$hand;
 
     /**
      * Creates a script context object for an interaction.

@@ -1,6 +1,8 @@
 package moe.seikimo.mwhrd.script;
 
 import lombok.extern.slf4j.Slf4j;
+import moe.seikimo.mwhrd.impl.script.ScriptPlayer;
+import moe.seikimo.mwhrd.impl.script.ScriptPosition;
 
 /**
  * A global instance of the scripting API.
@@ -37,7 +39,8 @@ public final class ScriptLib {
     /**
      * Teleports the specified player to the given position.
      */
-    public void teleport() {
-
+    public void teleport(ScriptPlayer player, ScriptPosition position) {
+        System.out.println(player.handle().getNameForScoreboard());
+        System.out.println(position.toString());
     }
 }

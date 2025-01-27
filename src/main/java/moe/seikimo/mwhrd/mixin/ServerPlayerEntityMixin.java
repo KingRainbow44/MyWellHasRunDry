@@ -4,8 +4,10 @@ import com.mojang.authlib.GameProfile;
 import moe.seikimo.data.DatabaseUtils;
 import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.events.PlayerMoveEvent;
+import moe.seikimo.mwhrd.impl.script.ScriptPlayer;
 import moe.seikimo.mwhrd.interfaces.player.IPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
+import moe.seikimo.mwhrd.script.ScriptObject;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.block.Portal;
 import net.minecraft.entity.Entity;
@@ -407,6 +409,18 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
     @Override
     public void mwhrd$resetSessionTicks() {
         this.sessionTicks = 0;
+    }
+
+    /// </editor-fold>
+
+    /// <editor-fold desc="Scriptable">
+
+    @Unique private final ScriptPlayer scriptObject
+        = new ScriptPlayer((ServerPlayerEntity) (Object) this);
+
+    @Override
+    public ScriptObject mwhrd$intoScript() {
+        return this.scriptObject;
     }
 
     /// </editor-fold>

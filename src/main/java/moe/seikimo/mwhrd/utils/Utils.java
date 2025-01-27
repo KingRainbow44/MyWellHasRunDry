@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.utils;
 
 import lombok.SneakyThrows;
 import moe.seikimo.general.EncodingUtils;
+import moe.seikimo.general.MapBuilder;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.block.Block;
 import net.minecraft.component.DataComponentTypes;
@@ -21,6 +22,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.BlockPos;
@@ -463,5 +465,127 @@ public interface Utils {
      */
     static String pretty(long number) {
         return String.format("%,d", number);
+    }
+
+    Map<Character, Formatting> FORMATTING_MAP = new MapBuilder<Character, Formatting>()
+        .put('0', Formatting.BLACK)
+        .put('1', Formatting.DARK_BLUE)
+        .put('2', Formatting.DARK_GREEN)
+        .put('3', Formatting.DARK_AQUA)
+        .put('4', Formatting.DARK_RED)
+        .put('5', Formatting.DARK_PURPLE)
+        .put('6', Formatting.GOLD)
+        .put('7', Formatting.GRAY)
+        .put('8', Formatting.DARK_GRAY)
+        .put('9', Formatting.BLUE)
+        .put('a', Formatting.GREEN)
+        .put('b', Formatting.AQUA)
+        .put('c', Formatting.RED)
+        .put('d', Formatting.LIGHT_PURPLE)
+        .put('e', Formatting.YELLOW)
+        .put('f', Formatting.WHITE)
+        .put('k', Formatting.OBFUSCATED)
+        .put('l', Formatting.BOLD)
+        .put('m', Formatting.STRIKETHROUGH)
+        .put('n', Formatting.UNDERLINE)
+        .put('o', Formatting.ITALIC)
+        .put('r', Formatting.RESET)
+        .build();
+
+    /**
+     * Converts a legacy string into a rich text object.
+     *
+     * @param legacy The legacy string to convert.
+     * @return The rich text object.
+     */
+    static Text fromLegacy(String legacy) {
+        var text = Text.empty();
+        var modified = false;
+
+        var builder = new StringBuilder();
+
+        var i = 0;
+        while (i < legacy.length()) {
+            var character = legacy.charAt(i);
+
+            // If the next character isn't an '&', continue.
+            if (character != '&') {
+                builder.append(character);
+                i++;
+                continue;
+            }
+
+            // Check if we are out of bounds.
+            if (i + 1 >= legacy.length()) {
+                continue;
+            }
+
+            // Check if a valid color code follows the character.
+            var next = legacy.charAt(i + 1);
+            if (!FORMATTING_MAP.containsKey(next)) {
+                // The character is not a valid color code.
+                builder.append('&').append(next);
+                i += 2;
+                continue;
+            }
+
+            // Set the formatting for this block.
+            var formatting = new ArrayList<Formatting>();
+            formatting.add(FORMATTING_MAP.get(next));
+
+            // Advance the index.
+            i += 2;
+
+            // Find the end of the color code.
+            int end;
+            while (true) {
+                // Find the next color code.
+                end = legacy.indexOf('&', i);
+
+                // If there are no more color codes, set the end to the end of the string.
+                if (end == -1) {
+                    end = legacy.length();
+                    break;
+                }
+
+                // Check the code.
+                if (end + 1 >= legacy.length()) {
+                    // We are out of bounds.
+                    break;
+                }
+
+                // Check if the next character is a valid color code.
+                var nextCode = legacy.charAt(end + 1);
+                if (!FORMATTING_MAP.containsKey(nextCode)) {
+                    // The character is not a valid color code.
+                    break;
+                }
+
+                // Check if the next character is a modifier.
+                var nextFormat = FORMATTING_MAP.get(nextCode);
+                if (nextFormat.isModifier()) {
+                    formatting.add(nextFormat);
+                    i += 2;
+                    continue;
+                }
+
+                // Otherwise, we have found the end of the color code.
+                break;
+            }
+
+            // Append the text.
+            builder.append(legacy, i, end);
+
+            // Convert builder to text.
+            text = text.append(Text.literal(builder.toString())
+                .formatted(formatting.toArray(new Formatting[0])));
+            builder.setLength(0);
+            modified = true;
+
+            // Move cursor position.
+            i = end;
+        }
+
+        return modified ? text : Text.literal(builder.toString());
     }
 }
