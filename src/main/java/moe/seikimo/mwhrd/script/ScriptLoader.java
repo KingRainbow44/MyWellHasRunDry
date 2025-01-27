@@ -8,13 +8,13 @@ import moe.seikimo.mwhrd.utils.Paths;
 import moe.seikimo.mwhrd.utils.Utils;
 import org.jetbrains.annotations.CheckReturnValue;
 import org.jetbrains.annotations.Nullable;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.script.LuajContext;
 
 import javax.script.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.security.DigestInputStream;
@@ -190,6 +190,39 @@ public final class ScriptLoader {
         }
 
         return bindings;
+    }
+
+    /**
+     * Calls a Lua function with the specified arguments.
+     *
+     * @param luaFunc The Lua function to call.
+     * @param arguments The (Lua-encoded) arguments to pass.
+     * @return Any return value from the function.
+     */
+    public static LuaValue call(Object luaFunc, LuaValue... arguments) {
+        if (!(luaFunc instanceof LuaFunction function)) {
+            return LuaValue.NIL;
+        }
+
+        try {
+            var encoded = new LuaValue[arguments.length + 1];
+            encoded[0] = function;
+            System.arraycopy(arguments, 0, encoded, 1, arguments.length);
+
+            // Reflection call to the Lua function.
+            var resolveFunc = LuaValue.class.getDeclaredMethod("callmt");
+            resolveFunc.setAccessible(true);
+
+            if (!(resolveFunc.invoke(encoded) instanceof Varargs retVal)) {
+                return LuaValue.NIL;
+            }
+            return retVal.arg1();
+        } catch (LuaError error) {
+            log.warn("Failed to call lua function", error);
+            return LuaValue.NIL;
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
