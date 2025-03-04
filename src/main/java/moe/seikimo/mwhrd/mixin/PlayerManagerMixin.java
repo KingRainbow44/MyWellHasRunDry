@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.mixin;
 
 import me.lucko.spark.api.SparkProvider;
 import me.lucko.spark.api.statistic.StatisticWindow;
+import moe.seikimo.mwhrd.BuildConfig;
 import moe.seikimo.mwhrd.game.guilds.GuildManager;
 import moe.seikimo.mwhrd.game.lightrealm.TheRealmOfLight;
 import moe.seikimo.mwhrd.utils.Time;
@@ -36,7 +37,7 @@ public abstract class PlayerManagerMixin {
     private static final Text HEADER = Utils.list(
         Text.translatable("text.mwhrd.player_list.header.1")
             .formatted(Formatting.AQUA)
-            .append(Text.literal("the Arbysid Server")
+            .append(Text.literal(BuildConfig.SERVER_NAME)
                 .formatted(Formatting.YELLOW)),
         Text.translatable("text.mwhrd.player_list.header.2")
             .formatted(Formatting.GOLD)
