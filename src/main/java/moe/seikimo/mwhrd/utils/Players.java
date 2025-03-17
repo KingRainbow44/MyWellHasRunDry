@@ -1,8 +1,10 @@
 package moe.seikimo.mwhrd.utils;
 
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.game.quest.PlayerQuestManager;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.player.IPlayer;
+import moe.seikimo.mwhrd.interfaces.player.IStoryPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.models.PlayerQuestData;
 import moe.seikimo.mwhrd.utils.items.ItemBuilder;
@@ -119,6 +121,20 @@ public interface Players {
         }
 
         return playerModel;
+    }
+
+    /**
+     * Fetches the quest manager for the given player.
+     *
+     * @param player The player to fetch the quest manager for.
+     * @return The player's quest manager.
+     */
+    static PlayerQuestManager getQuestManager(ServerPlayerEntity player) {
+        if (!(player instanceof IStoryPlayer storyPlayer)) {
+            throw new RuntimeException("Player is not a story player");
+        }
+
+        return storyPlayer.mwhrd$getQuestManager();
     }
 
     /**

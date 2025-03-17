@@ -35,7 +35,7 @@ public interface ScriptSerializer {
      * @return A List containing the serialized value.
      */
     static <T> List<T> toList(Object obj, Class<T> type) {
-        List<T> list = new ArrayList<>();
+        var list = new ArrayList<T>();
         if (!(obj instanceof LuaTable table)) return list;
 
         try {
@@ -44,7 +44,8 @@ public interface ScriptSerializer {
                 try {
                     var keyValue = table.get(k);
 
-                    T object; if (keyValue.istable()) {
+                    T object;
+                    if (keyValue.istable()) {
                         object = ScriptSerializer.serialize(type, null, keyValue.checktable());
                     } else if (keyValue.isint()) {
                         object = (T) (Integer) keyValue.toint();
@@ -61,9 +62,13 @@ public interface ScriptSerializer {
                     if (object != null) {
                         list.add(object);
                     }
-                } catch (Exception ignored) { }
+                } catch (Exception ignored) {
+
+                }
             }
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+
+        }
 
         return list;
     }

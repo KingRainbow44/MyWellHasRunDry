@@ -1,10 +1,37 @@
 package moe.seikimo.mwhrd.impl.script;
 
+import lombok.Getter;
+import moe.seikimo.mwhrd.game.quest.PlayerQuestManager;
+import moe.seikimo.mwhrd.interfaces.player.IStoryPlayer;
 import moe.seikimo.mwhrd.script.ScriptObject;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-public record ScriptPlayer(ServerPlayerEntity handle) implements ScriptObject {
+public final class ScriptPlayer implements ScriptObject {
+    private boolean initialized = false;
+
+    @Getter
+    private final ServerPlayerEntity handle;
+
+    public PlayerQuestManager quests;
+
+    public ScriptPlayer(ServerPlayerEntity handle) {
+        this.handle = handle;
+    }
+
+    /**
+     * Initializes the player.
+     */
+    public void initialize() {
+        if (this.initialized) return;
+        this.initialized = true;
+
+        if (!(this.handle instanceof IStoryPlayer storyPlayer)) {
+            throw new RuntimeException("Player needs to be a story player");
+        }
+        this.quests = storyPlayer.mwhrd$getQuestManager();
+    }
+
     /**
      * Sends a literal message to the player.
      *

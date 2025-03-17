@@ -99,6 +99,17 @@
     "text.mwhrd.guild.level.next": "Congratulations! Your guild, %s, has leveled up to level %s!",
     "text.mwhrd.guild.permission.set": "%s has been %s to %s!",
 
+    "text.mwhrd.quest.100000.1": "I've been trying to beat this dragon for...",
+    "text.mwhrd.quest.100000.2": "...",
+    "text.mwhrd.quest.100000.3": "four days-",
+    "text.mwhrd.quest.100000.4": "That's besides the point..!",
+    "text.mwhrd.quest.100000.5": "Can you help me defeat it?",
+    "text.mwhrd.quest.100000.6": "I can show you to my place after if we beat it!",
+    "text.mwhrd.quest.100000.option.1": "Help the adventurer",
+    "text.mwhrd.quest.100000.option.2": "\"no thanks bro\"",
+    "text.mwhrd.quest.100000.accept": "Thanks, I appreciate it!",
+    "text.mwhrd.quest.100000.decline": "kys",
+
     "commands.guild.not_in_guild": "You are not in a guild.",
     "commands.guild.not_in_guild.other": "The target player is not in this guild!",
     "commands.guild.no_permission": "You do not have permission to do this!",
@@ -123,5 +134,8 @@
     "commands.script.rebake": "Scripts reloaded!",
 
     "commands.quest.not_involved": "You have not participated in any quests yet!",
-    "commands.quest.reset.success": "Quest progress has been wiped"
+    "commands.quest.reset.success": "Quest progress has been wiped",
+    "commands.quest.dialogue.running": "You are already involved in a conversation!",
+    "commands.quest.dialogue.not_running": "You are not in a conversation.",
+    "commands.quest.dialogue.start.success": "Running dialogue %s"
 }

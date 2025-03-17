@@ -255,6 +255,36 @@ public final class ScriptLoader {
     }
 
     /**
+     * Encodes a Java object to a Lua object.
+     *
+     * @param arguments The Java objects to encode.
+     * @return The Lua-encoded objects.
+     */
+    public static LuaValue[] encode(ScriptObject... arguments) {
+        var encoded = new LuaValue[arguments.length];
+        for (var i = 0; i < arguments.length; i++) {
+            var arg = arguments[i];
+            encoded[i] = CoerceJavaToLua.coerce(arg);
+        }
+        return encoded;
+    }
+
+    /**
+     * Encodes a Java object to a Lua object.
+     *
+     * @param luaFunc The Lua function to call.
+     * @param arguments The (Lua-encoded) arguments to pass.
+     * @return Any return value from the function.
+     */
+    public static LuaValue call(Object luaFunc, ScriptObject... arguments) {
+        // Encode all arguments.
+        var encoded = ScriptLoader.encode(arguments);
+
+        // Invoke the function.
+        return ScriptLoader.call(luaFunc, encoded);
+    }
+
+    /**
      * Calls a Lua function with the specified arguments.
      *
      * @param luaFunc The Lua function to call.

@@ -67,11 +67,7 @@ public final class ScriptManager {
      */
     public void invoke(String function, ScriptObject... arguments) {
         // Encode all arguments.
-        var encoded = new LuaValue[arguments.length];
-        for (var i = 0; i < arguments.length; i++) {
-            var arg = arguments[i];
-            encoded[i] = CoerceJavaToLua.coerce(arg);
-        }
+        var encoded = ScriptLoader.encode(arguments);
 
         // Invoke the functions.
         for (var script : this.loaded) {

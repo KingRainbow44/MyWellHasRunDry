@@ -48,6 +48,7 @@ import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -94,6 +95,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     @Getter private static Datastore datastore;
 
     @Getter private static BlockPos defaultSpawn;
+    @Getter private static ServerWorld defaultWorld;
     @Getter private static LocationPredicate trialChamberPredicate;
 
     @Getter private static DynamicRegistryManager registry;
@@ -276,7 +278,9 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             .build();
 
         // Find the default spawn.
-        var overworld = server.getWorld(World.OVERWORLD);
+        var overworld =
+            MyWellHasRunDry.defaultWorld =
+                server.getWorld(World.OVERWORLD);
         if (overworld == null) {
             throw new IllegalStateException("Overworld is null.");
         }

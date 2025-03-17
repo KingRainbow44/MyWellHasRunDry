@@ -34,7 +34,13 @@ local ScriptContext = {}
 --- @field pitch number
 --- @field yaw number
 --- @field dimension string
-local Position = {}
+local Position = {
+    -- Special notes:
+
+    -- The dimension field, when wrapped in `<>` will create an ephemeral dimension
+    -- using the value in the brackets as the world type.
+    -- The world type is sourced from `moe.seikimo.mwhrd.custom.CustomWorlds`.
+}
 
 --- @class Actor
 local Actor = {}
@@ -44,6 +50,7 @@ local Actor = {}
 function Actor:setGlowing(glowing) end
 
 --- @class Player
+--- @field quests PlayerQuestManager
 local Player = {}
 
 --- Sends a message to the player.
@@ -53,6 +60,50 @@ function Player:message(message) end
 --- Sends a translated message to the player.
 --- @param key string The language key (from the language file) to send.
 function Player:hint(key) end
+
+--- @class Dialogue
+local Dialogue = {}
+
+--- Prompts the player with a list of options.
+--- This will keep the player in dialogue mode until they select an option.
+--- Dialogue mode can be exited with `Dialogue:stop()`.
+--- @param options table The options to prompt the player with.
+function Dialogue:prompt(options) end
+
+--- Marks the dialogue as finished.
+--- Sends the translated message to the player.
+--- @param key string The language key (from the language file) to send.
+function Dialogue:finish(key) end
+
+--- Unsets the player's current dialogue.
+--- This is used if a conversation is over, but it hasn't been 'completed'.
+function Dialogue:stop() end
+
+--- Acts as a "reply" from the given actor.
+--- Sends the translated message to the player.
+--- @param key string The language key (from the language file) to send.
+function Dialogue:reply(key) end
+
+--- @class PlayerQuestManager
+local PlayerQuestManager = {}
+
+--- Initiates dialogue with the player.
+--- @param dialogue_id number The ID of the dialogue to start.
+--- @overload fun(dialogue_id: number, is_quest: boolean)
+function PlayerQuestManager:startDialogue(dialogue_id) end
+
+--- Initiates dialogue with the player.
+--- @param dialogue_id number The ID of the dialogue to start.
+--- @param is_quest boolean Whether the dialogue is part of a quest.
+function PlayerQuestManager:startDialogue(dialogue_id, is_quest) end
+
+--- Marks a quest as complete for the player.
+--- @param quest_id number The ID of the quest to complete.
+function PlayerQuestManager:complete(quest_id) end
+
+--- Prompts the player with a list of selectable options.
+--- @param options table The options to prompt the player with.
+function PlayerQuestManager:prompt(options) end
 
 --- @class Hand
 --- @field MAIN_HAND number

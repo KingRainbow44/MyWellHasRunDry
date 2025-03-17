@@ -1,5 +1,6 @@
 package moe.seikimo.mwhrd.impl.script;
 
+import moe.seikimo.mwhrd.game.quest.Dialogue;
 import moe.seikimo.mwhrd.impl.PlayerNpcElement;
 import moe.seikimo.mwhrd.script.ScriptObject;
 import moe.seikimo.mwhrd.utils.Players;
@@ -11,7 +12,7 @@ import net.minecraft.util.Hand;
  * They store the context of the script that is being executed.
  */
 public final class ScriptContext implements ScriptObject {
-    public ScriptObject actor, player;
+    public ScriptObject actor, player, dialogue;
 
     public Hand interact$hand;
 
@@ -29,6 +30,21 @@ public final class ScriptContext implements ScriptObject {
         context.actor = actor.intoScript();
         context.player = Players.extend(player).intoScript();
         context.interact$hand = with;
+
+        return context;
+    }
+
+    /**
+     * Creates a script context object for a dialogue event.
+     *
+     * @param dialogue The dialogue event.
+     * @return The script context object.
+     */
+    public static ScriptContext dialogue(ServerPlayerEntity player, Dialogue dialogue) {
+        var context = new ScriptContext();
+
+        context.dialogue = dialogue;
+        context.player = Players.extend(player).intoScript();
 
         return context;
     }

@@ -420,6 +420,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
 
     @Override
     public ScriptObject mwhrd$intoScript() {
+        this.scriptObject.initialize();
         return this.scriptObject;
     }
 

@@ -2,16 +2,20 @@ package moe.seikimo.mwhrd.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
+import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public final class QuestCommand {
     private static final SimpleCommandExceptionType NOT_INVOLVED = new SimpleCommandExceptionType(Text.translatable("commands.quest.not_involved"));
+    private static final SimpleCommandExceptionType DIALOGUE_RUNNING = new SimpleCommandExceptionType(Text.translatable("commands.quest.dialogue.running"));
+    private static final SimpleCommandExceptionType DIALOGUE_NOT_RUNNING = new SimpleCommandExceptionType(Text.translatable("commands.quest.dialogue.not_running"));
 
     /**
      * Registers the command with the dispatcher.
@@ -19,8 +23,10 @@ public final class QuestCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
             literal("quest")
+                .requires(ServerCommandSource::isExecutedByPlayer)
                 .requires(s -> s.hasPermissionLevel(2))
                 .then(reset())
+                .then(dialogue())
         );
     }
 
@@ -29,7 +35,6 @@ public final class QuestCommand {
      */
     private static ArgumentBuilder<ServerCommandSource, ?> reset() {
         return literal("reset")
-            .requires(ServerCommandSource::isExecutedByPlayer)
             .executes(ctx -> {
                 var player = ctx.getSource().getPlayer();
                 var questData = Players.getQuestData(player);
@@ -43,6 +48,63 @@ public final class QuestCommand {
                 questData.reset();
 
                 ctx.getSource().sendFeedback(() -> Text.translatable("commands.quest.reset.success"), true);
+
+                return Command.SINGLE_SUCCESS;
+            });
+    }
+
+    /**
+     * Sub-command: <code>dialogue</code>
+     */
+    private static ArgumentBuilder<ServerCommandSource, ?> dialogue() {
+        return literal("dialogue")
+            .then(dialogueStart())
+            .then(dialogueEnd());
+    }
+
+    /**
+     * Sub-command: <code>dialogue start</code>
+     */
+    private static ArgumentBuilder<ServerCommandSource, ?> dialogueStart() {
+        return literal("start")
+            .then(argument("id", IntegerArgumentType.integer())
+                .executes(ctx -> {
+                    var player = ctx.getSource().getPlayer();
+                    var questManager = Players.getQuestManager(player);
+
+                    // Check if dialogue is already playing.
+                    if (questManager.isInConversation()) {
+                        throw DIALOGUE_RUNNING.create();
+                    }
+
+                    // Start the dialogue.
+                    var dialogueId = IntegerArgumentType.getInteger(ctx, "id");
+                    questManager.startDialogue(dialogueId);
+
+                    ctx.getSource().sendFeedback(() -> Text.translatable("commands.quest.dialogue.start.success", dialogueId), true);
+
+                    return Command.SINGLE_SUCCESS;
+                }));
+    }
+
+    /**
+     * Sub-command: <code>dialogue end</code>
+     */
+    private static ArgumentBuilder<ServerCommandSource, ?> dialogueEnd() {
+        return literal("end")
+            .executes(ctx -> {
+                var player = ctx.getSource().getPlayer();
+                var questManager = Players.getQuestManager(player);
+
+                // Check if dialogue is not playing.
+                if (!questManager.isInConversation()) {
+                    throw DIALOGUE_NOT_RUNNING.create();
+                }
+
+                // End the dialogue.
+                questManager.endDialogue();
+
+                ctx.getSource().sendFeedback(() -> Text.translatable("commands.quest.dialogue.end.success"), true);
 
                 return Command.SINGLE_SUCCESS;
             });
