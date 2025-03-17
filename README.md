@@ -22,6 +22,7 @@ another content mod for Minecraft: Java Edition (and Minecraft: Bedrock Edition!
   - This is **not** what the mod/library actually does, but it is a good simplification of it.
 - [LuaJ](https://github.com/luaj/luaj) - Scripting engine for quests/content
 - [MongoDB](https://mongodb.com) and [Morphia](https://github.com/MorphiaOrg/morphia) - Database engine & object document mapper for storing mod-related data
+  - [mongo-java-server](https://github.com/bwaldvogel/mongo-java-server) - Embedded MongoDB server for testing; used to replace a normal MongoDB database
 
 ## Credits
 
