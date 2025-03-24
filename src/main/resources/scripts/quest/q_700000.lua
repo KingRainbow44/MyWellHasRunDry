@@ -23,8 +23,10 @@ function before_dialogue(_) end
 function after_dialogue(context)
     context.player.quests:prompt(
         context,
-        { locale = "text.mwhrd.quest.700000.option.1", callback = "accept_quest" },
-        { locale = "text.mwhrd.quest.700000.option.2", callback = "decline_quest" }
+        {
+            { locale = "text.mwhrd.quest.700000.option.1", callback = "accept_quest" },
+            { locale = "text.mwhrd.quest.700000.option.2", callback = "decline_quest" }
+        }
     )
 end
 
