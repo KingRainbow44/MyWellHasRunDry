@@ -21,3 +21,4 @@ scripts are part of iterative design
 - `5xxxx` - A quest assigned to the `Karunia` faction
 - `9xxxxx` - A common quest assigned to all players; related to the world
 - `8xxxxx` - A common quest assigned to all players; miscellaneous quests
+- `7xxxxx` - A common quest acceptable by all players; related to MCA

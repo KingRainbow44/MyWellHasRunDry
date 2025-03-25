@@ -110,6 +110,13 @@
     "text.mwhrd.quest.100000.accept": "Thanks, I appreciate it!",
     "text.mwhrd.quest.100000.decline": "kys",
 
+    "text.mwhrd.quest.700000.1": "Hey!",
+    "text.mwhrd.quest.700000.2": "Are you interested in establishing your guild?",
+    "text.mwhrd.quest.700000.option.1": "Absolutely!",
+    "text.mwhrd.quest.700000.option.2": "\"not really\"",
+    "text.mwhrd.quest.700000.accept": "You can check your progress to domination with '/guild progress'!",
+    "text.mwhrd.quest.700000.decline": "If you're ever interested, do stop by again!",
+
     "commands.guild.not_in_guild": "You are not in a guild.",
     "commands.guild.not_in_guild.other": "The target player is not in this guild!",
     "commands.guild.no_permission": "You do not have permission to do this!",

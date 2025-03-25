@@ -121,7 +121,10 @@ public final class PlayerQuestManager implements ScriptObject {
      * @param quest Should the dialogue be looked for in the 'quest' folder?
      */
     public void startDialogue(int dialogueId, boolean quest) {
-        if (this.currentDialogue != null) {
+        if (
+            this.currentDialogue != null &&
+            this.currentDialogue.getId() == dialogueId
+        ) {
             // We shouldn't overwrite the current dialogue.
             return;
         }

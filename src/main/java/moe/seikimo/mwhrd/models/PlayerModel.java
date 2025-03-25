@@ -5,12 +5,12 @@ import dev.morphia.annotations.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.data.DatabaseObject;
-import moe.seikimo.general.Async;
 import moe.seikimo.general.JObject;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.game.Hardcore;
 import moe.seikimo.mwhrd.game.guilds.GuildInstance;
 import moe.seikimo.mwhrd.game.guilds.GuildManager;
+import moe.seikimo.mwhrd.interfaces.player.IStoryPlayer;
 import moe.seikimo.mwhrd.managers.TickManager;
 import moe.seikimo.mwhrd.utils.Players;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
@@ -147,6 +147,11 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
         // Add the player to the experience bar.
         if (this.guild != null && this.showExperienceBar) {
             this.guild.getExperienceBar().addPlayer(handle);
+        }
+
+        // Invoke 'init' for the player's quest manager.
+        if (handle instanceof IStoryPlayer storyPlayer) {
+            storyPlayer.mwhrd$getQuestManager().initialize(this);
         }
     }
 

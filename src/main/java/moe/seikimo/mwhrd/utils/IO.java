@@ -1,8 +1,6 @@
 package moe.seikimo.mwhrd.utils;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.Channels;
@@ -46,6 +44,17 @@ public interface IO {
      */
     static InputStream streamUrl(String url) throws IOException, URISyntaxException {
         return new URI(url).toURL().openStream();
+    }
+
+    /**
+     * Opens a steam to the given file.
+     *
+     * @param file The file to open a stream to.
+     * @return The input stream.
+     * @throws IOException If an I/O error occurs.
+     */
+    static InputStream streamFile(File file) throws IOException {
+        return new FileInputStream(file);
     }
 
     /**
@@ -99,5 +108,20 @@ public interface IO {
         } catch (IOException exception) {
             throw new RuntimeException("Failed to extract the zip file", exception);
         }
+    }
+
+    /**
+     * Creates a streamed file system for a resource in the JAR.
+     *
+     * @param path The path to the resource.
+     * @return The path to the resource.
+     */
+    static File resource(String path) throws URISyntaxException {
+        var url = IO.class.getResource("/" + path);
+        if (url == null) {
+            return null;
+        }
+
+        return new File(url.toURI());
     }
 }
