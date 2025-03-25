@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.game.quest;
 
 import lombok.Getter;
 import moe.seikimo.mwhrd.events.ScriptCachePurgeEvent;
+import moe.seikimo.mwhrd.game.quest.data.DialogueLine;
 import moe.seikimo.mwhrd.impl.script.ScriptContext;
 import moe.seikimo.mwhrd.script.ScriptLoader;
 import moe.seikimo.mwhrd.script.ScriptObject;
@@ -16,20 +17,26 @@ import java.util.Iterator;
 import java.util.List;
 
 public final class Dialogue implements Iterator<DialogueLine>, ScriptObject {
+    @Getter private final int id;
+
     private final String location;
-    private Bindings script = null;
+    @Getter private Bindings script = null;
 
     private final List<DialogueLine> lines = new ArrayList<>();
     @Getter private String displayName = null;
 
     private int index = 0;
+    @Getter private boolean finished = false;
 
     /**
      * Creates a dialogue instance.
      *
+     * @param dialogueId The ID of the dialogue.
      * @param location The path to the dialogue script.
      */
-    public Dialogue(String location) {
+    public Dialogue(int dialogueId, String location) {
+        this.id = dialogueId;
+
         this.location = location;
         this.loadScript();
 
@@ -61,7 +68,7 @@ public final class Dialogue implements Iterator<DialogueLine>, ScriptObject {
      */
     @Override
     public boolean hasNext() {
-        return this.index < this.lines.size();
+        return !this.finished && this.index < this.lines.size();
     }
 
     @Override
@@ -111,5 +118,7 @@ public final class Dialogue implements Iterator<DialogueLine>, ScriptObject {
         var context = ScriptContext.dialogue(player, this);
         // Invoke the function.
         ScriptLoader.call(luaFunc, context);
+
+        this.finished = true;
     }
 }

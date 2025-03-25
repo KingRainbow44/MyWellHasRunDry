@@ -61,29 +61,6 @@ function Player:message(message) end
 --- @param key string The language key (from the language file) to send.
 function Player:hint(key) end
 
---- @class Dialogue
-local Dialogue = {}
-
---- Prompts the player with a list of options.
---- This will keep the player in dialogue mode until they select an option.
---- Dialogue mode can be exited with `Dialogue:stop()`.
---- @param options table The options to prompt the player with.
-function Dialogue:prompt(options) end
-
---- Marks the dialogue as finished.
---- Sends the translated message to the player.
---- @param key string The language key (from the language file) to send.
-function Dialogue:finish(key) end
-
---- Unsets the player's current dialogue.
---- This is used if a conversation is over, but it hasn't been 'completed'.
-function Dialogue:stop() end
-
---- Acts as a "reply" from the given actor.
---- Sends the translated message to the player.
---- @param key string The language key (from the language file) to send.
-function Dialogue:reply(key) end
-
 --- @class PlayerQuestManager
 local PlayerQuestManager = {}
 
@@ -102,8 +79,23 @@ function PlayerQuestManager:startDialogue(dialogue_id, is_quest) end
 function PlayerQuestManager:complete(quest_id) end
 
 --- Prompts the player with a list of selectable options.
+--- @param context ScriptContext The context of the script.
 --- @param options table The options to prompt the player with.
-function PlayerQuestManager:prompt(options) end
+function PlayerQuestManager:prompt(context, options) end
+
+--- Marks the dialogue as finished.
+--- Sends the translated message to the player.
+--- @param key string The language key (from the language file) to send.
+function PlayerQuestManager:finishDialogue(key) end
+
+--- Unsets the player's current dialogue.
+--- This is used if a conversation is over, but it hasn't been 'completed'.
+function PlayerQuestManager:stopDialogue() end
+
+--- Acts as a "reply" from the given actor.
+--- Sends the translated message to the player.
+--- @param key string The language key (from the language file) to send.
+function PlayerQuestManager:reply(key) end
 
 --- @class Hand
 --- @field MAIN_HAND number

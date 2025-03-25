@@ -1,11 +1,14 @@
 package moe.seikimo.mwhrd.impl.script;
 
+import lombok.Getter;
 import moe.seikimo.mwhrd.game.quest.Dialogue;
 import moe.seikimo.mwhrd.impl.PlayerNpcElement;
 import moe.seikimo.mwhrd.script.ScriptObject;
 import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
+
+import javax.script.Bindings;
 
 /**
  * Fields in this class are potentially null.
@@ -15,6 +18,9 @@ public final class ScriptContext implements ScriptObject {
     public ScriptObject actor, player, dialogue;
 
     public Hand interact$hand;
+
+    @Getter
+    private transient Bindings bindings;
 
     /**
      * Creates a script context object for an interaction.
@@ -45,6 +51,7 @@ public final class ScriptContext implements ScriptObject {
 
         context.dialogue = dialogue;
         context.player = Players.extend(player).intoScript();
+        context.bindings = dialogue.getScript();
 
         return context;
     }

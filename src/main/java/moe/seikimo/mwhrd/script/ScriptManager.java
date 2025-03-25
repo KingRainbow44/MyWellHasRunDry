@@ -1,8 +1,6 @@
 package moe.seikimo.mwhrd.script;
 
 import moe.seikimo.mwhrd.events.ScriptCachePurgeEvent;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import javax.script.Bindings;
 import java.util.Collections;

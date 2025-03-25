@@ -1,4 +1,4 @@
-package moe.seikimo.mwhrd.game.quest;
+package moe.seikimo.mwhrd.game.quest.data;
 
 import lombok.Data;
 import net.minecraft.text.Text;

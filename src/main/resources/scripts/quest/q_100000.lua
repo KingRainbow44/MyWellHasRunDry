@@ -1,6 +1,8 @@
 quest = {
+    id = 100000,
+    hidden = true,
     conditions = {
-        { type = "PLAYER_HAS_NO_QUESTS" }
+        { type = "ALWAYS" }
     }
 }
 
@@ -16,6 +18,7 @@ dialogue = {
         { locale = "text.mwhrd.quest.100000.6", delay = 20 }
     }
 }
+
 --- Invoked before the dialogue starts playing.
 --- @param _ ScriptContext
 function before_dialogue(_) end
@@ -24,15 +27,18 @@ function before_dialogue(_) end
 --- @param context ScriptContext
 function after_dialogue(context)
     context.player.quests:prompt(
-        { locale = "text.mwhrd.quest.100000.option.1", callback = "accept_quest" },
-        { locale = "text.mwhrd.quest.100000.option.2", callback = "decline_quest" }
+        context,
+        {
+            { locale = "text.mwhrd.quest.100000.option.1", callback = "accept_quest" },
+            { locale = "text.mwhrd.quest.100000.option.2", callback = "decline_quest" }
+        }
     )
 end
 
 --- Invoked as a callback from a player prompt.
 --- @param context ScriptContext
 function accept_quest(context)
-    context.dialogue:finish("text.mwhrd.quest.100000.accept")
+    context.player.quests:finishDialogue("text.mwhrd.quest.100000.accept")
 
     -- Start the boss fight for the player.
     context.player.quests:complete(100000)
@@ -41,6 +47,6 @@ end
 --- Invoked as a callback from a player prompt.
 --- @param context ScriptContext
 function decline_quest(context)
-    context.dialogue:reply("text.mwhrd.quest.100000.decline")
-    context.dialogue:stop()
+    context.player.quests:reply("text.mwhrd.quest.100000.decline")
+    context.player.quests:stopDialogue()
 end

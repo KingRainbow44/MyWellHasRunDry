@@ -170,6 +170,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             QuestCommand.register(dispatcher);
             ScriptCommand.register(dispatcher);
             ReturnCommand.register(dispatcher);
+            InteractCommand.register(dispatcher);
             HardcoreCommand.register(dispatcher);
             ChangelogCommand.register(dispatcher);
             SelectionCommands.register(dispatcher);
