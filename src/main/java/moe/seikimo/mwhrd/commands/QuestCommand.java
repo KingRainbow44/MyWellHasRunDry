@@ -3,8 +3,10 @@ package moe.seikimo.mwhrd.commands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import moe.seikimo.mwhrd.game.quest.Quest;
 import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -16,6 +18,7 @@ public final class QuestCommand {
     private static final SimpleCommandExceptionType NOT_INVOLVED = new SimpleCommandExceptionType(Text.translatable("commands.quest.not_involved"));
     private static final SimpleCommandExceptionType DIALOGUE_RUNNING = new SimpleCommandExceptionType(Text.translatable("commands.quest.dialogue.running"));
     private static final SimpleCommandExceptionType DIALOGUE_NOT_RUNNING = new SimpleCommandExceptionType(Text.translatable("commands.quest.dialogue.not_running"));
+    private static final SimpleCommandExceptionType STATE_INVALID = new SimpleCommandExceptionType(Text.translatable("commands.quest.state.set.invalid_state"));
 
     /**
      * Registers the command with the dispatcher.
@@ -27,6 +30,7 @@ public final class QuestCommand {
                 .requires(s -> s.hasPermissionLevel(2))
                 .then(reset())
                 .then(dialogue())
+                .then(state())
         );
     }
 
@@ -108,5 +112,55 @@ public final class QuestCommand {
 
                 return Command.SINGLE_SUCCESS;
             });
+    }
+
+    /**
+     * Sub-command: <code>state</code>
+     */
+    private static ArgumentBuilder<ServerCommandSource, ?> state() {
+        return literal("state")
+            .then(argument("id", IntegerArgumentType.integer())
+                .then(stateSet())
+                .executes(ctx -> {
+                    var player = ctx.getSource().getPlayer();
+                    var questId = IntegerArgumentType.getInteger(ctx, "id");
+
+                    // Get the state of the quest.
+                    var questData = Players.getQuestData(player);
+                    var state = questData.getQuestState(questId);
+
+                    // Send the state to the player.
+                    ctx.getSource().sendMessage(Text.translatable("commands.quest.state.get", questId, state));
+
+                    return Command.SINGLE_SUCCESS;
+                }));
+    }
+
+    /**
+     * Sub-command: <code>state set</code>
+     */
+    private static ArgumentBuilder<ServerCommandSource, ?> stateSet() {
+        return literal("set")
+            .then(argument("value", StringArgumentType.word())
+                .executes(ctx -> {
+                    var player = ctx.getSource().getPlayer();
+                    var questId = IntegerArgumentType.getInteger(ctx, "id");
+                    var value = StringArgumentType.getString(ctx, "value");
+
+                    try {
+                        // Try parsing the value.
+                        var newState = Quest.State.valueOf(value.toUpperCase());
+
+                        // Set the state.
+                        var questData = Players.getQuestData(player);
+                        questData.setQuestState(questId, newState);
+
+                        ctx.getSource().sendFeedback(() -> Text.translatable("commands.quest.state.set.success", questId, newState), true);
+                    } catch (IllegalArgumentException ignored) {
+                        throw STATE_INVALID.create();
+                    }
+
+                    return Command.SINGLE_SUCCESS;
+                }));
     }
 }

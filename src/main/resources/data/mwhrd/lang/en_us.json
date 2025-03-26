@@ -144,5 +144,9 @@
     "commands.quest.reset.success": "Quest progress has been wiped",
     "commands.quest.dialogue.running": "You are already involved in a conversation!",
     "commands.quest.dialogue.not_running": "You are not in a conversation.",
-    "commands.quest.dialogue.start.success": "Running dialogue %s"
+    "commands.quest.dialogue.start.success": "Running dialogue %s",
+    "commands.quest.dialogue.end.success": "Stopped current dialogue",
+    "commands.quest.state.get": "Quest %s's status is %s",
+    "commands.quest.state.set.success": "Set quest %s's state to %s",
+    "commands.quest.state.set.invalid_state": "Invalid quest state specified."
 }
