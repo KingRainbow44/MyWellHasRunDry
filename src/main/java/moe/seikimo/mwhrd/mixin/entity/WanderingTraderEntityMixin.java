@@ -38,7 +38,10 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
             if (mwhrdPlayer.mwhrd$getData().getGuild() == null) {
                 player.sendMessage(Text.translatable("text.mwhrd.quest.700000.hint")
                     .formatted(Formatting.ITALIC, Formatting.GRAY), false);
+
                 cir.setReturnValue(ActionResult.CONSUME);
+                this.resetCustomer();
+
                 return;
             }
 
@@ -50,6 +53,8 @@ public abstract class WanderingTraderEntityMixin extends MerchantEntity {
                 if (!questManager.startDialogue(Quests.MCA_QUEST_ENTRYPOINT)) {
                     // Return a 'CONSUME' value if the dialogue failed.
                     cir.setReturnValue(ActionResult.CONSUME);
+                    // Un-set the customer value.
+                    this.resetCustomer();
                 }
             }
         }
