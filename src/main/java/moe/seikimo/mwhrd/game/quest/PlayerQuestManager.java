@@ -110,8 +110,8 @@ public final class PlayerQuestManager implements ScriptObject {
      *
      * @param dialogueId The dialogue ID. This is also just the quest ID.
      */
-    public void startDialogue(int dialogueId) {
-        this.startDialogue(dialogueId, true);
+    public boolean startDialogue(int dialogueId) {
+        return this.startDialogue(dialogueId, true);
     }
 
     /**
@@ -119,14 +119,15 @@ public final class PlayerQuestManager implements ScriptObject {
      *
      * @param dialogueId The dialogue ID.
      * @param quest Should the dialogue be looked for in the 'quest' folder?
+     * @return Whether the dialogue was started or not.
      */
-    public void startDialogue(int dialogueId, boolean quest) {
+    public boolean startDialogue(int dialogueId, boolean quest) {
         if (
             this.currentDialogue != null &&
             this.currentDialogue.getId() == dialogueId
         ) {
             // We shouldn't overwrite the current dialogue.
-            return;
+            return false;
         }
 
         // Create the quest instance.
@@ -135,8 +136,19 @@ public final class PlayerQuestManager implements ScriptObject {
             "dialogue/d_%s.lua".formatted(dialogueId);
         this.currentDialogue = new Dialogue(dialogueId, path);
 
+        // If the dialogue has been completed before, continue.
+        if (this.data.hasCompletedDialogue(dialogueId)) {
+            // Invoke script handler for this scenario.
+            this.currentDialogue.alreadyRead(this.player);
+            this.currentDialogue = null;
+
+            return false;
+        }
+
         // Invoke the start event.
         this.currentDialogue.startReading(this.player);
+
+        return true;
     }
 
     /**
@@ -210,8 +222,7 @@ public final class PlayerQuestManager implements ScriptObject {
 
         // Mark the dialogue as finished.
         var current = this.getCurrentDialogue();
-        this.getData().getDialogues()
-            .put(current.getId(), true);
+        this.data.setDialogueState(current.getId(), true);
 
         // Check conditions.
         this.data.checkConditions();
@@ -227,8 +238,7 @@ public final class PlayerQuestManager implements ScriptObject {
     public void stopDialogue() {
         // Mark the dialogue as incomplete.
         var current = this.getCurrentDialogue();
-        this.getData().getDialogues()
-            .put(current.getId(), false);
+        this.data.setDialogueState(current.getId(), false);
 
         // Check conditions.
         this.data.checkConditions();

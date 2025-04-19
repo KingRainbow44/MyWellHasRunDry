@@ -110,12 +110,14 @@
     "text.mwhrd.quest.100000.accept": "Thanks, I appreciate it!",
     "text.mwhrd.quest.100000.decline": "kys",
 
+    "text.mwhrd.quest.700000.hint": "Psst! You need to be associated with a guild to access this content...",
     "text.mwhrd.quest.700000.1": "Hey!",
     "text.mwhrd.quest.700000.2": "Are you interested in establishing your guild?",
     "text.mwhrd.quest.700000.option.1": "Absolutely!",
     "text.mwhrd.quest.700000.option.2": "\"not really\"",
     "text.mwhrd.quest.700000.accept": "You can check your progress to domination with '/guild progress'!",
     "text.mwhrd.quest.700000.decline": "If you're ever interested, do stop by again!",
+    "text.mwhrd.quest.700000.completed": "Go out there and establish your legacy!",
 
     "commands.guild.not_in_guild": "You are not in a guild.",
     "commands.guild.not_in_guild.other": "The target player is not in this guild!",
@@ -134,6 +136,7 @@
     "commands.guild.demote.self": "You cannot demote yourself!",
     "commands.guild.demote.cannot_demote": "You cannot demote that player!",
     "commands.guild.demote.higher": "You cannot demote that player to a higher (or same) rank!",
+    "commands.guild.progress.not_started": "You have not unlocked this feature!",
 
     "commands.script.invalid": "Invalid script '%s'!",
     "commands.script.close": "Failed to close script stream: '%s'",

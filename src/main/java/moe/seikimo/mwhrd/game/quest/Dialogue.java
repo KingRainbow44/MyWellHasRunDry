@@ -104,6 +104,25 @@ public final class Dialogue implements Iterator<DialogueLine>, ScriptObject {
     }
 
     /**
+     * Invoked if the dialogue is already completed.
+     *
+     * @param player The player reading the dialogue.
+     */
+    public void alreadyRead(ServerPlayerEntity player) {
+        // Resolve the event handler method.
+        if (!(this.script.get("already_completed") instanceof LuaValue luaFunc)) {
+            return;
+        }
+
+        // Create the script context.
+        var context = ScriptContext.dialogue(player, this);
+        // Invoke the function.
+        ScriptLoader.call(luaFunc, context);
+
+        this.finished = true;
+    }
+
+    /**
      * Invoked when the dialogue has been fully read.
      *
      * @param player The player reading the dialogue.

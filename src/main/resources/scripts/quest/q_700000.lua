@@ -18,6 +18,12 @@ dialogue = {
 --- @param _ ScriptContext
 function before_dialogue(_) end
 
+--- Invoked if the dialogue is already completed.
+--- @param context ScriptContext
+function already_completed(context)
+    context.player.quests:reply("text.mwhrd.quest.700000.completed")
+end
+
 --- Invoked after the dialogue finishes playing.
 --- @param context ScriptContext
 function after_dialogue(context)
