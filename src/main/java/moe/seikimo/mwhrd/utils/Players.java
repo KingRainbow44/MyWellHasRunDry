@@ -60,13 +60,34 @@ public interface Players {
     }
 
     /**
+     * Resets a player to their default attributes.
+     *
+     * @param player The player to reset.
+     */
+    static void reset(PlayerEntity player) {
+        // Reset the player's health.
+        player.setHealth(player.getMaxHealth());
+
+        // Reset the player's hunger.
+        var hungerManager = player.getHungerManager();
+        hungerManager.setFoodLevel(20);
+        hungerManager.setSaturationLevel(5f);
+
+        // Clear the player's effects.
+        player.clearStatusEffects();
+    }
+
+    /**
      * Teleports the player to their spawnpoint, or the world spawnpoint if the player has no spawnpoint.
      *
      * @param player The player to teleport.
      */
     static void respawn(PlayerEntity player) {
+        Players.reset(player);
+
         if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
 
+        // Teleport the player to their spawnpoint.
         var target = serverPlayer.getRespawnTarget(false, TeleportTarget.NO_OP);
         player.teleportTo(target);
     }

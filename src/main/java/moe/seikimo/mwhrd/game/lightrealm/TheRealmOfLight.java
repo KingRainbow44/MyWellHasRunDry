@@ -292,6 +292,9 @@ public final class TheRealmOfLight extends RuntimeWorld {
                 new ItemStack(Items.BONE_BLOCK, 2)
             );
 
+            // Reset the player.
+            Players.reset(player);
+
             // Teleport the player to the realm.
             var portalInfo = traveler.mwhrd$getQueuedPortal();
             if (portalInfo == null) {
