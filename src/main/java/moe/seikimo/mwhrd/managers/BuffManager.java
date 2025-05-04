@@ -66,7 +66,7 @@ public final class BuffManager {
         Identifier debuffId = null;
         float debuffValue = 0f;
 
-        var playerArmor = ArmorEnum.identify(player.getArmorItems());
+        var playerArmor = ArmorEnum.identify(Utils.iterate(player.equipment));
         if (playerArmor == ArmorEnum.NONE) {
             // Remove all debuffs.
             maxHealth.removeModifier(DEBUFF);
@@ -76,7 +76,7 @@ public final class BuffManager {
         for (var nearby : nearbyPlayers) {
             if (nearby.equals(player)) continue;
 
-            var nearbyArmor = ArmorEnum.identify(nearby.getArmorItems());
+            var nearbyArmor = ArmorEnum.identify(Utils.iterate(player.equipment));
             if (nearbyArmor == ArmorEnum.NONE) continue;
 
             debuffId = DEBUFF;

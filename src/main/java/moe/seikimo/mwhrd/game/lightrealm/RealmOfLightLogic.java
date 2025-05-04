@@ -230,7 +230,7 @@ public final class RealmOfLightLogic {
                 // Drop the mob's gear.
                 var world = mob.getEntityWorld();
 
-                mob.getArmorItems().forEach(item -> {
+                Utils.iterate(mob.equipment).forEach(item -> {
                     if (item.isEmpty()) return;
 
                     var itemEntity = new ItemEntity(
@@ -255,8 +255,7 @@ public final class RealmOfLightLogic {
         if (!Players.inWorld(MyWellHasRunDry.getRealmOfLight(), player)) return;
 
         // Check if the item is a tool.
-        var item = stack.getItem();
-        if (item instanceof MiningToolItem) {
+        if (Utils.isMiningTool(stack)) {
             EnchantmentHelper.apply(stack, builder -> {
                 builder.add(Utils.lookup(Enchantments.EFFICIENCY), 5);
                 builder.add(Utils.lookup(Enchantments.FORTUNE), 5);
@@ -264,7 +263,7 @@ public final class RealmOfLightLogic {
             });
         }
 
-        if (item instanceof SwordItem || item instanceof AxeItem) {
+        if (Utils.isWeapon(stack)) {
             EnchantmentHelper.apply(stack, builder -> {
                 builder.add(Utils.lookup(Enchantments.SHARPNESS), 5);
                 builder.add(Utils.lookup(Enchantments.SWEEPING_EDGE), 3);

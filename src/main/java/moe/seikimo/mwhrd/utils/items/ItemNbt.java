@@ -54,7 +54,7 @@ public final class ItemNbt {
      * @return The string value.
      */
     public String getString(String key) {
-        return this.compound.getString(key);
+        return this.compound.getString(key, "");
     }
 
     /**
@@ -64,7 +64,7 @@ public final class ItemNbt {
      * @return The integer value.
      */
     public int getInt(String key) {
-        return this.compound.getInt(key);
+        return this.compound.getInt(key, 0);
     }
 
     /**
@@ -74,7 +74,7 @@ public final class ItemNbt {
      * @return The double value.
      */
     public double getDouble(String key) {
-        return this.compound.getDouble(key);
+        return this.compound.getDouble(key, 0d);
     }
 
     /**
@@ -84,7 +84,7 @@ public final class ItemNbt {
      * @return The boolean value.
      */
     public boolean getBoolean(String key) {
-        return this.compound.getBoolean(key);
+        return this.compound.getBoolean(key, false);
     }
 
     /**
@@ -94,7 +94,7 @@ public final class ItemNbt {
      * @return The byte array value.
      */
     public byte[] getByteArray(String key) {
-        return this.compound.getByteArray(key);
+        return this.compound.getByteArray(key).orElse(new byte[0]);
     }
 
     /**
@@ -104,7 +104,7 @@ public final class ItemNbt {
      * @return The integer array value.
      */
     public int[] getIntArray(String key) {
-        return this.compound.getIntArray(key);
+        return this.compound.getIntArray(key).orElse(new int[0]);
     }
 
     /**
@@ -114,7 +114,7 @@ public final class ItemNbt {
      * @return The long array value.
      */
     public long[] getLongArray(String key) {
-        return this.compound.getLongArray(key);
+        return this.compound.getLongArray(key).orElse(new long[0]);
     }
 
     /**
@@ -129,11 +129,11 @@ public final class ItemNbt {
         }
 
         // Read the dimension registry key.
-        var dimensionId = posNbt.getString("dimension");
+        var dimensionId = posNbt.getString("dimension", "minecraft:overworld");
         var dimensionKey = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(dimensionId));
 
         // Read the block position.
-        var blockPos = NBT.readBlockPos(posNbt.getCompound("position"));
+        var blockPos = NBT.readBlockPos(posNbt.getCompoundOrEmpty("position"));
 
         return GlobalPos.create(dimensionKey, blockPos);
     }

@@ -5,7 +5,6 @@ import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
-import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
@@ -13,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
+import net.minecraft.util.Unit;
 
 import java.util.ArrayList;
 
@@ -101,9 +101,7 @@ public final class ItemBuilder {
      * @return The builder for chaining.
      */
     public ItemBuilder unbreakable() {
-        this.stack.set(
-            DataComponentTypes.UNBREAKABLE,
-            new UnbreakableComponent(false));
+        this.stack.set(DataComponentTypes.UNBREAKABLE, Unit.INSTANCE);
         return this;
     }
 

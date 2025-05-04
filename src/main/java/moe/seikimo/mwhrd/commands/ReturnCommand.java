@@ -1,10 +1,13 @@
 package moe.seikimo.mwhrd.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.Collections;
 
@@ -24,7 +27,7 @@ public final class ReturnCommand {
 
     private static int returnToSpawn(CommandContext<ServerCommandSource> context) {
         var player = context.getSource().getPlayer();
-        if (player == null) return 1;
+        if (player == null) return Command.SINGLE_SUCCESS;
 
         if (!MyWellHasRunDry.getTrialChamberPredicate().test(
             player.getServerWorld(), player.getX(),
@@ -36,8 +39,10 @@ public final class ReturnCommand {
                 return 1;
             }
 
-            var spawnPoint = player.getSpawnPointPosition();
-            if (spawnPoint == null) {
+            BlockPos spawnPoint;
+            if (player.getRespawn() instanceof ServerPlayerEntity.Respawn respawn) {
+                spawnPoint = respawn.pos();
+            } else {
                 spawnPoint = player.getWorld().getSpawnPos();
             }
 
@@ -53,6 +58,6 @@ public final class ReturnCommand {
             );
         }
 
-        return 1;
+        return Command.SINGLE_SUCCESS;
     }
 }

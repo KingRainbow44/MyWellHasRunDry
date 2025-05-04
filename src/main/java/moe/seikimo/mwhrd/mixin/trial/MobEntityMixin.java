@@ -13,7 +13,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -34,9 +33,6 @@ public abstract class MobEntityMixin
 
     @Shadow
     private @Nullable LivingEntity target;
-
-    @Shadow
-    public abstract void equipStack(EquipmentSlot slot, ItemStack stack);
 
     @Unique private boolean stickTarget = false;
     @Unique private boolean trial = false;

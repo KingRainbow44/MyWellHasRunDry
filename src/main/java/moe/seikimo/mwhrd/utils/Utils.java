@@ -6,6 +6,7 @@ import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.block.Block;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.EntityEquipment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -16,9 +17,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -463,5 +466,73 @@ public interface Utils {
      */
     static String pretty(long number) {
         return String.format("%,d", number);
+    }
+
+    List<EquipmentSlot> ARMOR = List.of(
+        EquipmentSlot.HEAD,
+        EquipmentSlot.CHEST,
+        EquipmentSlot.LEGS,
+        EquipmentSlot.FEET
+    );
+
+    /**
+     * Provides a list of armor item stacks.
+     *
+     * @param equipment The entity's equipment holder.
+     * @return The list of item stacks.
+     */
+    static List<ItemStack> iterate(EntityEquipment equipment) {
+        var stacks = new ArrayList<ItemStack>();
+
+        for (var slot : ARMOR) {
+            var stack = equipment.get(slot);
+            if (stack.isEmpty()) continue;
+
+            stacks.add(stack);
+        }
+
+        return stacks;
+    }
+
+    /**
+     * Checks if an item stack is a pickaxe.
+     *
+     * @param stack The item stack to check.
+     * @return Whether the item stack is a pickaxe.
+     */
+    static boolean isWeapon(ItemStack stack) {
+        var item = stack.getItem();
+        var key = Registries.ITEM.getEntry(item);
+        return key.isIn(ItemTags.SWORDS) || key.isIn(ItemTags.AXES);
+    }
+
+    /**
+     * Checks if an item stack is a mining tool.
+     *
+     * @param stack The item stack to check.
+     * @return Whether the item stack is a mining tool.
+     */
+    static boolean isMiningTool(ItemStack stack) {
+        var item = stack.getItem();
+        var key = Registries.ITEM.getEntry(item);
+        return key.isIn(ItemTags.PICKAXES) ||
+            key.isIn(ItemTags.AXES) ||
+            key.isIn(ItemTags.SHOVELS) ||
+            key.isIn(ItemTags.HOES);
+    }
+
+    /**
+     * Checks if an item stack is armor.
+     *
+     * @param stack The item stack to check.
+     * @return Whether the item stack is armor.
+     */
+    static boolean isArmor(ItemStack stack) {
+        var item = stack.getItem();
+        var key = Registries.ITEM.getEntry(item);
+        return key.isIn(ItemTags.HEAD_ARMOR) ||
+            key.isIn(ItemTags.CHEST_ARMOR) ||
+            key.isIn(ItemTags.LEG_ARMOR) ||
+            key.isIn(ItemTags.FOOT_ARMOR);
     }
 }

@@ -83,7 +83,7 @@ public final class MinecartBlaster extends BaseGun {
     }
 
     @Override
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+    public boolean canMine(ItemStack stack, BlockState state, World world, BlockPos pos, LivingEntity user) {
         return false;
     }
 

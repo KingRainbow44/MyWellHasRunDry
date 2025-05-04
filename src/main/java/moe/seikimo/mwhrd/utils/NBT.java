@@ -17,9 +17,9 @@ public interface NBT {
         }
 
         // Pull the coordinates from the NBT.
-        var x = compound.getInt("x");
-        var y = compound.getInt("y");
-        var z = compound.getInt("z");
+        var x = compound.getInt("x", 0);
+        var y = compound.getInt("y", 0);
+        var z = compound.getInt("z", 0);
 
         return new BlockPos(x, y, z);
     }

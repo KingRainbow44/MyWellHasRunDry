@@ -74,7 +74,7 @@ public final class PixelPrinterPower extends BeaconPower {
 
     @Override
     public void read(World world, NbtCompound tag) {
-        this.itemFuel = tag.getInt("item_fuel");
+        this.itemFuel = tag.getInt("item_fuel", 0);
     }
 
     @Override

@@ -274,14 +274,14 @@ public abstract class BeaconBlockEntityMixin
 
     @Override
     public void mwhrd$deserialize(NbtCompound nbt) {
-        var advanced = nbt.getBoolean("adv_beacon");
-        var fuel = nbt.getInt("fuel");
+        var advanced = nbt.getBoolean("adv_beacon", false);
+        var fuel = nbt.getInt("fuel", 0);
 
         this.mwhrd$setAdvanced(advanced);
         this.mwhrd$setFuel(fuel);
 
         // Apply powers.
-        var powers = nbt.getCompound("powers");
+        var powers = nbt.getCompoundOrEmpty("powers");
         for (var key : powers.getKeys()) {
             var effect = BeaconEffect.getById(key);
             if (effect == null) {
@@ -289,7 +289,7 @@ public abstract class BeaconBlockEntityMixin
             }
 
             var power = effect.create(this.getPos());
-            power.read(this.getWorld(), powers.getCompound(key));
+            power.read(this.getWorld(), powers.getCompoundOrEmpty(key));
 
             this.powers.put(effect, power);
         }

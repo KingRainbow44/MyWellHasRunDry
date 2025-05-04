@@ -36,7 +36,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.predicate.LightPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.LocationPredicate;
@@ -60,6 +59,7 @@ import org.geysermc.geyser.api.GeyserApi;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
+import java.net.URI;
 import java.util.*;
 
 @Slf4j
@@ -76,9 +76,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             .formatted(Formatting.GRAY),
         Text.literal("https://docs.seikimo.moe/mwhrd/changelog")
             .setStyle(Style.EMPTY
-                .withClickEvent(new ClickEvent(
-                    ClickEvent.Action.OPEN_URL,
-                    "https://docs.seikimo.moe/mwhrd/changelog"
+                .withClickEvent(new ClickEvent.OpenUrl(
+                    URI.create("https://docs.seikimo.moe/mwhrd/changelog")
                 )))
             .formatted(Formatting.DARK_GRAY)
     );

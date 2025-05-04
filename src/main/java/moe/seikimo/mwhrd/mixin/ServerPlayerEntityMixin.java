@@ -12,7 +12,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -40,12 +39,6 @@ import java.util.function.Consumer;
 public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IPlayer {
     @Shadow
     public abstract void sendMessage(Text message);
-
-    @Shadow
-    public abstract boolean isCreative();
-
-    @Shadow
-    public abstract boolean isSpectator();
 
     @Shadow
     public abstract void sendMessage(Text message, boolean overlay);
@@ -305,8 +298,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
         this.getInventory().clear();
 
         for (var stack : storage.getArmor()) {
-            if (!(stack.getItem() instanceof ArmorItem item)) continue;
-            this.equipStack(Utils.getSlot(item), stack);
+            if (!Utils.isArmor(stack)) continue;
+            this.equipStack(Utils.getSlot(stack.getItem()), stack);
         }
 
         // Add all items to the player's inventory.
@@ -338,9 +331,15 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
         // Store the entirety of the player's inventory.
         var inventory = this.getInventory();
 
-        inventory.armor.forEach(storage.getArmor()::offer);
-        inventory.main.forEach(storage.getInventory()::offer);
-        inventory.offHand.forEach(storage.getOffHand()::offer);
+        for (var stack : Utils.iterate(this.equipment)) {
+            if (!Utils.isArmor(stack)) continue;
+            storage.getArmor().offer(stack);
+        }
+
+        inventory.getMainStacks().forEach(storage.getInventory()::offer);
+
+        var offHand = this.getOffHandStack();
+        storage.getOffHand().offer(offHand);
 
         // Clear the player's existing inventory.
         if (clear) {

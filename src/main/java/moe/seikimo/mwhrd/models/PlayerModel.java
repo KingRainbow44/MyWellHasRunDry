@@ -221,9 +221,12 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
         this.handle.getEnderChestInventory().clear();
 
         this.handle.setSpawnPoint(
-            World.OVERWORLD,
-            MyWellHasRunDry.getDefaultSpawn(),
-            0.0F, false, false
+            new ServerPlayerEntity.Respawn(
+                World.OVERWORLD,
+                MyWellHasRunDry.getDefaultSpawn(),
+                0.0F, false
+            ),
+            false
         );
     }
 
