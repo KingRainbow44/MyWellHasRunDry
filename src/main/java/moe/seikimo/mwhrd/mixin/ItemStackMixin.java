@@ -5,6 +5,7 @@ import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
 import moe.seikimo.mwhrd.interfaces.nbt.IItemNbtWrapper;
 import moe.seikimo.mwhrd.utils.items.ItemNbt;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -26,8 +27,8 @@ public abstract class ItemStackMixin implements
     @Unique private boolean unbreakable = false;
 
     @Inject(method = "inventoryTick", at = @At("RETURN"))
-    public void inventoryTick(World world, Entity entity, int slot, boolean selected, CallbackInfo ci) {
-        if (selected && entity instanceof IPlayerConditions condPlayer) {
+    public void inventoryTick(World world, Entity entity, EquipmentSlot slot, CallbackInfo ci) {
+        if (slot == EquipmentSlot.MAINHAND && entity instanceof IPlayerConditions condPlayer) {
             this.unbreakable = condPlayer.mwhrd$isUnbreakable();
         } else {
             this.unbreakable = false;
