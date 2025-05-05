@@ -486,8 +486,6 @@ public interface Utils {
 
         for (var slot : ARMOR) {
             var stack = equipment.get(slot);
-            if (stack.isEmpty()) continue;
-
             stacks.add(stack);
         }
 
