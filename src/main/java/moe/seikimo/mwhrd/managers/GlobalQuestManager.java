@@ -86,7 +86,7 @@ public final class GlobalQuestManager {
         GlobalQuestManager.startBlock = new BlockPos(ADVENTURE_START_X, y, ADVENTURE_START_Z);
 
         // Create NPC element.
-        var npc = new PlayerNpcElement();
+        var npc = new PlayerNpcElement("Adventurer");
         npc.loadScript("behavior/b_adventures.lua");
         npc.setSkin(
             Constants.ADVENTURE_NPC_SKIN,
