@@ -200,8 +200,7 @@ public final class PlayerQuestManager implements ScriptObject {
                     .formatted(Formatting.DARK_GRAY)
                     .append(Text.translatable(option.getLocale()))
                     .styled(style -> style.withClickEvent(
-                        new ClickEvent(
-                            ClickEvent.Action.RUN_COMMAND,
+                        new ClickEvent.RunCommand(
                             "/interact %s".formatted(option.getCallback())
                         )
                     ))
