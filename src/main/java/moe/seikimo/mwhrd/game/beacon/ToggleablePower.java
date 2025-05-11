@@ -29,7 +29,7 @@ public abstract class ToggleablePower extends BeaconPower {
 
     @Override
     public void read(World world, NbtCompound tag) {
-        this.enabled = tag.getBoolean("enabled");
+        this.enabled = tag.getBoolean("enabled", false);
     }
 
     @Override

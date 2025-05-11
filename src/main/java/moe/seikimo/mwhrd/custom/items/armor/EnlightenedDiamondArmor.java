@@ -71,7 +71,7 @@ public final class EnlightenedDiamondArmor
         var stack = super.getPolymerItemStack(itemStack, tooltipType, context);
 
         // Set armor color.
-        stack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0x9bb3e8, false));
+        stack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0x9bb3e8));
 
         return stack;
     }
@@ -82,8 +82,8 @@ public final class EnlightenedDiamondArmor
     }
 
     @Override
-    public void onCraftByPlayer(ItemStack stack, World world, PlayerEntity player) {
-        super.onCraftByPlayer(stack, world, player);
+    public void onCraftByPlayer(ItemStack stack, PlayerEntity player) {
+        super.onCraftByPlayer(stack, player);
         this.upgrade(stack, player);
     }
 

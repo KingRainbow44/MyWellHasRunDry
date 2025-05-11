@@ -99,7 +99,7 @@ public final class BeaconEffectsGui extends SimpleGui {
                     .append(Text.literal("!")
                         .formatted(Formatting.GREEN)));
             }
-        });
+        }, 1f);
 
         this.drawEffects();
 

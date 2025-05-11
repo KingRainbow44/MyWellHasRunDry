@@ -14,16 +14,14 @@ import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-public final class EnlightenedDiamondSword extends SwordItem implements PolymerItem, EnlightenedItem {
+public final class EnlightenedDiamondSword extends Item implements PolymerItem, EnlightenedItem {
     public EnlightenedDiamondSword(Settings settings) {
         super(
-            CustomToolMaterials.ENLIGHTENED,
-            1.5f, -2.4f,
             settings
+                .sword(CustomToolMaterials.ENLIGHTENED, 1.5f, -2.4f)
                 .maxCount(1)
                 .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
                     .set("upgrade_tier", 0)
@@ -44,8 +42,8 @@ public final class EnlightenedDiamondSword extends SwordItem implements PolymerI
     }
 
     @Override
-    public void onCraftByPlayer(ItemStack stack, World world, PlayerEntity player) {
-        super.onCraftByPlayer(stack, world, player);
+    public void onCraftByPlayer(ItemStack stack, PlayerEntity player) {
+        super.onCraftByPlayer(stack, player);
         this.upgrade(stack, player);
     }
 

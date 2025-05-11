@@ -77,8 +77,7 @@ public final class PartyManager {
             PartyManager.removePlayer(member);
             if (lastLocations.containsKey(member.getUuid())) {
                 member.sendMessage(Text.literal("Click to return to your last location.")
-                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(
-                        ClickEvent.Action.RUN_COMMAND,
+                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand(
                         "/party return"
                     )))
                     .withColor(Color.YELLOW.getRGB()));
@@ -115,7 +114,7 @@ public final class PartyManager {
             .append(Text.literal(". Click to accept!")
                 .withColor(Color.CYAN.getRGB()))
             .setStyle(Style.EMPTY.withClickEvent(
-                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept")
+                new ClickEvent.RunCommand("/party accept")
             ).withColor(Color.CYAN.getRGB())));
 
         return true;
@@ -305,8 +304,7 @@ public final class PartyManager {
                 member.sendMessage(Text.literal("You have been warped to the party leader.")
                     .withColor(Color.GREEN.getRGB()));
                 member.sendMessage(Text.literal("You can return to your previous location by leaving.")
-                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent(
-                        ClickEvent.Action.RUN_COMMAND,
+                    .setStyle(Style.EMPTY.withClickEvent(new ClickEvent.RunCommand(
                         "/party leave"
                     )))
                     .withColor(Color.YELLOW.getRGB()));

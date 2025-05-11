@@ -61,6 +61,7 @@ import org.geysermc.geyser.api.GeyserApi;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
+import java.net.URI;
 import java.util.*;
 
 @Slf4j
@@ -77,9 +78,8 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             .formatted(Formatting.GRAY),
         Text.literal("https://docs.seikimo.moe/mwhrd/changelog")
             .setStyle(Style.EMPTY
-                .withClickEvent(new ClickEvent(
-                    ClickEvent.Action.OPEN_URL,
-                    "https://docs.seikimo.moe/mwhrd/changelog"
+                .withClickEvent(new ClickEvent.OpenUrl(
+                    URI.create("https://docs.seikimo.moe/mwhrd/changelog")
                 )))
             .formatted(Formatting.DARK_GRAY)
     );

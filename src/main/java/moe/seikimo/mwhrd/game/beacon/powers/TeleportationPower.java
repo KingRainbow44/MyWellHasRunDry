@@ -69,9 +69,9 @@ public final class TeleportationPower extends BeaconPower {
 
     @Override
     public void read(World world, NbtCompound tag) {
-        this.name = tag.getString("name");
-        this.target = BlockPos.fromLong(tag.getLong("target")).mutableCopy();
-        this.enabled = tag.getBoolean("enabled");
+        this.name = tag.getString("name", "My Cool Base!");
+        this.target = BlockPos.fromLong(tag.getLong("target", 0L)).mutableCopy();
+        this.enabled = tag.getBoolean("enabled", false);
 
         if (world != null) {
             this.update(world);

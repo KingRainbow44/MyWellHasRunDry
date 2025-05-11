@@ -16,11 +16,10 @@ import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SimpleParticleType;
@@ -37,6 +36,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
 import java.util.ArrayList;
@@ -85,8 +85,7 @@ public abstract class BaseGun
                                 Attributes.add(Identifier.of(MyWellHasRunDry.MOD_ID, "gun_atk_spd"), 34f),
                                 AttributeModifierSlot.MAINHAND
                             )
-                        ),
-                        false
+                        )
                     )
                 )
                 .component(
@@ -429,7 +428,7 @@ public abstract class BaseGun
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
         // Check if the gun is reloading.
         var gunData = stack.getOrDefault(
             CustomComponents.GUN, GunComponent.EMPTY);

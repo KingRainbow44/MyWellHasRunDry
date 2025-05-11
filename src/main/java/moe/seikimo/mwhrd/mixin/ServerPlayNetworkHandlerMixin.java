@@ -74,7 +74,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
         if (screenHandler instanceof GenericContainerScreenHandler &&
             SHULKERS.containsKey(this.player.getUuid())) {
-            var slot = packet.getSlot();
+            var slot = packet.slot();
             if (slot == -999) return;
 
             var item = screenHandler.getSlot(slot).getStack();
@@ -87,13 +87,13 @@ public abstract class ServerPlayNetworkHandlerMixin {
             return;
         }
 
-        var slot = packet.getSlot();
+        var slot = packet.slot();
         if (slot == -999) return;
 
-        var button = packet.getButton();
+        var button = packet.button();
         if (button != 1) return;
 
-        var action = packet.getActionType();
+        var action = packet.actionType();
         if (action != SlotActionType.QUICK_MOVE) return;
 
         // Determine the slot's item stack.

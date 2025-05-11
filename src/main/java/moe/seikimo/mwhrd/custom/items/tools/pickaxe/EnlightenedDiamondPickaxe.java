@@ -14,21 +14,18 @@ import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.packettweaker.PacketContext;
 
-public final class EnlightenedDiamondPickaxe extends PickaxeItem implements PolymerItem, EnlightenedItem {
-    public EnlightenedDiamondPickaxe(Settings settings) {
-        super(
-            CustomToolMaterials.ENLIGHTENED,
-            2f, -3f,
-            settings
-                .maxCount(1)
-                .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
-                    .set("upgrade_tier", 0)
-                    .build())
-                .component(DataComponentTypes.RARITY, Rarity.RARE)
+public final class EnlightenedDiamondPickaxe extends Item implements PolymerItem, EnlightenedItem {
+    public EnlightenedDiamondPickaxe(Item.Settings settings) {
+        super(settings
+            .pickaxe(CustomToolMaterials.ENLIGHTENED, 2f, -3f)
+            .maxCount(1)
+            .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
+                .set("upgrade_tier", 0)
+                .build())
+            .component(DataComponentTypes.RARITY, Rarity.RARE)
         );
     }
 
@@ -49,8 +46,8 @@ public final class EnlightenedDiamondPickaxe extends PickaxeItem implements Poly
     }
 
     @Override
-    public void onCraftByPlayer(ItemStack stack, World world, PlayerEntity player) {
-        super.onCraftByPlayer(stack, world, player);
+    public void onCraftByPlayer(ItemStack stack, PlayerEntity player) {
+        super.onCraftByPlayer(stack, player);
         this.upgrade(stack, player);
     }
 

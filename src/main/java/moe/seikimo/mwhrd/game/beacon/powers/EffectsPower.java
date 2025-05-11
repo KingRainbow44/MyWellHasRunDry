@@ -11,7 +11,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
@@ -47,22 +46,27 @@ public final class EffectsPower extends BeaconPower {
     public void read(World world, NbtCompound tag) {
         if (tag.contains("effects")) {
             this.effects.clear();
-            var effects = tag.getList("effects", NbtElement.COMPOUND_TYPE);
+            var effects = tag.getListOrEmpty("effects");
             for (var element : effects) {
                 var effect = (NbtCompound) element;
-                var id = Identifier.tryParse(effect.getString("id"));
-                var potency = effect.getInt("potency");
+                var id = Identifier.tryParse(effect.getString("id", ""));
+                if (id != null) {
+                    var potency = effect.getInt("potency", 0);
 
-                var entry = Registries.STATUS_EFFECT.getEntry(id);
-                entry.ifPresent(e -> this.effects.put(e, potency));
+                    var entry = Registries.STATUS_EFFECT.getEntry(id);
+                    entry.ifPresent(e -> this.effects.put(e, potency));
+                }
             }
         }
 
         if (tag.contains("known_effects")) {
             this.known.clear();
-            for (var id : tag.getList("known_effects", NbtElement.STRING_TYPE)) {
-                var effect = Registries.STATUS_EFFECT.getEntry(Identifier.tryParse(id.asString()));
-                effect.ifPresent(this.known::add);
+            for (var id : tag.getListOrEmpty("known_effects")) {
+                var string = id.asString();
+                if (string.isPresent()) {
+                    var effect = Registries.STATUS_EFFECT.getEntry(Identifier.tryParse(string.get()));
+                    effect.ifPresent(this.known::add);
+                }
             }
         }
     }

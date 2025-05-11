@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
     @Inject(method = "onCraftByPlayer", at = @At("HEAD"))
-    public void onCraftByPlayer(World world, PlayerEntity player, int amount, CallbackInfo ci) {
+    public void onCraftByPlayer(PlayerEntity player, int amount, CallbackInfo ci) {
         PlayerCraftEvent.EVENT
             .invoker()
             .onCraft(player, (ItemStack) (Object) this);

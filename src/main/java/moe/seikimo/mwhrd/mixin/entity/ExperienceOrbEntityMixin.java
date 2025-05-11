@@ -13,9 +13,10 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ExperienceOrbEntity.class)
 public abstract class ExperienceOrbEntityMixin extends Entity {
-    @Shadow private int amount;
-
     @Shadow private int pickingCount;
+
+    @Shadow
+    public abstract int getValue();
 
     public ExperienceOrbEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -27,7 +28,7 @@ public abstract class ExperienceOrbEntityMixin extends Entity {
      */
     @Overwrite
     private boolean isMergeable(ExperienceOrbEntity other) {
-        return other != (Object) this && !other.isRemoved() && other.getExperienceAmount() == this.amount;
+        return other != (Object) this && !other.isRemoved() && other.getValue() == this.getValue();
     }
 
     /**
@@ -43,7 +44,7 @@ public abstract class ExperienceOrbEntityMixin extends Entity {
         if (player.experiencePickUpDelay == 0) {
             player.experiencePickUpDelay = 2;
             player.sendPickup(this, this.pickingCount);
-            Players.addExperience(serverPlayer, this.pickingCount * this.amount);
+            Players.addExperience(serverPlayer, this.pickingCount * this.getValue());
 
             this.discard();
         }
