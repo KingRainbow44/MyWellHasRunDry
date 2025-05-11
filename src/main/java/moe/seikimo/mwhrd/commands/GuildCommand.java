@@ -1,10 +1,12 @@
 package moe.seikimo.mwhrd.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import moe.seikimo.mwhrd.game.guilds.GuildManager;
 import moe.seikimo.mwhrd.game.guilds.GuildPermission;
+import moe.seikimo.mwhrd.game.quest.Quests;
 import moe.seikimo.mwhrd.gui.guild.GuildBankSelectorGui;
 import moe.seikimo.mwhrd.gui.guild.GuildInfoGui;
 import moe.seikimo.mwhrd.utils.Players;
@@ -62,6 +64,8 @@ public final class GuildCommand {
                     .executes(GuildCommand::toggleXpBar))
                 .then(literal("list")
                     .executes(GuildCommand::toggleList)))
+            .then(literal("progress")
+                .executes(GuildCommand::mcaProgress))
         );
 
         // Register '/g' alias.
@@ -439,5 +443,30 @@ public final class GuildCommand {
             .formatted(Formatting.ITALIC, Formatting.GRAY));
 
         return 1;
+    }
+
+    /**
+     * Displays the player's progress towards the MCA quest line.
+     */
+    private static int mcaProgress(CommandContext<ServerCommandSource> context) {
+        var source = context.getSource();
+        var player = Objects.requireNonNull(source.getPlayer());
+
+        // Resolve the guild.
+        var guild = GuildManager.getGuild(player);
+        if (guild == null) {
+            source.sendMessage(Text.translatable("commands.guild.not_in_guild"));
+            return 0;
+        }
+
+        // Check if the player has started the MCA quest line.
+        if (!Quests.hasStartedMca(player)) {
+            source.sendError(Text.translatable("commands.guild.progress.not_started"));
+            return 0;
+        }
+
+        // Open the MCA GUI.
+
+        return Command.SINGLE_SUCCESS;
     }
 }

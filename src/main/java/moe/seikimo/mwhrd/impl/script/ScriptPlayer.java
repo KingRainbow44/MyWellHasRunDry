@@ -4,6 +4,7 @@ import lombok.Getter;
 import moe.seikimo.mwhrd.game.quest.PlayerQuestManager;
 import moe.seikimo.mwhrd.interfaces.player.IStoryPlayer;
 import moe.seikimo.mwhrd.script.ScriptObject;
+import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -30,6 +31,15 @@ public final class ScriptPlayer implements ScriptObject {
             throw new RuntimeException("Player needs to be a story player");
         }
         this.quests = storyPlayer.mwhrd$getQuestManager();
+    }
+
+    /**
+     * Checks if the player is in a guild.
+     *
+     * @return {@code true} if the player is in a guild, {@code false} otherwise.
+     */
+    public boolean isInGuild() {
+        return Players.getModel(this.handle).getGuild() != null;
     }
 
     /**

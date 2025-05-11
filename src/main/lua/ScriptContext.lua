@@ -53,6 +53,10 @@ function Actor:setGlowing(glowing) end
 --- @field quests PlayerQuestManager
 local Player = {}
 
+--- Checks if the player is in a guild.
+--- @return boolean True if the player is in a guild, false otherwise.
+function Player:isInGuild() end
+
 --- Sends a message to the player.
 --- @param message string The message to send.
 function Player:message(message) end
