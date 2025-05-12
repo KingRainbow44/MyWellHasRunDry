@@ -3,6 +3,7 @@ package moe.seikimo.mwhrd.gui.guild;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import moe.seikimo.mwhrd.game.guilds.GuildInstance;
+import moe.seikimo.mwhrd.game.guilds.GuildPermission;
 import moe.seikimo.mwhrd.utils.GUI;
 import moe.seikimo.mwhrd.utils.Players;
 import moe.seikimo.mwhrd.utils.Utils;
@@ -13,7 +14,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public final class GuildInfoGui extends SimpleGui {
     private static final int INFO = 22;
@@ -63,14 +63,54 @@ public final class GuildInfoGui extends SimpleGui {
             var player = members.get(i);
             var head = Players.headOf(player.getUUID());
 
-            this.setSlot(i, new GuiElementBuilder(head)
+            var targetRank = this.guild.getPermission(player);
+
+            var builder = new GuiElementBuilder(head)
                 .setName(Text.literal(player.username())
                     .formatted(this.guild.getColor()))
                 .addLoreLine(Text.literal("Rank: ")
                     .formatted(Formatting.GRAY)
-                    .append(Text.literal(this.guild.getPermission(player).toString())
-                        .formatted(Formatting.DARK_AQUA)))
-            );
+                    .append(Text.literal(targetRank.toString())
+                        .formatted(Formatting.DARK_AQUA)));
+
+            if (
+                !player.getUUID().equals(this.player.getUuid()) &&
+                    targetRank.ordinal() >= GuildPermission.OFFICER.ordinal()
+            ) {
+                builder
+                    .addLoreLine(Text.empty())
+                    .addLoreLine(Text.literal("Left-click to promote")
+                        .formatted(Formatting.YELLOW))
+                    .addLoreLine(Text.literal("Right-click to demote")
+                        .formatted(Formatting.AQUA))
+                    .setCallback(event -> {
+                        // Get the target rank.
+                        var executorRank = this.guild.getPermission(this.player);
+                        var newTargetRank = switch (event) {
+                            case MOUSE_LEFT -> targetRank.getNext();
+                            case MOUSE_RIGHT -> targetRank.getPrevious();
+                            default -> targetRank;
+                        };
+
+                        // If the rank is the same, do nothing.
+                        if (newTargetRank == null || targetRank == newTargetRank) {
+                            return;
+                        }
+
+                        // Check if the player has permission to change the rank.
+                        if (newTargetRank.ordinal() >= executorRank.ordinal()) {
+                            return;
+                        }
+
+                        // Update the permission.
+                        this.guild.setPermission(player, newTargetRank);
+
+                        // Re-draw players.
+                        this.drawPlayers();
+                    });
+            }
+
+            this.setSlot(i, builder);
         }
     }
 

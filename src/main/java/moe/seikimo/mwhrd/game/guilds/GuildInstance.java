@@ -318,6 +318,18 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         return this.permissions.getOrDefault(player.uuid(), GuildPermission.RECRUIT);
     }
 
+    public void setPermission(BasicPlayerInfo player, GuildPermission permission) {
+        var oldPermission = this.permissions.put(player.uuid(), permission);
+        var demoted = oldPermission != null && oldPermission.ordinal() > permission.ordinal();
+
+        this.broadcast(Text.translatable(
+            "text.mwhrd.guild.permission.set",
+            player.username(),
+            demoted ? "demoted" : "promoted",
+            permission.toString()
+        ).formatted(Formatting.AQUA));
+    }
+
     /**
      * Sets the permission of a player.
      *
@@ -325,15 +337,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
      * @param permission The permission to set.
      */
     public void setPermission(PlayerEntity player, GuildPermission permission) {
-        var oldPermission = this.permissions.put(player.getUuidAsString(), permission);
-        var demoted = oldPermission != null && oldPermission.ordinal() > permission.ordinal();
-
-        this.broadcast(Text.translatable(
-            "text.mwhrd.guild.permission.set",
-            player.getDisplayName(),
-            demoted ? "demoted" : "promoted",
-            permission.toString()
-        ).formatted(Formatting.AQUA));
+        this.setPermission(BasicPlayerInfo.from(player), permission);
     }
 
     /**
