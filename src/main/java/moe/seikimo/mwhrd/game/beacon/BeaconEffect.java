@@ -28,7 +28,7 @@ public enum BeaconEffect {
     PIXEL_PRINTER("pixel_printer", "Pixel Printer", BeaconLevel.TIER_1, Items.CRAFTER, PixelPrinterPower::new, true, CustomItems.PIXEL_PRINTER_UPGRADE),
     FLIGHT_CRYSTAL("flight_crystal", "Flight Crystal", BeaconLevel.TIER_3, Items.ELYTRA, FlightPower::new, true, CustomItems.FLIGHT_CRYSTAL_UPGRADE),
     EYE_OF_TELEPORTATION("eye_of_teleportation", "Eye of Teleportation", BeaconLevel.TIER_2, Items.ENDER_EYE, TeleportationPower::new, true, CustomItems.TELEPORT_EYE_UPGRADE),
-    WORLDEDIT("worldedit", "Builder's Grace", BeaconLevel.TIER_4, Items.WOODEN_AXE, BeaconPower.Empty::new, true, CustomItems.WORLDEDIT_UPGRADE)
+    WORLDEDIT("worldedit", "Builder's Grace", BeaconLevel.TIER_4, Items.WOODEN_AXE, WorldEditPower::new, true, CustomItems.WORLDEDIT_UPGRADE)
     ;
 
     public static final Map<Class<? extends BeaconPower>, BeaconEffect> POWERS = Maps.beaconPower()
@@ -39,6 +39,7 @@ public enum BeaconEffect {
         .put(PixelPrinterPower.class, PIXEL_PRINTER)
         .put(FlightPower.class, FLIGHT_CRYSTAL)
         .put(TeleportationPower.class, EYE_OF_TELEPORTATION)
+        .put(WorldEditPower.class, WORLDEDIT)
         .build();
 
     private static final Map<String, BeaconEffect> idMap = new HashMap<>();
