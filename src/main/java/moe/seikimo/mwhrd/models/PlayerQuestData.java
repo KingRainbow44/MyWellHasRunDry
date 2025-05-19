@@ -100,6 +100,16 @@ public final class PlayerQuestData {
     }
 
     /**
+     * Returns the full quest data for the given quest ID.
+     *
+     * @param questId The ID of the quest to retrieve.
+     * @return The quest data.
+     */
+    public Quest getQuest(int questId) {
+        return this.quests.get(questId);
+    }
+
+    /**
      * Retrieves the state of the quest with the given ID.
      *
      * @param questId The ID of the quest to check.
@@ -125,5 +135,25 @@ public final class PlayerQuestData {
         }
 
         this.quests.get(questId).setState(state);
+    }
+
+    /**
+     * Sets the state of the dialogue with the given ID.
+     *
+     * @param dialogueId The ID of the dialogue to set the state of.
+     * @param completed {@code true} if the dialogue is completed, {@code false} otherwise.
+     */
+    public void setDialogueState(int dialogueId, boolean completed) {
+        this.dialogues.put(dialogueId, completed);
+    }
+
+    /**
+     * Checks if the player has completed the given dialogue.
+     *
+     * @param dialogueId The ID of the dialogue to check.
+     * @return {@code true} if the player has completed the dialogue, {@code false} otherwise.
+     */
+    public boolean hasCompletedDialogue(int dialogueId) {
+        return this.dialogues.getOrDefault(dialogueId, false);
     }
 }
