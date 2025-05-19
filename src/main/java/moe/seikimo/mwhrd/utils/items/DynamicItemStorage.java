@@ -10,6 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Range;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Paginated, dynamic storage for items.
@@ -19,10 +20,10 @@ import java.util.*;
 @Embedded
 public final class DynamicItemStorage {
     @Transient
-    private List<List<ItemStack>> backing = Collections.synchronizedList(new ArrayList<>());
+    private Map<Integer, List<ItemStack>> backing = new ConcurrentHashMap<>();
 
     /** This is the list to be serialized by Morphia. */
-    private List<List<String>> backing$1 = new ArrayList<>();
+    private Map<Integer, List<String>> backing$1 = new HashMap<>();
 
     @Range(from = 1, to = 6)
     private int rows = 1;
@@ -67,9 +68,9 @@ public final class DynamicItemStorage {
             .getRegistryManager();
 
         // Allocate pages for the serialized list.
-        this.backing$1 = new ArrayList<>();
+        this.backing$1 = new HashMap<>();
         for (var i = 0; i < this.backing.size(); i++) {
-            this.backing$1.add(new ArrayList<>());
+            this.backing$1.put(i, new ArrayList<>());
         }
 
         // Serialize all pages.
@@ -101,7 +102,7 @@ public final class DynamicItemStorage {
             }
 
             // Write the items to the list.
-            this.backing$1.set(i, serialized);
+            this.backing$1.put(i, serialized);
         }
     }
 
@@ -117,9 +118,9 @@ public final class DynamicItemStorage {
         this.backing.clear();
 
         // Allocate pages for the serialized list.
-        var deserialized = new ArrayList<List<ItemStack>>();
+        var deserialized = new ConcurrentHashMap<Integer, List<ItemStack>>();
         for (var i = 0; i < this.backing$1.size(); i++) {
-            deserialized.add(new ArrayList<>());
+            deserialized.put(i, new ArrayList<>());
         }
 
         // Deserialize all pages.
@@ -152,17 +153,21 @@ public final class DynamicItemStorage {
             }
 
             // Write the items to the list.
-            deserialized.set(i, page);
+            deserialized.put(i, page);
         }
 
-        this.backing = Collections.synchronizedList(deserialized);
+        this.backing = deserialized;
     }
 
     /**
      * Removes empty item stacks from the storage.
      */
     public void cleanup() {
-        this.backing.removeIf(page -> page.stream().allMatch(ItemStack::isEmpty));
+        for (var entry : this.backing.entrySet()) {
+            if (entry.getValue().stream().allMatch(ItemStack::isEmpty)) {
+                this.backing.remove(entry.getKey());
+            }
+        }
     }
 
     /**
@@ -209,7 +214,7 @@ public final class DynamicItemStorage {
         while (remaining > 0 && depth++ < 640) {
             // Try and find a stack to work on.
             if (workingStack == null) {
-                workingStack = this.backing.stream()
+                workingStack = this.backing.values().stream()
                     .flatMap(Collection::stream)
                     .filter(s -> s.getItem() == type)
                     .filter(s -> s.getCount() < maxPerStack)
@@ -232,7 +237,7 @@ public final class DynamicItemStorage {
 
         // Once we are here, we need to allocate new stacks.
 
-        var pageIterator = this.backing.iterator();
+        var pageIterator = this.backing.values().iterator();
         var workingList = pageIterator.next();
 
         // This loop will run until the stack is fully depleted.
@@ -453,7 +458,18 @@ public final class DynamicItemStorage {
             page.add(ItemStack.EMPTY);
         }
 
-        this.backing.add(page);
+        // Add the page to the next available index.
+        var index = 0;
+        while (true) {
+            // Check if the page exists.
+            if (!this.backing.containsKey(index)) {
+                this.backing.put(index, page);
+                break;
+            } else {
+                index++;
+            }
+        }
+
         return page;
     }
 
@@ -463,7 +479,7 @@ public final class DynamicItemStorage {
     public Set<Item> uniqueItems() {
         var set = new HashSet<Item>();
 
-        this.backing.stream()
+        this.backing.values().stream()
             .flatMap(Collection::stream)
             .map(ItemStack::getItem)
             .forEach(set::add);
@@ -490,7 +506,7 @@ public final class DynamicItemStorage {
      * @return The amount of items fitting the type on all pages.
      */
     public int count(Item item) {
-        return this.backing.stream()
+        return this.backing.values().stream()
             .mapToInt(page -> page.stream()
                 .filter(stack -> stack.getItem() == item)
                 .mapToInt(ItemStack::getCount)
@@ -505,7 +521,7 @@ public final class DynamicItemStorage {
      * @return The amount of items in the dynamic storage.
      */
     public long count() {
-        return this.backing.stream()
+        return this.backing.values().stream()
             .mapToLong(page -> page.stream()
                 .filter(stack -> !stack.isEmpty())
                 .count()
