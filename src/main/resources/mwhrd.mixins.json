@@ -16,6 +16,7 @@
         "beacon.BeaconBlockEntityMixin",
         "beacon.BeaconBlockMixin",
         "block.SmithingTableBlockMixin",
+        "block.spawner.MobSpawnerLogicMixin",
         "entity.ExperienceOrbEntityMixin",
         "event.BlockMixin",
         "event.ItemStackMixin",
