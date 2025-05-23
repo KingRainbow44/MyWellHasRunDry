@@ -34,6 +34,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -214,9 +215,12 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             // Apply luck buff.
             BuffManager.applyBuffs(player);
 
-            // Apply Bedrock player buff.
-            if (GeyserApi.api().isBedrockPlayer(player.getUuid())) {
-                BuffManager.applyBedrockBuff(player);
+            // Check if Geyser is loaded.
+            if (FabricLoader.getInstance().isModLoaded("geyser-fabric")) {
+                // Apply Bedrock player buff.
+                if (GeyserApi.api().isBedrockPlayer(player.getUuid())) {
+                    BuffManager.applyBedrockBuff(player);
+                }
             }
 
             // Send the changelog message.
