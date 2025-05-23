@@ -61,7 +61,7 @@ public interface IAdvancedBeacon {
      */
     void mwhrd$addEffect(BeaconEffect effect);
 
-    List<UUID> mwhrd$getLastPlayers();
+    Set<UUID> mwhrd$getLastPlayers();
 
     void mwhrd$setFuel(int fuel);
     int mwhrd$getFuel();
