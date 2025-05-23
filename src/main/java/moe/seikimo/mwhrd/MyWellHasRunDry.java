@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.data.DatabaseUtils;
+import moe.seikimo.mwhrd.events.PlayerRemoveEvent;
 import moe.seikimo.mwhrd.game.Hardcore;
 import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.game.beacon.BeaconManager;
@@ -233,9 +234,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             // Give players all recipes.
             player.unlockRecipes(server.getRecipeManager().values());
         });
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, sender) -> {
-            var player = handler.getPlayer();
-
+        PlayerRemoveEvent.EVENT.register((manager, player) -> {
             // Save the player's data.
             if (player instanceof IDBObject<?> model) {
                 model.mwhrd$getData().save();
@@ -245,6 +244,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             var guild = GuildManager.getGuild(player);
             if (guild != null) {
                 guild.getExperienceBar().removePlayer(player);
+                guild.save();
             }
 
             // Remove all beacon effects on disconnect.
