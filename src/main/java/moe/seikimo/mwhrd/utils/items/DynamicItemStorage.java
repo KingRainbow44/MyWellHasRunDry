@@ -426,8 +426,8 @@ public final class DynamicItemStorage {
      * @return The page fetched from the storage.
      */
     public List<ItemStack> getOrAllocate(int page) {
-        while (this.backing.size() <= page) {
-            this.allocatePage();
+        if (!this.backing.containsKey(page)) {
+            this.allocatePage(page);
         }
 
         return Collections.synchronizedList(this.get(page));
@@ -487,6 +487,26 @@ public final class DynamicItemStorage {
         }
 
         return page;
+    }
+
+    /**
+     * Creates a new page in the storage at the index.
+     *
+     * @param index The index to allocate the page at.
+     * @return The page allocated at the index.
+     */
+    public List<ItemStack> allocatePage(int index) {
+        return this.backing.computeIfAbsent(index, k -> {
+            var size = this.rows * this.columns;
+            var page = new ArrayList<ItemStack>();
+
+            // Allocate the page.
+            for (var i = 0; i < size; i++) {
+                page.add(ItemStack.EMPTY);
+            }
+
+            return page;
+        });
     }
 
     /**
