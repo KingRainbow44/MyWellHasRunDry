@@ -74,7 +74,7 @@ public final class MinecartBlaster extends BaseGun {
             position.getX(),
             position.getY(),
             position.getZ(),
-            8f,
+            12f,
             false,
             World.ExplosionSourceType.MOB
         );
