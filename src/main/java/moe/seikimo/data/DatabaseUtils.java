@@ -4,6 +4,8 @@ import dev.morphia.Datastore;
 import dev.morphia.query.experimental.filters.Filter;
 import dev.morphia.query.experimental.filters.Filters;
 import moe.seikimo.general.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public interface DatabaseUtils {
+    Logger LOG = LoggerFactory.getLogger("DB");
+
     /**
      * This reference must be set before using any of the methods.
      */
@@ -41,9 +45,14 @@ public interface DatabaseUtils {
             Class<T> type,
             String param, Object value
     ) {
-        return DATASTORE.get().find(type)
+        try {
+            return DATASTORE.get().find(type)
                 .filter(Filters.eq(param, value))
                 .first();
+        } catch (IllegalStateException exception) {
+            LOG.error("Failed to fetch object from database", exception);
+            return null;
+        }
     }
 
     /**
