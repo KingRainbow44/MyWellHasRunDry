@@ -32,6 +32,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
@@ -101,6 +102,15 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
     @Getter @Setter
     private static RuntimeWorldHandle realmOfLight, overworldExpanse;
+
+    private static final Set<Item> BLACKLISTED = Set.of(
+        Items.SPAWNER,
+        Items.ALLAY_SPAWN_EGG,
+        Items.WITHER_SPAWN_EGG,
+        Items.ENDER_DRAGON_SPAWN_EGG,
+        Items.ENDERMAN_SPAWN_EGG,
+        Items.BAT_SPAWN_EGG
+    );
 
     /**
      * Gets or creates the loot set for the player.
@@ -247,7 +257,23 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
                 return BeaconManager.handleBeacon(item, world, hitResult);
             }
 
-            return ActionResult.PASS;
+            if (player.isCreative()) {
+                return ActionResult.PASS;
+            }
+
+            return BLACKLISTED.contains(item.getItem()) ?
+                ActionResult.FAIL : ActionResult.PASS;
+        });
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            if (player.isCreative()) {
+                return ActionResult.PASS;
+            }
+
+            var item = player.getStackInHand(hand);
+            var pass = BLACKLISTED.contains(item.getItem());
+            return pass ?
+                ActionResult.FAIL :
+                ActionResult.PASS;
         });
 
         // Wait for players to join.
