@@ -3,10 +3,7 @@ package moe.seikimo.mwhrd.game.lightrealm;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.general.MapBuilder;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
-import moe.seikimo.mwhrd.events.BlockBreakEvent;
-import moe.seikimo.mwhrd.events.EntityPreDeathEvent;
-import moe.seikimo.mwhrd.events.PlayerCraftEvent;
-import moe.seikimo.mwhrd.events.PlayerMoveEvent;
+import moe.seikimo.mwhrd.events.*;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
 import moe.seikimo.mwhrd.interfaces.game.IRespawnableMob;
 import moe.seikimo.mwhrd.utils.*;
@@ -24,6 +21,7 @@ import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -275,14 +273,9 @@ public final class RealmOfLightLogic {
 
     /**
      * Invoked when a player disconnects from the server.
-     *
-     * @param handler The network handler.
-     * @param server The server instance.
      */
-    private static void onDisconnect(ServerPlayNetworkHandler handler, MinecraftServer server) {
-        var player = handler.getPlayer();
+    private static void onDisconnect(PlayerManager manager, ServerPlayerEntity player) {
         if (!Players.inWorld(MyWellHasRunDry.getRealmOfLight(), player)) return;
-
         RealmOfLightLogic.respawn(player);
     }
 
@@ -316,6 +309,6 @@ public final class RealmOfLightLogic {
         PlayerMoveEvent.EVENT.register(RealmOfLightLogic::onPlayerMove);
         EntityPreDeathEvent.EVENT.register(RealmOfLightLogic::onPreDeath);
         PlayerCraftEvent.EVENT.register(RealmOfLightLogic::onCraft);
-        ServerPlayConnectionEvents.DISCONNECT.register(RealmOfLightLogic::onDisconnect);
+        PlayerRemoveEvent.EVENT.register(RealmOfLightLogic::onDisconnect);
     }
 }
