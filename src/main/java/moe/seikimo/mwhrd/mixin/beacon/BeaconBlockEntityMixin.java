@@ -132,7 +132,7 @@ public abstract class BeaconBlockEntityMixin
         var lastPlayers = self.mwhrd$getLastPlayers();
 
         // For any players in last that aren't in players, remove the effect.
-        for (var playerUuid : Collections.unmodifiableSet(lastPlayers)) {
+        for (var playerUuid : new HashSet<>(lastPlayers)) {
             var player = world.getPlayerByUuid(playerUuid);
             if (!(player instanceof ServerPlayerEntity serverPlayer)) {
                 continue;
