@@ -286,10 +286,6 @@ public final class TheRealmOfLight extends RuntimeWorld {
 
             // Store the player's inventory.
             traveler.mwhrd$storeInventory(true);
-            // Give the player bone meal.
-            player.getInventory().offerOrDrop(
-                new ItemStack(Items.BONE_BLOCK, 2)
-            );
 
             // Teleport the player to the realm.
             var portalInfo = traveler.mwhrd$getQueuedPortal();
@@ -301,6 +297,15 @@ public final class TheRealmOfLight extends RuntimeWorld {
             var portal = portalInfo.getLeft();
             var pos = portalInfo.getRight();
             player.tryUsePortal(portal, pos);
+
+            // SANITY CHECK: Re-clear the player's inventory.
+            player.closeHandledScreen();
+            player.getInventory().clear();
+
+            // Give the player bone meal.
+            player.getInventory().offerOrDrop(
+                new ItemStack(Items.BONE_BLOCK, 2)
+            );
 
             // Send info messages.
             Players.bulkSend(player, INFO_MESSAGES);
