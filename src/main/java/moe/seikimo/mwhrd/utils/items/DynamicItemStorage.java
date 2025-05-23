@@ -22,8 +22,15 @@ public final class DynamicItemStorage {
     @Transient
     private Map<Integer, List<ItemStack>> backing = new ConcurrentHashMap<>();
 
+    /**
+     * @deprecated This legacy field does not have support for blank pages..
+     */
+    @Deprecated
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    private List<List<String>> backing$1 = new ArrayList<>();
+
     /** This is the list to be serialized by Morphia. */
-    private Map<Integer, List<String>> backing$1 = new HashMap<>();
+    private Map<Integer, List<String>> backing$2 = new HashMap<>();
 
     @Range(from = 1, to = 6)
     private int rows = 1;
@@ -68,9 +75,9 @@ public final class DynamicItemStorage {
             .getRegistryManager();
 
         // Allocate pages for the serialized list.
-        this.backing$1 = new HashMap<>();
+        this.backing$2 = new HashMap<>();
         for (var i = 0; i < this.backing.size(); i++) {
-            this.backing$1.put(i, new ArrayList<>());
+            this.backing$2.put(i, new ArrayList<>());
         }
 
         // Serialize all pages.
@@ -102,7 +109,7 @@ public final class DynamicItemStorage {
             }
 
             // Write the items to the list.
-            this.backing$1.put(i, serialized);
+            this.backing$2.put(i, serialized);
         }
     }
 
@@ -117,15 +124,24 @@ public final class DynamicItemStorage {
 
         this.backing.clear();
 
+        // Check if backing$1 is used.
+        if (!this.backing$1.isEmpty()) {
+            // Convert the legacy list into a hash map.
+            for (var i = 0; i < this.backing$1.size(); i++) {
+                this.backing$2.put(i, this.backing$1.get(i));
+            }
+            this.backing$1.clear();
+        }
+
         // Allocate pages for the serialized list.
         var deserialized = new ConcurrentHashMap<Integer, List<ItemStack>>();
-        for (var i = 0; i < this.backing$1.size(); i++) {
+        for (var i = 0; i < this.backing$2.size(); i++) {
             deserialized.put(i, new ArrayList<>());
         }
 
         // Deserialize all pages.
-        for (var i = 0; i < this.backing$1.size(); i++) {
-            var serialized = this.backing$1.get(i);
+        for (var i = 0; i < this.backing$2.size(); i++) {
+            var serialized = this.backing$2.get(i);
             var page = new ArrayList<ItemStack>();
 
             var maxSize = this.rows * this.columns;
