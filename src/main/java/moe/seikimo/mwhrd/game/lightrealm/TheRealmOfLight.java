@@ -42,7 +42,7 @@ import java.util.function.BooleanSupplier;
 @Slf4j
 public final class TheRealmOfLight extends RuntimeWorld {
     public static final long MAX_TICKS = Ticks.ofHours(1);
-    private static final long TRANSPORT_WAIT = Ticks.ofSeconds(5);
+    private static final long TRANSPORT_WAIT = 5;
 
     private static final Vec3d BOSS_SPAWN_POS = new Vec3d(1, 410, 0);
 
