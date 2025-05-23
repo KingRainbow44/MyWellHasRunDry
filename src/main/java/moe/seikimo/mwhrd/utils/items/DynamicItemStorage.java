@@ -81,8 +81,8 @@ public final class DynamicItemStorage {
         }
 
         // Serialize all pages.
-        for (var i = 0; i < this.backing.size(); i++) {
-            var page = this.backing.get(i);
+        for (var entry : this.backing.entrySet()) {
+            var page = entry.getValue();
             var serialized = new ArrayList<String>();
 
             // Allocate pages for the serialized list.
@@ -109,7 +109,7 @@ public final class DynamicItemStorage {
             }
 
             // Write the items to the list.
-            this.backing$2.put(i, serialized);
+            this.backing$2.put(entry.getKey(), serialized);
         }
     }
 
@@ -135,13 +135,13 @@ public final class DynamicItemStorage {
 
         // Allocate pages for the serialized list.
         var deserialized = new ConcurrentHashMap<Integer, List<ItemStack>>();
-        for (var i = 0; i < this.backing$2.size(); i++) {
-            deserialized.put(i, new ArrayList<>());
+        for (var index : this.backing$2.keySet()) {
+            deserialized.put(index, new ArrayList<>());
         }
 
         // Deserialize all pages.
-        for (var i = 0; i < this.backing$2.size(); i++) {
-            var serialized = this.backing$2.get(i);
+        for (var entry : this.backing$2.entrySet()) {
+            var serialized = entry.getValue();
             var page = new ArrayList<ItemStack>();
 
             var maxSize = this.rows * this.columns;
@@ -169,7 +169,7 @@ public final class DynamicItemStorage {
             }
 
             // Write the items to the list.
-            deserialized.put(i, page);
+            deserialized.put(entry.getKey(), page);
         }
 
         this.backing = deserialized;
@@ -569,7 +569,10 @@ public final class DynamicItemStorage {
     public String toString() {
         var builder = new StringBuilder("------START STORAGE------\n");
 
-        for (var pageIndex = 0; pageIndex < this.size(); pageIndex++) {
+        for (var entry : this.backing.entrySet()) {
+            var pageIndex = entry.getKey();
+            var page = entry.getValue();
+
             // Add page header.
             builder
                 .append("Page ")
@@ -577,7 +580,7 @@ public final class DynamicItemStorage {
                 .append(":\n");
 
             // Add each item (and quantity) on the page.
-            for (var stack : this.backing.get(pageIndex)) {
+            for (var stack : page) {
                 var name = stack.getItemName().getString();
 
                 builder
