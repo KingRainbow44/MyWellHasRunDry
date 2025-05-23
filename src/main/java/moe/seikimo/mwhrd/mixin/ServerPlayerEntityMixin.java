@@ -8,7 +8,6 @@ import moe.seikimo.mwhrd.impl.script.ScriptPlayer;
 import moe.seikimo.mwhrd.interfaces.player.IPlayer;
 import moe.seikimo.mwhrd.models.PlayerModel;
 import moe.seikimo.mwhrd.script.ScriptObject;
-import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.block.Portal;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
@@ -18,7 +17,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -297,23 +295,9 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
             return;
         }
 
-        var storage = this.model.getStorage();
-
-        // Restore the entirety of the player's inventory.
-        this.getInventory().clear();
-
-        for (var stack : storage.getArmor()) {
-            if (!Utils.isArmor(stack)) continue;
-            this.equipStack(Utils.getSlot(stack.getItem()), stack);
-        }
-
-        // Add all items to the player's inventory.
-        var inventory = this.getInventory();
-        for (var stack : storage.getInventory()) {
-            inventory.offerOrDrop(stack);
-        }
-
-        this.setStackInHand(Hand.OFF_HAND, storage.getOffHand().get(0));
+        // Restore the player's inventory.
+        var storage = this.model.getInvStorage();
+        storage.output(this);
 
         // Clear the player's stored inventory.
         this.model.setStoredInventory(false);
@@ -330,21 +314,9 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
             return;
         }
 
-        var storage = this.model.getStorage();
-        storage.clear();
-
-        // Store the entirety of the player's inventory.
-        var inventory = this.getInventory();
-
-        for (var stack : Utils.iterate(this.equipment)) {
-            if (!Utils.isArmor(stack)) continue;
-            storage.getArmor().offer(stack);
-        }
-
-        inventory.getMainStacks().forEach(storage.getInventory()::offer);
-
-        var offHand = this.getOffHandStack();
-        storage.getOffHand().offer(offHand);
+        // Store the player's inventory.
+        var storage = this.model.getInvStorage();
+        storage.input(this);
 
         // Clear the player's existing inventory.
         if (clear) {

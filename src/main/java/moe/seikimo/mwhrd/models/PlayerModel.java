@@ -13,8 +13,8 @@ import moe.seikimo.mwhrd.game.guilds.GuildManager;
 import moe.seikimo.mwhrd.interfaces.player.IStoryPlayer;
 import moe.seikimo.mwhrd.managers.TickManager;
 import moe.seikimo.mwhrd.utils.Players;
+import moe.seikimo.mwhrd.utils.items.InventoryStorage;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
-import moe.seikimo.mwhrd.utils.items.PlayerStorage;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -40,6 +40,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     @ApiStatus.Internal
     private List<String> lootItems = new ArrayList<>();
 
+    @Deprecated
     @ApiStatus.Internal
     private String storedItems = null;
 
@@ -66,12 +67,12 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     private int guildSplit = 0;
 
     private PlayerQuestData questData = new PlayerQuestData();
+    private InventoryStorage invStorage = new InventoryStorage();
 
     private transient ServerPlayerEntity handle;
     private transient GuildInstance guild;
 
     private transient ItemStorage loot = new ItemStorage();
-    private transient PlayerStorage storage = new PlayerStorage();
 
     @VisibleForTesting
     @ApiStatus.Internal
@@ -83,8 +84,6 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     public void beforeSave() {
         this.lootItems.clear();
         this.lootItems.addAll(this.loot.serialize());
-
-        this.storedItems = this.storage.serialize();
 
         if (this.handle != null) {
             var player = Players.extend(this.handle);
@@ -99,7 +98,6 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     @PostLoad
     public void afterLoad() {
         this.loot.deserialize(this.lootItems);
-        this.storage.deserialize(this.storedItems);
 
         if (this.guildId != -1) {
             var guildColor = Formatting.byColorIndex(this.guildId);
