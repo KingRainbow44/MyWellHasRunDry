@@ -45,6 +45,9 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
     @Shadow
     public abstract void sendMessage(Text message, boolean overlay);
 
+    @Shadow
+    public abstract void closeHandledScreen();
+
     @Unique private PlayerModel model;
     @Unique private boolean unbreakable = false;
 
@@ -345,6 +348,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
 
         // Clear the player's existing inventory.
         if (clear) {
+            this.closeHandledScreen();
             this.getInventory().clear();
         }
 
