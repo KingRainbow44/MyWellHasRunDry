@@ -89,7 +89,7 @@ public abstract class BeaconBlockEntityMixin
         }
 
         // Remove effects from nearby players.
-        if (level == 0) {
+        if (level == 0 || blockEntity.beamSegments.isEmpty()) {
             for (var playerUuid : new ArrayList<>(beacon.mwhrd$getLastPlayers())) {
                 var player = world.getPlayerByUuid(playerUuid);
                 if (player instanceof ServerPlayerEntity serverPlayer) {
@@ -132,7 +132,7 @@ public abstract class BeaconBlockEntityMixin
         var lastPlayers = self.mwhrd$getLastPlayers();
 
         // For any players in last that aren't in players, remove the effect.
-        for (var playerUuid : new ArrayList<>(lastPlayers)) {
+        for (var playerUuid : new HashSet<>(lastPlayers)) {
             var player = world.getPlayerByUuid(playerUuid);
             if (!(player instanceof ServerPlayerEntity serverPlayer)) {
                 continue;
@@ -147,20 +147,20 @@ public abstract class BeaconBlockEntityMixin
 
         // Apply the effects to the players.
         for (var player : players) {
-            if (player instanceof ServerPlayerEntity serverPlayer) {
-                self.mwhrd$getEffectMap().forEach((effect, power) ->
-                    power.apply(world, beaconLevel, serverPlayer));
-
-                if (!lastPlayers.contains(player.getUuid())) {
-                    lastPlayers.add(player.getUuid());
-                }
+            if (!(player instanceof ServerPlayerEntity serverPlayer)) {
+                continue;
             }
+
+            self.mwhrd$getEffectMap().forEach((effect, power) ->
+                power.apply(world, beaconLevel, serverPlayer));
+
+            lastPlayers.add(player.getUuid());
         }
     }
 
     /// </editor-fold>
 
-    @Unique private final List<UUID> lastPlayers = new ArrayList<>();
+    @Unique private final Set<UUID> lastPlayers = new HashSet<>();
 
     @Unique private int fuel = 0;
     @Unique private boolean advanced = false, initialized = false;
@@ -340,7 +340,7 @@ public abstract class BeaconBlockEntityMixin
     }
 
     @Override
-    public List<UUID> mwhrd$getLastPlayers() {
+    public Set<UUID> mwhrd$getLastPlayers() {
         return this.lastPlayers;
     }
 
