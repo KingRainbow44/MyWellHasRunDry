@@ -19,9 +19,11 @@ import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -113,7 +115,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     private Map<Integer, String> pageNames = new HashMap<>();
 
     @ApiStatus.Internal
-    private Map<Integer, Integer> bankIcons = new HashMap<>();
+    private Map<Integer, String> bankIcons = new HashMap<>();
 
     private transient Formatting color;
     private transient Map<Integer, Item> pageIcons = new HashMap<>();
@@ -154,10 +156,9 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
 
         // Load all bank icons.
         for (var entry : this.bankIcons.entrySet()) {
-            var item = Item.byRawId(entry.getValue());
-            if (item != null) {
-                this.pageIcons.put(entry.getKey(), item);
-            }
+            var identifier = Identifier.of(entry.getValue());
+            var item = Registries.ITEM.get(identifier);
+            this.pageIcons.put(entry.getKey(), item);
         }
 
         // Set experience bar color.
@@ -171,7 +172,9 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         // Serialize all bank icons.
         this.bankIcons.clear();
         for (var entry : this.pageIcons.entrySet()) {
-            this.bankIcons.put(entry.getKey(), Item.getRawId(entry.getValue()));
+            var item = entry.getValue();
+            var identifier = Registries.ITEM.getId(item);
+            this.bankIcons.put(entry.getKey(), identifier.toString());
         }
     }
 
