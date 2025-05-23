@@ -67,6 +67,9 @@ public final class DebugCommand {
             .then(literal("text")
                 .then(argument("input", greedyString())
                     .executes(DebugCommand::text)))
+            .then(literal("schem")
+                .then(argument("path", greedyString())
+                    .executes(DebugCommand::paste)))
             .executes(DebugCommand::usage));
     }
 
@@ -301,6 +304,32 @@ public final class DebugCommand {
     private static int text(CommandContext<ServerCommandSource> context) {
         var text = getString(context, "input");
         context.getSource().sendMessage(Utils.fromLegacy(text));
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int paste(CommandContext<ServerCommandSource> context) {
+        var path = getString(context, "path");
+        var player = context.getSource().getPlayer();
+        if (player == null) {
+            context.getSource().sendError(Text.literal("Must be ran as a player"));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        try {
+            var schematic = IO.readSchematic(path);
+            Objects.requireNonNull(schematic);
+
+            var placement = schematic.sample();
+            placement.place(
+                player.getWorld(),
+                player.getBlockPos().add(0, -1, 0)
+            );
+
+            context.getSource().sendMessage(Text.literal("Pasted schematic"));
+        } catch (Exception exception) {
+            log.error("Failed to paste schematic", exception);
+        }
 
         return Command.SINGLE_SUCCESS;
     }

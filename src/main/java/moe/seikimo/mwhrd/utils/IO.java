@@ -1,5 +1,13 @@
 package moe.seikimo.mwhrd.utils;
 
+import com.google.common.base.Preconditions;
+import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.utils.schem.Schematic;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtSizeTracker;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -92,9 +100,9 @@ public interface IO {
                         var entryFile = entryPath.toFile();
 
                         if (entry.isDirectory()) {
-                            entryFile.mkdirs();
+                            Preconditions.checkArgument(entryFile.mkdirs(), "Failed to create directory");
                         } else {
-                            entryFile.getParentFile().mkdirs();
+                            Preconditions.checkArgument(entryFile.getParentFile().mkdirs(), "Failed to create directory");
 
                             try (var input = zip.getInputStream(entry);
                                  var output = new FileOutputStream(entryFile)) {
@@ -123,5 +131,35 @@ public interface IO {
         }
 
         return new File(url.toURI());
+    }
+
+    /**
+     * Downloads and reads a schematic from the URL.
+     *
+     * @param url The URL to download the schematic from.
+     * @return The schematic sample.
+     */
+    @Nullable
+    static Schematic readSchematic(String url) {
+        try {
+            InputStream stream;
+            if (url.startsWith("resource://")) {
+                var path = url.substring(11);
+                stream = IO.streamFile(IO.resource(path));
+            } else {
+                stream = IO.streamUrl(url);
+            }
+
+            // Read the NBT from the stream.
+            var tracker = NbtSizeTracker.ofUnlimitedBytes();
+            var nbt = NbtIo.readCompressed(stream, tracker);
+
+            return Schematic.CODEC
+                .decode(NbtOps.INSTANCE, nbt)
+                .getOrThrow()
+                .getFirst();
+        } catch (IOException | URISyntaxException | IllegalStateException ignored) {
+            return null;
+        }
     }
 }
