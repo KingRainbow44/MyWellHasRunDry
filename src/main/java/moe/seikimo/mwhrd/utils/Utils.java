@@ -276,7 +276,7 @@ public interface Utils {
      * @param destination The destination world.
      * @return Whether the worlds are the same.
      */
-    static boolean compare(ServerWorld source, ServerWorld destination) {
+    static boolean compare(World source, World destination) {
         return source.getRegistryKey().equals(destination.getRegistryKey());
     }
 
@@ -287,7 +287,7 @@ public interface Utils {
      * @param destination The destination world.
      * @return Whether the worlds are the same.
      */
-    static boolean compare(ServerWorld source, RuntimeWorldHandle destination) {
+    static boolean compare(World source, RuntimeWorldHandle destination) {
         return source.getRegistryKey().equals(destination.getRegistryKey());
     }
 
@@ -298,7 +298,7 @@ public interface Utils {
      * @param destination The destination world.
      * @return Whether the worlds are the same.
      */
-    static boolean compare(ServerWorld source, RegistryKey<World> destination) {
+    static boolean compare(World source, RegistryKey<World> destination) {
         return source.getRegistryKey().equals(destination);
     }
 
