@@ -1,8 +1,10 @@
 package moe.seikimo.mwhrd.mixin;
 
+import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.custom.interfaces.SwingHandListener;
 import moe.seikimo.mwhrd.events.PlayerSwingHandEvent;
 import moe.seikimo.mwhrd.impl.FunctionalScreenListener;
+import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
@@ -105,6 +107,11 @@ public abstract class ServerPlayNetworkHandlerMixin {
         }
 
         if (itemType == Items.ENDER_CHEST) {
+            // If the player is in the realm of light, ignore this check.
+            if (Utils.compare(this.player.getWorld(), MyWellHasRunDry.getRealmOfLight())) {
+                return;
+            }
+
             var inventory = this.player.getEnderChestInventory();
             player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) ->
                 GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, inventory),

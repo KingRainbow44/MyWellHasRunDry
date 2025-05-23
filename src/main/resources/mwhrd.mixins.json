@@ -22,6 +22,7 @@
         "event.LivingEntityMixin",
         "game.hardcore.HardcoreEntityMixin",
         "game.hardcore.HardcorePlayerMixin",
+        "game.rol.LightRealmEnderChestBlockMixin",
         "mwhrd.MobEntityMixin",
         "trial.ItemEntityMixin",
         "trial.MobEntityMixin",
