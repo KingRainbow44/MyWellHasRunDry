@@ -484,6 +484,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         // If the level has changed, broadcast the message.
         if (newLevel > this.level) {
             this.level = newLevel;
+            this.save();
 
             this.broadcast(Text.translatable("text.mwhrd.guild.level.next", this.getDisplayName(), newLevel)
                 .formatted(Formatting.AQUA));
