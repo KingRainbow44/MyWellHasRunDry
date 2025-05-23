@@ -114,8 +114,15 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     private DynamicItemStorage bank = new DynamicItemStorage(6, 8);
     private Map<Integer, String> pageNames = new HashMap<>();
 
+    /**
+     * @deprecated Use {@link #pageIcons$1} instead.
+     */
+    @Deprecated
     @ApiStatus.Internal
-    private Map<Integer, String> bankIcons = new HashMap<>();
+    private Map<Integer, Integer> bankIcons = new HashMap<>();
+
+    @ApiStatus.Internal
+    private Map<Integer, String> pageIcons$1 = new HashMap<>();
 
     private transient Formatting color;
     private transient Map<Integer, Item> pageIcons = new HashMap<>();
@@ -154,8 +161,19 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     public void afterLoad() {
         this.color = Formatting.byColorIndex(this.guildId);
 
+        // Check if bankIcons is used.
+        if (!this.bankIcons.isEmpty()) {
+            // Convert the legacy numerical IDs to identifiers.
+            for (var entry : this.bankIcons.entrySet()) {
+                var item = Item.byRawId(entry.getValue());
+                var identifier = Registries.ITEM.getId(item);
+                this.pageIcons$1.put(entry.getKey(), identifier.toString());
+            }
+            this.bankIcons.clear();
+        }
+
         // Load all bank icons.
-        for (var entry : this.bankIcons.entrySet()) {
+        for (var entry : this.pageIcons$1.entrySet()) {
             var identifier = Identifier.of(entry.getValue());
             var item = Registries.ITEM.get(identifier);
             this.pageIcons.put(entry.getKey(), item);
@@ -170,11 +188,11 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     @PrePersist
     public void beforeSave() {
         // Serialize all bank icons.
-        this.bankIcons.clear();
+        this.pageIcons$1.clear();
         for (var entry : this.pageIcons.entrySet()) {
             var item = entry.getValue();
             var identifier = Registries.ITEM.getId(item);
-            this.bankIcons.put(entry.getKey(), identifier.toString());
+            this.pageIcons$1.put(entry.getKey(), identifier.toString());
         }
     }
 
