@@ -32,6 +32,9 @@
         "fabricloader": ">=${loader_version}",
         "fabric": "*",
         "minecraft": "${minecraft_version}",
+        "spark": "*"
+    },
+    "recommends": {
         "geyser-fabric": ">=${geyser_version}"
     }
 }
