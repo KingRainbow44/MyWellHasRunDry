@@ -12,6 +12,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
@@ -126,16 +127,31 @@ public final class Sample implements BlockView, ModifiableWorld {
     }
 
     /**
-     * Places the sample at the given position.
+     * Places the sample at the given position without rotation.
      *
+     * @param world  The world to place the sample in.
      * @param origin The position to place the sample at.
      */
     public void place(World world, BlockPos origin) {
+        this.place(world, origin, BlockRotation.NONE);
+    }
+
+    /**
+     * Places the sample at the given position with the specified rotation.
+     *
+     * @param world    The world to place the sample in.
+     * @param origin   The position to place the sample at.
+     * @param rotation The rotation to apply to the schematic.
+     */
+    public void place(World world, BlockPos origin, BlockRotation rotation) {
         var registry = MyWellHasRunDry.getRegistry();
 
         // Place all blocks in the world.
-        this.blocks.forEach((pos, state) ->
-            world.setBlockState(origin.add(pos), state, Block.NOTIFY_ALL));
+        this.blocks.forEach((pos, state) -> {
+            var rotatedPos = this.rotatePosition(pos, rotation);
+            var rotatedState = this.rotateBlockState(state, rotation);
+            world.setBlockState(origin.add(rotatedPos), rotatedState, Block.NOTIFY_ALL);
+        });
 
         // Add all block entities.
         for (var entry : this.blockEntities.entrySet()) {
@@ -174,6 +190,43 @@ public final class Sample implements BlockView, ModifiableWorld {
 
             var entity = EntityType.getEntityFromNbt(tag, world, SpawnReason.LOAD);
             entity.ifPresent(world::spawnEntity);
+        }
+    }
+
+    /**
+     * Rotates a block position around a center point.
+     *
+     * @param pos      The position to rotate.
+     * @param rotation The rotation to apply.
+     * @return The rotated position.
+     */
+    private BlockPos rotatePosition(BlockPos pos, BlockRotation rotation) {
+        return switch (rotation) {
+            case NONE -> pos;
+            case CLOCKWISE_90 -> new BlockPos(-pos.getX(), pos.getY(), pos.getZ());
+            case CLOCKWISE_180 -> new BlockPos(-pos.getX(), pos.getY(), -pos.getZ());
+            case COUNTERCLOCKWISE_90 -> new BlockPos(pos.getX(), pos.getY(), -pos.getZ());
+        };
+    }
+
+    /**
+     * Rotates a block state to match the rotation.
+     *
+     * @param state    The block state to rotate.
+     * @param rotation The rotation to apply.
+     * @return The rotated block state.
+     */
+    private BlockState rotateBlockState(BlockState state, BlockRotation rotation) {
+        if (rotation == BlockRotation.NONE) {
+            return state;
+        }
+
+        // Use Minecraft's built-in rotation for most blocks
+        try {
+            return state.rotate(rotation);
+        } catch (Exception e) {
+            // If rotation fails for some reason, return the original state
+            return state;
         }
     }
 

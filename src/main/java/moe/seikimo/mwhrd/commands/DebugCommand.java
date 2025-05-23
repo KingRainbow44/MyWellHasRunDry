@@ -19,6 +19,7 @@ import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
@@ -324,6 +325,12 @@ public final class DebugCommand {
             placement.place(
                 player.getWorld(),
                 player.getBlockPos().add(0, -1, 0)
+            );
+
+            placement.place(
+                player.getWorld(),
+                player.getBlockPos().add(0, 15, 0),
+                BlockRotation.CLOCKWISE_90
             );
 
             context.getSource().sendMessage(Text.literal("Pasted schematic"));
