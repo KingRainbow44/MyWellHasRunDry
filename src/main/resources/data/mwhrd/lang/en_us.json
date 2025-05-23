@@ -104,7 +104,7 @@
     "text.mwhrd.quest.100000.3": "four days-",
     "text.mwhrd.quest.100000.4": "That's besides the point..!",
     "text.mwhrd.quest.100000.5": "Can you help me defeat it?",
-    "text.mwhrd.quest.100000.6": "I can show you to my place after if we beat it!",
+    "text.mwhrd.quest.100000.unready.1": "Maybe someone will help me one day...",
     "text.mwhrd.quest.100000.option.1": "Help the adventurer",
     "text.mwhrd.quest.100000.option.2": "\"no thanks bro\"",
     "text.mwhrd.quest.100000.accept": "Thanks, I appreciate it!",
@@ -115,7 +115,7 @@
     "text.mwhrd.quest.700000.2": "Are you interested in establishing your guild?",
     "text.mwhrd.quest.700000.option.1": "Absolutely!",
     "text.mwhrd.quest.700000.option.2": "\"not really\"",
-    "text.mwhrd.quest.700000.accept": "You can check your progress to domination with '/guild progress'!",
+    "text.mwhrd.quest.700000.accept": "You can check your progress with '/guild progress'!",
     "text.mwhrd.quest.700000.decline": "If you're ever interested, do stop by again!",
     "text.mwhrd.quest.700000.completed": "Go out there and establish your legacy!",
 

@@ -14,8 +14,9 @@ dialogue = {
         { locale = "text.mwhrd.quest.100000.2", delay = 30 },
         { locale = "text.mwhrd.quest.100000.3", delay = 10 },
         { locale = "text.mwhrd.quest.100000.4", delay = 20 },
-        { locale = "text.mwhrd.quest.100000.5", delay = 20 },
-        { locale = "text.mwhrd.quest.100000.6", delay = 20 }
+        { locale = "text.mwhrd.quest.100000.unready.1", delay = 20 },
+
+        -- { locale = "text.mwhrd.quest.100000.5", delay = 20 }
     }
 }
 
@@ -26,13 +27,13 @@ function before_dialogue(_) end
 --- Invoked after the dialogue finishes playing.
 --- @param context ScriptContext
 function after_dialogue(context)
-    context.player.quests:prompt(
-        context,
-        {
-            { locale = "text.mwhrd.quest.100000.option.1", callback = "accept_quest" },
-            { locale = "text.mwhrd.quest.100000.option.2", callback = "decline_quest" }
-        }
-    )
+    --context.player.quests:prompt(
+    --    context,
+    --    {
+    --        { locale = "text.mwhrd.quest.100000.option.1", callback = "accept_quest" },
+    --        { locale = "text.mwhrd.quest.100000.option.2", callback = "decline_quest" }
+    --    }
+    --)
 end
 
 --- Invoked as a callback from a player prompt.
