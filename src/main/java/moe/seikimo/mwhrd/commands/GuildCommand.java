@@ -9,6 +9,7 @@ import moe.seikimo.mwhrd.game.guilds.GuildPermission;
 import moe.seikimo.mwhrd.game.quest.Quests;
 import moe.seikimo.mwhrd.gui.guild.GuildBankSelectorGui;
 import moe.seikimo.mwhrd.gui.guild.GuildInfoGui;
+import moe.seikimo.mwhrd.gui.mca.McaProgressGui;
 import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
@@ -466,6 +467,7 @@ public final class GuildCommand {
         }
 
         // Open the MCA GUI.
+        McaProgressGui.open(guild, player);
 
         return Command.SINGLE_SUCCESS;
     }
