@@ -34,6 +34,8 @@ function after_dialogue(context)
     --        { locale = "text.mwhrd.quest.100000.option.2", callback = "decline_quest" }
     --    }
     --)
+
+    context.player.quests:stopDialogue()
 end
 
 --- Invoked as a callback from a player prompt.
