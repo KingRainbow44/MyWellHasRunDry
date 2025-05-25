@@ -15,6 +15,6 @@ public interface Quests {
      */
     static boolean hasStartedMca(ServerPlayerEntity player) {
         return Players.getQuestData(player)
-            .getQuestState(MCA_QUEST_ENTRYPOINT) != Quest.State.COMPLETED;
+            .getQuestState(MCA_QUEST_ENTRYPOINT) == Quest.State.COMPLETED;
     }
 }
