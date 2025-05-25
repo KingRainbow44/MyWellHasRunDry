@@ -10,6 +10,7 @@ import dev.morphia.annotations.PrePersist;
 import lombok.Data;
 import moe.seikimo.data.DatabaseObject;
 import moe.seikimo.general.JObject;
+import moe.seikimo.mwhrd.game.mca.GuildProgress;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.models.BasicPlayerInfo;
 import moe.seikimo.mwhrd.models.PlayerModel;
@@ -113,6 +114,9 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     /** Bank item storage. */
     private DynamicItemStorage bank = new DynamicItemStorage(6, 8);
     private Map<Integer, String> pageNames = new HashMap<>();
+
+    /** MCA fields. */
+    private GuildProgress progress = GuildProgress.NEEDS_BASE;
 
     /**
      * @deprecated Use {@link #pageIcons$1} instead.

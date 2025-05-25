@@ -8,8 +8,10 @@ import com.mojang.brigadier.context.CommandContext;
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.attachment.EntityAttachment;
 import eu.pb4.polymer.virtualentity.api.elements.TextDisplayElement;
+import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.game.beacon.BeaconManager;
+import moe.seikimo.mwhrd.game.mca.GuildProgress;
 import moe.seikimo.mwhrd.impl.PlayerNpcElement;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.ITimeTraveler;
@@ -26,12 +28,12 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static com.mojang.brigadier.arguments.StringArgumentType.*;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 @Slf4j
+@ExtensionMethod(Players.class)
 public final class DebugCommand {
     /**
      * Registers the command with the dispatcher.
@@ -71,6 +73,10 @@ public final class DebugCommand {
             .then(literal("schem")
                 .then(argument("path", greedyString())
                     .executes(DebugCommand::paste)))
+            .then(literal("guild")
+                .then(literal("progress")
+                    .then(argument("progress", string())
+                        .executes(DebugCommand::progress))))
             .executes(DebugCommand::usage));
     }
 
@@ -336,6 +342,32 @@ public final class DebugCommand {
             context.getSource().sendMessage(Text.literal("Pasted schematic"));
         } catch (Exception exception) {
             log.error("Failed to paste schematic", exception);
+        }
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int progress(CommandContext<ServerCommandSource> context) {
+        var player = context.getSource().getPlayer();
+        if (player == null) {
+            context.getSource().sendError(Text.literal("Must be ran as a player"));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        var guild = Players.getGuild(player);
+        if (guild == null) {
+            context.getSource().sendError(Text.literal("You are not in a guild"));
+            return Command.SINGLE_SUCCESS;
+        }
+
+        var progressArg = getString(context, "progress");
+        try {
+            var progress = GuildProgress.valueOf(progressArg.toUpperCase());
+            guild.setProgress(progress);
+
+            context.getSource().sendMessage(Text.literal("Set guild progress to " + progress));
+        } catch (IllegalArgumentException ignored) {
+            context.getSource().sendError(Text.literal("Invalid progress value: " + progressArg));
         }
 
         return Command.SINGLE_SUCCESS;
