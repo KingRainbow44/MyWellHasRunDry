@@ -189,6 +189,18 @@ public final class Players {
     }
 
     /**
+     * Gets the guild instance for the player.
+     *
+     * @param player The player to get the guild for.
+     * @return The guild instance for the player.
+     */
+    @Nullable
+    public static GuildInstance getGuild(ServerPlayerEntity player) {
+        var model = Players.getModel(player);
+        return model.getGuild();
+    }
+
+    /**
      * Repairs the player's gear.
      * This is a recursive function.
      *
