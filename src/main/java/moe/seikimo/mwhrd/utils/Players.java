@@ -1,6 +1,7 @@
 package moe.seikimo.mwhrd.utils;
 
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.game.guilds.GuildInstance;
 import moe.seikimo.mwhrd.game.quest.PlayerQuestManager;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.interfaces.player.IPlayer;
@@ -22,18 +23,23 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public interface Players {
+public final class Players {
+    private Players() {
+        // Utility class, no instantiation allowed.
+    }
+
     /**
      * Runs a consumer for each player.
      *
      * @param consumer The consumer to run.
      */
-    static void all(Consumer<ServerPlayerEntity> consumer) {
+    public static void all(Consumer<ServerPlayerEntity> consumer) {
         MyWellHasRunDry.getServer().getPlayerManager().getPlayerList().forEach(consumer);
     }
 
@@ -43,7 +49,7 @@ public interface Players {
      * @param message The message to broadcast.
      * @param overlay Whether to overlay the message.
      */
-    static void broadcast(Text message, boolean overlay) {
+    public static void broadcast(Text message, boolean overlay) {
         Players.all(player -> player.sendMessage(message, overlay));
     }
 
@@ -53,7 +59,7 @@ public interface Players {
      * @param player The player to send the messages to.
      * @param messages The messages to send.
      */
-    static void bulkSend(PlayerEntity player, Text... messages) {
+    public static void bulkSend(PlayerEntity player, Text... messages) {
         for (var message : messages) {
             player.sendMessage(message, false);
         }
@@ -64,7 +70,7 @@ public interface Players {
      *
      * @param player The player to reset.
      */
-    static void reset(PlayerEntity player) {
+    public static void reset(PlayerEntity player) {
         // Reset the player's health.
         player.setHealth(player.getMaxHealth());
 
@@ -82,7 +88,7 @@ public interface Players {
      *
      * @param player The player to teleport.
      */
-    static void respawn(PlayerEntity player) {
+    public static void respawn(PlayerEntity player) {
         Players.reset(player);
 
         if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
@@ -99,7 +105,7 @@ public interface Players {
      * @param player The player to check.
      * @return Whether the player is in the world.
      */
-    static boolean inWorld(RegistryKey<World> world, PlayerEntity player) {
+    public static boolean inWorld(RegistryKey<World> world, PlayerEntity player) {
         return world.equals(player.getWorld().getRegistryKey());
     }
 
@@ -110,7 +116,7 @@ public interface Players {
      * @param player The player to check.
      * @return Whether the player is in the world.
      */
-    static boolean inWorld(RuntimeWorldHandle world, PlayerEntity player) {
+    public static boolean inWorld(RuntimeWorldHandle world, PlayerEntity player) {
         return Players.inWorld(world.getRegistryKey(), player);
     }
 
@@ -120,7 +126,7 @@ public interface Players {
      * @param player The player to kick.
      * @param text The reason for the kick.
      */
-    static void kickPlayer(ServerPlayerEntity player, Text text) {
+    public static void kickPlayer(ServerPlayerEntity player, Text text) {
         var connection = player.networkHandler.connection;
         connection.send(new DisconnectS2CPacket(text), PacketCallbacks.always(() -> connection.disconnect(text)));
         connection.tryDisableAutoRead();
@@ -132,7 +138,7 @@ public interface Players {
      * @param player The player to fetch the model for.
      * @return The player's data model.
      */
-    static PlayerModel getModel(ServerPlayerEntity player) {
+    public static PlayerModel getModel(ServerPlayerEntity player) {
         if (!(player instanceof IDBObject<?> dbObject)) {
             throw new RuntimeException("Player is not instance of IDBObject.");
         }
@@ -150,7 +156,7 @@ public interface Players {
      * @param player The player to fetch the quest manager for.
      * @return The player's quest manager.
      */
-    static PlayerQuestManager getQuestManager(ServerPlayerEntity player) {
+    public static PlayerQuestManager getQuestManager(ServerPlayerEntity player) {
         if (!(player instanceof IStoryPlayer storyPlayer)) {
             throw new RuntimeException("Player is not a story player");
         }
@@ -164,7 +170,7 @@ public interface Players {
      * @param player The player to fetch the quest data for.
      * @return The player's quest data.
      */
-    static PlayerQuestData getQuestData(ServerPlayerEntity player) {
+    public static PlayerQuestData getQuestData(ServerPlayerEntity player) {
         return Players.getModel(player).getQuestData();
     }
 
@@ -174,7 +180,7 @@ public interface Players {
      * @param player The player to cast.
      * @return The player as an IPlayer.
      */
-    static IPlayer extend(ServerPlayerEntity player) {
+    public static IPlayer extend(ServerPlayerEntity player) {
         if (!(player instanceof IPlayer customPlayer)) {
             throw new RuntimeException("Player does not have MWHRD mixins.");
         }
@@ -190,7 +196,7 @@ public interface Players {
      * @param amount The amount of experience to repair the gear with.
      * @return The amount of experience left after repairing the gear.
      */
-    static int repairPlayerGears(ServerPlayerEntity player, int amount) {
+    public static int repairPlayerGears(ServerPlayerEntity player, int amount) {
         var optional = EnchantmentHelper.chooseEquipmentWith(EnchantmentEffectComponentTypes.REPAIR_WITH_XP, player, ItemStack::isDamaged);
         if (optional.isPresent()) {
             int experience;
@@ -218,7 +224,7 @@ public interface Players {
      * @param player The player to add experience to.
      * @param experience The amount of experience to add.
      */
-    static void addExperience(ServerPlayerEntity player, int experience) {
+    public static void addExperience(ServerPlayerEntity player, int experience) {
         // Try getting the player's guild.
         var model = Players.getModel(player);
         var guild = model.getGuild();
@@ -245,7 +251,7 @@ public interface Players {
      * @param player The player to check.
      * @return Whether the player is in an allowed world.
      */
-    static boolean inAllowedWorld(ServerPlayerEntity player) {
+    public static boolean inAllowedWorld(ServerPlayerEntity player) {
         var world = player.getWorld().getRegistryKey();
         return Utils.ALLOWED_WORLDS.contains(world);
     }
@@ -256,7 +262,7 @@ public interface Players {
      * @param uuid The UUID of the player to create the head for.
      * @return The head item stack.
      */
-    static ItemStack headOf(UUID uuid) {
+    public static ItemStack headOf(UUID uuid) {
         var result = MyWellHasRunDry.getServer()
             .getSessionService()
             .fetchProfile(uuid, false);
