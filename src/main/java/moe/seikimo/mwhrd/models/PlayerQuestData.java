@@ -40,8 +40,22 @@ public final class PlayerQuestData {
      * Deletes all previous quest data.
      */
     public void reset() {
+        this.reset(false);
+    }
+
+    /**
+     * Deletes all previous quest data.
+     *
+     * @param dialogue If {@code true}, resets dialogue states as well.
+     */
+    public void reset(boolean dialogue) {
         this.setStarted(false);
         this.quests.clear();
+
+        // Reset dialogue states if requested.
+        if (dialogue) {
+            this.dialogues.clear();
+        }
 
         // Re-check all quest conditions.
         this.checkConditions();
