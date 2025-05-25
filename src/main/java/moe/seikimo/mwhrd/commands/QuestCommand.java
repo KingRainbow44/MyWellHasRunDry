@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import lombok.experimental.ExtensionMethod;
 import moe.seikimo.mwhrd.game.quest.Quest;
 import moe.seikimo.mwhrd.utils.Players;
 import net.minecraft.server.command.ServerCommandSource;
@@ -14,10 +15,12 @@ import net.minecraft.text.Text;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
+@ExtensionMethod(Players.class)
 public final class QuestCommand {
     private static final SimpleCommandExceptionType NOT_INVOLVED = new SimpleCommandExceptionType(Text.translatable("commands.quest.not_involved"));
     private static final SimpleCommandExceptionType DIALOGUE_RUNNING = new SimpleCommandExceptionType(Text.translatable("commands.quest.dialogue.running"));
     private static final SimpleCommandExceptionType DIALOGUE_NOT_RUNNING = new SimpleCommandExceptionType(Text.translatable("commands.quest.dialogue.not_running"));
+    private static final SimpleCommandExceptionType DIALOGUE_NOT_COMPLETE = new SimpleCommandExceptionType(Text.translatable("commands.quest.dialogue.reset.incomplete"));
     private static final SimpleCommandExceptionType STATE_INVALID = new SimpleCommandExceptionType(Text.translatable("commands.quest.state.set.invalid_state"));
 
     /**
@@ -63,7 +66,8 @@ public final class QuestCommand {
     private static ArgumentBuilder<ServerCommandSource, ?> dialogue() {
         return literal("dialogue")
             .then(dialogueStart())
-            .then(dialogueEnd());
+            .then(dialogueEnd())
+            .then(dialogueReset());
     }
 
     /**
@@ -109,6 +113,46 @@ public final class QuestCommand {
                 questManager.endDialogue();
 
                 ctx.getSource().sendFeedback(() -> Text.translatable("commands.quest.dialogue.end.success"), true);
+
+                return Command.SINGLE_SUCCESS;
+            });
+    }
+
+    /**
+     * Sub-command: <code>dialogue reset</code>
+     */
+    private static ArgumentBuilder<ServerCommandSource, ?> dialogueReset() {
+        return literal("reset")
+            .then(argument("id", IntegerArgumentType.integer())
+                .executes(ctx -> {
+                    var player = ctx.getSource().getPlayer();
+                    var dialogueId = IntegerArgumentType.getInteger(ctx, "id");
+
+                    var questManager = player.getQuestManager();
+                    var data = questManager.getData();
+
+                    // Check if the dialogue exists.
+                    if (!data.hasCompletedDialogue(dialogueId)) {
+                        throw DIALOGUE_NOT_COMPLETE.create();
+                    }
+
+                    // Reset the dialogue state.
+                    data.setDialogueState(dialogueId, false);
+
+                    ctx.getSource().sendFeedback(() -> Text.translatable("commands.quest.dialogue.reset.success"), true);
+
+                    return Command.SINGLE_SUCCESS;
+                }))
+            .executes(ctx -> {
+                var player = ctx.getSource().getPlayer();
+
+                var questManager = player.getQuestManager();
+                var data = questManager.getData();
+
+                // Reset all dialogue states.
+                data.getDialogues().clear();
+
+                ctx.getSource().sendFeedback(() -> Text.translatable("commands.quest.dialogue.reset.success"), true);
 
                 return Command.SINGLE_SUCCESS;
             });
