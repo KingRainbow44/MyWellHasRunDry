@@ -11,9 +11,12 @@ import lombok.Data;
 import moe.seikimo.data.DatabaseObject;
 import moe.seikimo.general.JObject;
 import moe.seikimo.mwhrd.game.mca.GuildProgress;
+import moe.seikimo.mwhrd.impl.script.ScriptGuild;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.models.BasicPlayerInfo;
 import moe.seikimo.mwhrd.models.PlayerModel;
+import moe.seikimo.mwhrd.script.ScriptObject;
+import moe.seikimo.mwhrd.script.Scriptable;
 import moe.seikimo.mwhrd.utils.Maps;
 import moe.seikimo.mwhrd.utils.items.DynamicItemStorage;
 import net.minecraft.entity.boss.BossBar;
@@ -26,13 +29,14 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.*;
 
 @Data
 @Entity("guilds")
-public final class GuildInstance implements DatabaseObject<GuildInstance> {
+public final class GuildInstance implements Scriptable, DatabaseObject<GuildInstance> {
     private static final SimpleCommandExceptionType ALREADY_IN_GUILD = new SimpleCommandExceptionType(Text.translatable("commands.guild.join.already_in_guild"));
 
     private static final Map<Formatting, String> DEFAULT_NAMES = Maps.guildNames()
@@ -115,6 +119,9 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     private DynamicItemStorage bank = new DynamicItemStorage(6, 8);
     private Map<Integer, String> pageNames = new HashMap<>();
 
+    /** Flags for the guild. */
+    private Map<String, Long> flags = new HashMap<>();
+
     /** MCA fields. */
     private GuildProgress progress = GuildProgress.NEEDS_BASE;
 
@@ -131,6 +138,7 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
     private transient Formatting color;
     private transient Map<Integer, Item> pageIcons = new HashMap<>();
 
+    private transient ScriptGuild scriptObject = new ScriptGuild(this);
     private transient ServerBossBar experienceBar;
 
     @VisibleForTesting
@@ -343,6 +351,12 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         return this.permissions.getOrDefault(player.uuid(), GuildPermission.RECRUIT);
     }
 
+    /**
+     * Sets the permission of a player.
+     *
+     * @param player The player to set the permission for.
+     * @param permission The permission to set.
+     */
     public void setPermission(BasicPlayerInfo player, GuildPermission permission) {
         var oldPermission = this.permissions.put(player.uuid(), permission);
         var demoted = oldPermission != null && oldPermission.ordinal() > permission.ordinal();
@@ -533,6 +547,53 @@ public final class GuildInstance implements DatabaseObject<GuildInstance> {
         var current = this.experience - experienceNeeded(this.level);
         var total = experienceRemaining(this.level + 1);
         this.experienceBar.setPercent((float) current / total);
+    }
+
+    /**
+     * Checks if the guild has a specific flag set.
+     *
+     * @param flag The flag to check.
+     * @return {@code true} if the flag is set, {@code false} otherwise.
+     */
+    public boolean hasFlag(String flag) {
+        return this.flags.containsKey(flag);
+    }
+
+    /**
+     * Unsets a flag for the guild.
+     *
+     * @param flag The flag to unset.
+     */
+    public void unsetFlag(String flag) {
+        if (this.flags.remove(flag) != null) {
+            this.save();
+        }
+    }
+
+    /**
+     * Sets a flag for the guild.
+     *
+     * @param flag The flag to set.
+     */
+    public void setFlag(@NotNull String flag) {
+        this.flags.put(flag, 0L);
+        this.save();
+    }
+
+    /**
+     * Sets a flag for the guild with a specific value.
+     *
+     * @param flag The flag to set.
+     * @param value The value to set for the flag.
+     */
+    public void setFlag(@NotNull String flag, long value) {
+        this.flags.put(flag, value);
+        this.save();
+    }
+
+    @Override
+    public ScriptObject intoScript() {
+        return this.scriptObject;
     }
 
     @Override
