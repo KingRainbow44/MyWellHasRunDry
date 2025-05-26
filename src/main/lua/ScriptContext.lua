@@ -108,3 +108,19 @@ Hand = {
     MAIN_HAND = 0,
     OFF_HAND = 1
 }
+
+--- @class GuildProgress
+--- @field NEEDS_BASE number
+--- @field NEEDS_CITIZENS number
+--- @field NEEDS_JOBS number
+--- @field NEEDS_LOCATIONS number
+--- @field NEEDS_HALL number
+--- @field COMPLETED number
+GuildProgress = {
+    NEEDS_BASE = 0,
+    NEEDS_CITIZENS = 1,
+    NEEDS_JOBS = 2,
+    NEEDS_LOCATIONS = 3,
+    NEEDS_HALL = 4,
+    COMPLETED = 5
+}

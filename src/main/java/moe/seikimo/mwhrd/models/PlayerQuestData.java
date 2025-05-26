@@ -5,14 +5,19 @@ import dev.morphia.annotations.PostLoad;
 import it.unimi.dsi.fastutil.ints.Int2BooleanArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.Data;
+import lombok.experimental.ExtensionMethod;
 import moe.seikimo.mwhrd.game.quest.Quest;
 import moe.seikimo.mwhrd.game.quest.data.QuestData;
 import moe.seikimo.mwhrd.managers.GlobalQuestManager;
+import moe.seikimo.mwhrd.utils.Players;
+import moe.seikimo.mwhrd.utils.Preconditions;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Map;
 
 @Data
 @Embedded
+@ExtensionMethod(Players.class)
 public final class PlayerQuestData {
     /**
      * Marker of if a player has started any quest chains before.
@@ -26,6 +31,9 @@ public final class PlayerQuestData {
 
     /** Finished state of dialogues. */
     private Map<Integer, Boolean> dialogues = new Int2BooleanArrayMap();
+
+    /** The player that owns this quest data. */
+    private transient ServerPlayerEntity handle;
 
     /**
      * Event listener invoked after the object is loaded.
@@ -73,11 +81,32 @@ public final class PlayerQuestData {
             }
 
             // Check to see if the conditions are fulfilled.
-            var conditions = questData.getConditions();
+            var conditions = questData.accept_conditions;
             if (conditions.stream().allMatch(this::isFulfilled)) {
                 // If all conditions are fulfilled, start the quest.
                 this.assignQuest(questData);
             }
+        }
+
+        // Check all running quests to see if they can be completed.
+        var check = false;
+        var running = this.quests.values().stream()
+            .filter(quest -> quest.getState() == Quest.State.STARTED)
+            .toList();
+        for (var quest : running) {
+            // Check if the quest's completion conditions are fulfilled.
+            var conditions = quest.getData().complete_conditions;
+            if (conditions.stream().allMatch(this::isFulfilled)) {
+                // If all conditions are fulfilled, complete the quest.
+                // We do this manually so we do not recursively call quest completions.
+                quest.setState(Quest.State.COMPLETED);
+
+                check = true;
+            }
+        }
+
+        if (check) {
+            this.checkConditions();
         }
     }
 
@@ -88,10 +117,27 @@ public final class PlayerQuestData {
      * @return {@code true} if the condition is fulfilled, {@code false} otherwise.
      */
     private boolean isFulfilled(QuestData.Condition condition) {
-        return switch (condition.getType()) {
-            case ALWAYS -> true;
-            case QUEST_COMPLETED -> this.getQuestState(condition.getQuestId()) == Quest.State.COMPLETED;
-        };
+        try {
+            return switch (condition.getType()) {
+                case ALWAYS -> true;
+                case NEVER -> false;
+                case QUEST_COMPLETED -> this.getQuestState(condition.quest_id) == Quest.State.COMPLETED;
+                case DIALOGUE_COMPLETED -> this.hasCompletedDialogue(condition.dialogue_id);
+                case GUILD_PROGRESS -> {
+                    Preconditions.notNull(this.handle);
+                    var guild = this.handle.getGuildNotNull();
+                    yield guild.getProgress().ordinal() >= condition.progress.ordinal();
+                }
+                case GUILD_FLAG_SET -> {
+                    Preconditions.notNull(this.handle);
+                    var guild = this.handle.getGuildNotNull();
+                    yield guild.hasFlag(condition.flag);
+                }
+            };
+        } catch (Exception e) {
+            // If an error occurs, we assume the condition is not fulfilled.
+            return false;
+        }
     }
 
     /**
@@ -101,6 +147,19 @@ public final class PlayerQuestData {
      */
     public void assignQuest(QuestData data) {
         this.quests.put(data.getId(), Quest.fromData(data));
+    }
+
+    /**
+     * Finishes a quest for the player.
+     *
+     * @param quest The quest to complete.
+     */
+    public void completeQuest(Quest quest) {
+        // Mark the quest as completed.
+        quest.setState(Quest.State.COMPLETED);
+
+        // Re-check conditions.
+        this.checkConditions();
     }
 
     /**

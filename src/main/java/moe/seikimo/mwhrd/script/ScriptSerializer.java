@@ -195,7 +195,16 @@ public interface ScriptSerializer {
             } else if (fieldMeta.type().equals(float.class)) {
                 methodAccess.invoke(object, fieldMeta.index, keyValue.tofloat());
             } else if (fieldMeta.type().equals(int.class)) {
-                methodAccess.invoke(object, fieldMeta.index, keyValue.toint());
+                var clazz = fieldMeta.type();
+                var value = keyValue.toint();
+
+                // Check if the field is an enum type.
+                if (clazz.isEnum()) {
+                    var enumValue = clazz.getEnumConstants()[value];
+                    methodAccess.invoke(object, fieldMeta.index, enumValue);
+                } else {
+                    methodAccess.invoke(object, fieldMeta.index, value);
+                }
             } else if (fieldMeta.type().equals(String.class)) {
                 methodAccess.invoke(object, fieldMeta.index, keyValue.tojstring());
             } else if (fieldMeta.type().equals(boolean.class)) {

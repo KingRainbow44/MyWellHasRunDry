@@ -201,6 +201,21 @@ public final class Players {
     }
 
     /**
+     * Gets the guild instance for the player, or throws an exception if the player is not in a guild.
+     *
+     * @param player The player to get the guild for.
+     * @return The guild instance for the player.
+     * @throws NullPointerException if the player is not in a guild.
+     */
+    public static GuildInstance getGuildNotNull(ServerPlayerEntity player) throws NullPointerException {
+        var guild = Players.getGuild(player);
+        if (guild == null) {
+            throw new NullPointerException("Player is not in a guild.");
+        }
+        return guild;
+    }
+
+    /**
      * Repairs the player's gear.
      * This is a recursive function.
      *

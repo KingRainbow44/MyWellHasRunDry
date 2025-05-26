@@ -1,8 +1,11 @@
 quest = {
     id = 100000,
     hidden = true,
-    conditions = {
+    accept_conditions = {
         { type = "ALWAYS" }
+    },
+    complete_conditions = {
+        { type = "DIALOGUE_COMPLETED", dialogue_id = 100000 }
     }
 }
 
@@ -42,9 +45,6 @@ end
 --- @param context ScriptContext
 function accept_quest(context)
     context.player.quests:finishDialogue("text.mwhrd.quest.100000.accept")
-
-    -- Start the boss fight for the player.
-    context.player.quests:complete(100000)
 end
 
 --- Invoked as a callback from a player prompt.

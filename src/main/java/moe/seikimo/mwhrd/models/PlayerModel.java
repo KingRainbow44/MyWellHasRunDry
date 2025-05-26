@@ -113,6 +113,9 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
     public void setHandle(ServerPlayerEntity handle) {
         this.handle = handle;
 
+        // Set quest data handle.
+        this.questData.setHandle(handle);
+
         // Handle hardcore mode.
         Hardcore.onLogin(handle, this);
 

@@ -1,7 +1,10 @@
 quest = {
     id = 700000,
-    conditions = {
+    accept_conditions = {
         { type = "ALWAYS" }
+    },
+    complete_conditions = {
+        { type = "DIALOGUE_COMPLETED", dialogue_id = 700000 }
     }
 }
 
@@ -40,9 +43,6 @@ end
 --- @param context ScriptContext
 function accept_quest(context)
     context.player.quests:finishDialogue("text.mwhrd.quest.700000.accept")
-
-    -- Complete the quest and unlock guild rivalry.
-    context.player.quests:complete(700000)
 end
 
 --- Invoked as a callback from a player prompt.

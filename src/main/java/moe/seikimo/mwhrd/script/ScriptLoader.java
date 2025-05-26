@@ -3,6 +3,7 @@ package moe.seikimo.mwhrd.script;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.events.ScriptCachePurgeEvent;
+import moe.seikimo.mwhrd.game.mca.GuildProgress;
 import moe.seikimo.mwhrd.utils.IO;
 import moe.seikimo.mwhrd.utils.Paths;
 import moe.seikimo.mwhrd.utils.Utils;
@@ -77,6 +78,7 @@ public final class ScriptLoader {
 
         // Register enums.
         ScriptLoader.register(Hand.class);
+        ScriptLoader.register(GuildProgress.class);
 
         log.info("Initialized Lua script engine.");
     }
