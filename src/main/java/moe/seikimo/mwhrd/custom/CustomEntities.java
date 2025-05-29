@@ -7,6 +7,7 @@ import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
 import moe.seikimo.mwhrd.custom.entities.GuardianOfLight;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -29,7 +30,7 @@ public interface CustomEntities {
         Identifier.of(MyWellHasRunDry.MOD_ID, "advanced_beacon"),
         new BlockEntityType<>(
             AdvancedBeaconBlockEntity::new,
-            Set.of(CustomBlocks.ADVANCED_BEACON)
+            Set.of(Blocks.BEACON, CustomBlocks.ADVANCED_BEACON)
         )
     );
 
