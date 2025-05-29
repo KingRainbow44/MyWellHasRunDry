@@ -14,6 +14,7 @@ import moe.seikimo.mwhrd.models.BeaconModel;
 import moe.seikimo.mwhrd.utils.Utils;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Stainable;
@@ -151,6 +152,11 @@ public final class AdvancedBeaconBlockEntity
                     null, pos, SoundEvents.BLOCK_BEACON_AMBIENT,
                     SoundCategory.BLOCKS, 1f, 1f
                 );
+
+                // Update listeners.
+                if (blockEntity.world != null) {
+                    blockEntity.world.updateListeners(blockEntity.getPos(), state, state, Block.NOTIFY_ALL);
+                }
             }
         }
 

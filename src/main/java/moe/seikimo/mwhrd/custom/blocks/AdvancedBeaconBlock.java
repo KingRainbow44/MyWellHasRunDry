@@ -3,9 +3,8 @@ package moe.seikimo.mwhrd.custom.blocks;
 import com.mojang.serialization.MapCodec;
 import eu.pb4.polymer.core.api.block.PolymerBlock;
 import moe.seikimo.mwhrd.custom.CustomEntities;
-import moe.seikimo.mwhrd.custom.CustomItems;
+import moe.seikimo.mwhrd.custom.CustomStats;
 import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
-import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -72,7 +71,7 @@ public final class AdvancedBeaconBlock extends BlockWithEntity implements Staina
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (world.getBlockEntity(pos) instanceof AdvancedBeaconBlockEntity blockEntity) {
             player.openHandledScreen(blockEntity);
-            player.incrementStat(Stats.INTERACT_WITH_BEACON);
+            player.incrementStat(CustomStats.INTERACT_WITH_ADVANCED_BEACON);
         }
         return ActionResult.SUCCESS;
     }
