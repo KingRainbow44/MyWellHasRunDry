@@ -15,7 +15,6 @@ import moe.seikimo.mwhrd.custom.items.tools.shovel.EnlightenedDiamondShovel;
 import moe.seikimo.mwhrd.custom.items.tools.sword.EnlightenedDiamondSword;
 import moe.seikimo.mwhrd.utils.items.LoreBuilder;
 import moe.seikimo.mwhrd.utils.items.NbtBuilder;
-import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.item.Item;
@@ -49,13 +48,9 @@ public interface CustomItems {
     Item ADVANCED_BEACON = Items.register(
         itemKey("advanced_beacon"),
         settings -> new PolymerBlockItem(
-            Blocks.BEACON,
+            CustomBlocks.ADVANCED_BEACON,
             settings
                 .rarity(Rarity.EPIC)
-                .component(DataComponentTypes.BLOCK_ENTITY_DATA, NbtBuilder.of()
-                    .set("id", "mwhrd:advanced_beacon")
-                    .set("is_advanced", true)
-                    .build())
                 .component(DataComponentTypes.LORE, new LoreComponent(List.of(
                     Text.literal("This beacon emits special radiation!")
                         .setStyle(Style.EMPTY.withItalic(false))

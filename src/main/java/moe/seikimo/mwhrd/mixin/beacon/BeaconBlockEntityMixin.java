@@ -40,8 +40,8 @@ public abstract class BeaconBlockEntityMixin
 
         // If this beacon is advanced, replace it with an AdvancedBeaconBlockEntity.
         if (advBeacon.mwhrd$isAdvanced()) {
-            // var newState = CustomBlocks.ADVANCED_BEACON.getDefaultState();
-            // world.setBlockState(pos, newState);
+            var newState = CustomBlocks.ADVANCED_BEACON.getDefaultState();
+            world.setBlockState(pos, newState);
         }
     }
 
