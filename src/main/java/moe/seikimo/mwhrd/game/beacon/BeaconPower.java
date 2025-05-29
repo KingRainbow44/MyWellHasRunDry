@@ -2,7 +2,7 @@ package moe.seikimo.mwhrd.game.beacon;
 
 import eu.pb4.sgui.api.gui.SimpleGui;
 import lombok.RequiredArgsConstructor;
-import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
+import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 @RequiredArgsConstructor
 public abstract class BeaconPower {
     protected final BlockPos blockPos;
-    protected IAdvancedBeacon handle;
+    protected AdvancedBeaconBlockEntity handle;
     protected World world;
 
     /**
@@ -20,7 +20,7 @@ public abstract class BeaconPower {
      * @param beacon The beacon to initialize.
      * @param world The world the beacon is in.
      */
-    public void init(IAdvancedBeacon beacon, World world) {
+    public void init(AdvancedBeaconBlockEntity beacon, World world) {
         this.handle = beacon;
         this.world = world;
     }

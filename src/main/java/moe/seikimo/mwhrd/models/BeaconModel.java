@@ -5,8 +5,8 @@ import dev.morphia.annotations.*;
 import lombok.Data;
 import moe.seikimo.data.DatabaseObject;
 import moe.seikimo.general.JObject;
+import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
-import net.minecraft.block.entity.BeaconBlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public final class BeaconModel implements DatabaseObject<BeaconModel> {
      */
     private List<String> items = new ArrayList<>();
 
-    private transient BeaconBlockEntity handle;
+    private transient AdvancedBeaconBlockEntity handle;
     private transient ItemStorage itemStorage = new ItemStorage();
 
     @PrePersist

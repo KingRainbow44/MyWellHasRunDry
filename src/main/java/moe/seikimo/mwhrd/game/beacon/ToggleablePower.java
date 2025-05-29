@@ -27,6 +27,13 @@ public abstract class ToggleablePower extends BeaconPower {
      */
     protected abstract BeaconEffect getEffect();
 
+    /**
+     * Can be implemented by subclasses to handle toggling the power.
+     *
+     * @param newState The new state of the power (enabled or disabled).
+     */
+    protected void toggle(boolean newState) {}
+
     @Override
     public void read(World world, NbtCompound tag) {
         this.enabled = tag.getBoolean("enabled", false);
@@ -74,7 +81,10 @@ public abstract class ToggleablePower extends BeaconPower {
                 .addLoreLine(GUI.lore("Click to toggle this effect!", Formatting.YELLOW))
                 .setCallback(() -> {
                     this.self.enabled = !this.self.enabled;
-                    this.self.handle.mwhrd$save();
+                    this.self.handle.save();
+
+                    // Run the toggle method if implemented.
+                    this.self.toggle(this.self.enabled);
 
                     this.getPlayer().sendMessage(Text.literal("%s \"%s\"!"
                             .formatted(this.self.enabled ? "Enabled" : "Disabled", this.data.getDisplayName()))

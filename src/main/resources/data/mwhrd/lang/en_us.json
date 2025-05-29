@@ -46,6 +46,8 @@
 
     "entity.mwhrd.guardian_of_light": "Guardian of Light",
 
+    "container.advanced_beacon": "Advanced Beacon",
+
     "death.attack.gun": "%1$s got shot",
     "death.attack.gun.player": "%1$s got shot by %2$s",
     "death.attack.gun.player.item": "%1$s got shot by %2$s using %3$s",

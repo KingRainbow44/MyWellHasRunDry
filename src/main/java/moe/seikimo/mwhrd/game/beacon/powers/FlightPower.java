@@ -20,7 +20,15 @@ public final class FlightPower extends ToggleablePower {
     @Override
     public void fuelTick(int fuel) {
         if (!this.minimumFuel().compare(BeaconFuel.getFuel(fuel))) {
-            this.handle.mwhrd$getPlayers().forEach(player ->
+            this.handle.getLastOnlinePlayers().forEach(player ->
+                this.remove(this.world, player));
+        }
+    }
+
+    @Override
+    protected void toggle(boolean newState) {
+        if (!newState) {
+            this.handle.getLastOnlinePlayers().forEach(player ->
                 this.remove(this.world, player));
         }
     }
@@ -35,7 +43,7 @@ public final class FlightPower extends ToggleablePower {
         if (player == null || player.isCreative() || player.isSpectator()) return;
         if (this.handle == null) return;
 
-        var fuel = this.handle.mwhrd$getFuel();
+        var fuel = this.handle.getFuel();
         if (!this.minimumFuel().compare(BeaconFuel.getFuel(fuel))) return;
 
         player.getAbilities().allowFlying = this.enabled;

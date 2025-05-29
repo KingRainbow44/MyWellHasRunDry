@@ -2,20 +2,14 @@ package moe.seikimo.mwhrd.game.beacon;
 
 import eu.pb4.sgui.virtual.inventory.VirtualScreenHandler;
 import lombok.Getter;
+import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
 import moe.seikimo.mwhrd.game.beacon.powers.TeleportationPower;
 import moe.seikimo.mwhrd.gui.beacon.BeaconTeleportGui;
-import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import moe.seikimo.mwhrd.interfaces.IPlayerConditions;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -26,7 +20,7 @@ import java.util.Map;
 public final class BeaconManager {
     public static long FUEL_TIME = 20L * 60L * 60L; // 20 ticks * 60 seconds * 60 minutes
 
-    @Getter private static final Map<BlockPos, IAdvancedBeacon> allBeacons = new HashMap<>();
+    @Getter private static final Map<BlockPos, AdvancedBeaconBlockEntity> allBeacons = new HashMap<>();
     @Getter private static final Map<BlockPos, BeaconEntry> tpBeacons = new HashMap<>();
 
     /**
@@ -40,14 +34,13 @@ public final class BeaconManager {
         var pos = player.getBlockPos();
         var blockEntity = world.getBlockEntity(pos.down());
 
-        if (!(blockEntity instanceof IAdvancedBeacon beacon)) return;
-        if (!beacon.mwhrd$isAdvanced()) return;
+        if (!(blockEntity instanceof AdvancedBeaconBlockEntity beacon)) return;
 
-        var tpPower = beacon.mwhrd$getEffectMap().get(BeaconEffect.EYE_OF_TELEPORTATION);
+        var tpPower = beacon.getPowers().get(BeaconEffect.EYE_OF_TELEPORTATION);
         if (!(tpPower instanceof TeleportationPower power)) return;
         if (power.isForceDisabled()) return;
 
-        var upgrades = beacon.mwhrd$getEffectList();
+        var upgrades = beacon.getEffectList();
         if (!upgrades.contains(BeaconEffect.EYE_OF_TELEPORTATION)) return;
 
         // Open the beacon menu.
@@ -76,8 +69,7 @@ public final class BeaconManager {
         }
 
         var blockEntity = world.getBlockEntity(pos);
-        return blockEntity instanceof IAdvancedBeacon beacon &&
-            beacon.mwhrd$isAdvanced();
+        return blockEntity instanceof AdvancedBeaconBlockEntity;
     }
 
     /**
@@ -97,7 +89,7 @@ public final class BeaconManager {
      * @param entity The beacon block entity.
      * @param entry The beacon entry.
      */
-    public static void register(BeaconBlockEntity entity, BeaconEntry entry) {
+    public static void register(AdvancedBeaconBlockEntity entity, BeaconEntry entry) {
         BeaconManager.purge(); // Remove all invalid beacons.
 
         // Add the beacon to the map.
@@ -151,44 +143,5 @@ public final class BeaconManager {
                 .formatted(Formatting.YELLOW))
             .append(Text.literal("!")
                 .formatted(Formatting.GREEN)));
-    }
-
-    /**
-     * Handles the placing of beacons.
-     *
-     * @param stack The item stack.
-     * @param world The world.
-     * @param result The block hit result.
-     * @return The action result.
-     */
-    public static ActionResult handleBeacon(
-        ItemStack stack, World world, BlockHitResult result
-    ) {
-        // Check if the stack contains the custom beacon data.
-        var customData = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (customData == null) {
-            return ActionResult.PASS;
-        }
-        if (!customData.contains("adv_beacon")) {
-            return ActionResult.PASS;
-        }
-
-        // Set the block.
-        var newBlock = result.getBlockPos().add(result.getSide().getVector());
-        world.setBlockState(newBlock, Blocks.BEACON.getDefaultState());
-        var blockEntity = (BeaconBlockEntity) world.getBlockEntity(newBlock);
-        if (blockEntity == null) {
-            world.setBlockState(newBlock, Blocks.AIR.getDefaultState());
-            return ActionResult.FAIL;
-        }
-
-        // Update the beacon block from the item.
-        var beacon = (IAdvancedBeacon) blockEntity;
-        beacon.mwhrd$deserialize(customData.copyNbt());
-        beacon.mwhrd$setAdvanced(true);
-
-        stack.decrement(1);
-
-        return ActionResult.SUCCESS;
     }
 }

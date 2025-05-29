@@ -38,3 +38,8 @@ mutable field net/minecraft/network/packet/s2c/play/EntitySetHeadYawS2CPacket en
 accessible field net/minecraft/entity/player/PlayerEntity PLAYER_MODEL_PARTS Lnet/minecraft/entity/data/TrackedData;
 
 accessible field net/minecraft/entity/LivingEntity equipment Lnet/minecraft/entity/EntityEquipment;
+
+accessible class net/minecraft/block/entity/BlockEntityType$BlockEntityFactory
+accessible method net/minecraft/block/entity/BlockEntityType <init> (Lnet/minecraft/block/entity/BlockEntityType$BlockEntityFactory;Ljava/util/Set;)V
+accessible method net/minecraft/block/entity/BeaconBlockEntity updateLevel (Lnet/minecraft/world/World;III)I
+accessible method net/minecraft/network/packet/s2c/play/BlockEntityUpdateS2CPacket <init> (Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/entity/BlockEntityType;Lnet/minecraft/nbt/NbtCompound;)V

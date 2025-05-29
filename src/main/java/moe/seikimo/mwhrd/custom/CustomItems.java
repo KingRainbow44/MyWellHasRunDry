@@ -16,16 +16,19 @@ import moe.seikimo.mwhrd.custom.items.tools.sword.EnlightenedDiamondSword;
 import moe.seikimo.mwhrd.utils.items.LoreBuilder;
 import moe.seikimo.mwhrd.utils.items.NbtBuilder;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.item.equipment.EquipmentType;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static eu.pb4.polymer.core.api.item.PolymerItemGroupUtils.registerPolymerItemGroup;
@@ -44,14 +47,15 @@ public interface CustomItems {
     );
     Item ADVANCED_BEACON = Items.register(
         itemKey("advanced_beacon"),
-        settings -> new SimplePolymerItem(settings
-            .component(DataComponentTypes.CUSTOM_DATA, NbtBuilder.of()
-                .set("adv_beacon", 1)
-                .build())
-            .component(DataComponentTypes.LORE, LoreBuilder.of(false)
-                .literal("This beacon emits special radiation!", Formatting.AQUA)
-                .build())
-            .component(DataComponentTypes.RARITY, Rarity.EPIC),
+        settings -> new PolymerBlockItem(
+            CustomBlocks.ADVANCED_BEACON,
+            settings
+                .rarity(Rarity.EPIC)
+                .component(DataComponentTypes.LORE, new LoreComponent(List.of(
+                    Text.literal("This beacon emits special radiation!")
+                        .setStyle(Style.EMPTY.withItalic(false))
+                        .formatted(Formatting.AQUA)
+                ))),
             Items.BEACON
         )
     );

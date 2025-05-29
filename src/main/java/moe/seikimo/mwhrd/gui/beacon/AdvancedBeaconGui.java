@@ -4,19 +4,20 @@ import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import moe.seikimo.mwhrd.utils.items.CustomItems;
+import moe.seikimo.mwhrd.custom.CustomItems;
+import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
 import moe.seikimo.mwhrd.game.beacon.BeaconEffect;
 import moe.seikimo.mwhrd.game.beacon.BeaconFuel;
 import moe.seikimo.mwhrd.game.beacon.BeaconLevel;
-import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -45,13 +46,16 @@ public final class AdvancedBeaconGui extends SimpleGui {
     private static final int[] FUEL = {17, 26, 35, 44};
 
     /**
-     * Opens the GUI for the player.
-     *
-     * @param player The player instance.
+     * Creates a new instance of the AdvancedBeaconGui.
      */
-    public static void open(IAdvancedBeacon beacon, ServerPlayerEntity player) {
+    public static ScreenHandler create(
+        AdvancedBeaconBlockEntity beacon,
+        int syncId,
+        PlayerInventory playerInventory,
+        ServerPlayerEntity player
+    ) {
         var gui = new AdvancedBeaconGui(beacon, player);
-        gui.open();
+        return gui.openAsScreenHandler(syncId, playerInventory, player);
     }
 
     private final GuiElement EMPTY =
@@ -65,8 +69,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
             .setCallback(this::beaconInput)
             .build();
 
-    private final BeaconBlockEntity vanillaBeacon;
-    private final IAdvancedBeacon beacon;
+    private final AdvancedBeaconBlockEntity beacon;
 
     /**
      * Constructs a new simple container gui for the supplied player.
@@ -74,11 +77,10 @@ public final class AdvancedBeaconGui extends SimpleGui {
      * @param player                the player to server this gui to
      *                              will be treated as slots of this gui
      */
-    public AdvancedBeaconGui(IAdvancedBeacon beacon, ServerPlayerEntity player) {
+    public AdvancedBeaconGui(AdvancedBeaconBlockEntity beacon, ServerPlayerEntity player) {
         super(ScreenHandlerType.GENERIC_9X6, player, false);
 
         this.beacon = beacon;
-        this.vanillaBeacon = (BeaconBlockEntity) beacon;
 
         this.setTitle(Text.literal("Advanced Beacon Menu"));
 
@@ -129,7 +131,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
             if (level == BeaconLevel.TIER_0) continue;
 
             var index = LEVELS[level.getLevel() - 1];
-            var element = getLevelElement(this.vanillaBeacon.level, level);
+            var element = getLevelElement(this.beacon.getLevel(), level);
 
             this.setSlot(index, element);
         }
@@ -139,11 +141,11 @@ public final class AdvancedBeaconGui extends SimpleGui {
      * Draws the beacon's fuel display.
      */
     private void drawFuel() {
-        var beaconLevel = BeaconLevel.valueOf("TIER_" + this.vanillaBeacon.level);
-        var fuelLevel = BeaconFuel.getFuel(this.beacon.mwhrd$getFuel());
+        var beaconLevel = BeaconLevel.valueOf("TIER_" + this.beacon.getLevel());
+        var fuelLevel = BeaconFuel.getFuel(this.beacon.getFuel());
 
         var fuelDuration = (int) Math.ceil((float)
-            this.beacon.mwhrd$getFuel() /
+            this.beacon.getFuel() /
             beaconLevel.getFuelCost());
 
         var fuelItem = new GuiElementBuilder(switch (fuelLevel) {
@@ -156,7 +158,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
                 .setStyle(Style.EMPTY.withItalic(false))
                 .formatted(fuelLevel.getColor()));
 
-        if (this.beacon.mwhrd$getFuel() < BeaconFuel.HIGH.getHighBound()) {
+        if (this.beacon.getFuel() < BeaconFuel.HIGH.getHighBound()) {
             fuelItem.addLoreLine(
                 Text.literal("Use Blaze Powder to refuel the beacon!")
                     .setStyle(Style.EMPTY.withItalic(false))
@@ -169,7 +171,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
             Text.literal("Fuel Remaining")
                 .setStyle(Style.EMPTY.withItalic(false))
                 .formatted(Formatting.GRAY),
-            Text.literal(" " + this.beacon.mwhrd$getFuel() + " fuel")
+            Text.literal(" " + this.beacon.getFuel() + " fuel")
                 .setStyle(Style.EMPTY.withItalic(false))
                 .formatted(Formatting.BLUE),
             Text.literal("Hours Remaining")
@@ -209,7 +211,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
                 .formatted(Formatting.GRAY))
             .setCallback(this::removeBeacon));
 
-        var upgrades = this.beacon.mwhrd$getEffectList().stream()
+        var upgrades = this.beacon.getEffectList().stream()
             .filter(BeaconEffect::isDraw)
             .toList();
         for (var i = 0; i < 3; i++) {
@@ -231,12 +233,12 @@ public final class AdvancedBeaconGui extends SimpleGui {
                     .setCallback((_i, type, action) -> {
                         if (type == ClickType.MOUSE_RIGHT) {
                             var power = this.beacon
-                                .mwhrd$getEffectMap()
+                                .getPowers()
                                 .remove(upgrade);
 
                             if (power != null) {
                                 power.delete();
-                                this.beacon.mwhrd$save();
+                                this.beacon.save();
 
                                 // Add the power to the player's inventory.
                                 var item = BeaconEffect.POWERS.get(power.getClass());
@@ -244,9 +246,9 @@ public final class AdvancedBeaconGui extends SimpleGui {
                                     item.getItem().getDefaultStack());
                             }
                         } else {
-                            var power = this.beacon.mwhrd$getEffectMap().get(upgrade);
+                            var power = this.beacon.getPowers().get(upgrade);
                             if (power != null) {
-                                power.showGui(this.vanillaBeacon.getWorld(), this.getPlayer());
+                                power.showGui(this.beacon.getWorld(), this.getPlayer());
                             }
                         }
 
@@ -327,7 +329,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
         }
 
         // Check if the upgrade is already applied.
-        var upgrades = this.beacon.mwhrd$getEffectList().stream()
+        var upgrades = this.beacon.getEffectList().stream()
             .filter(BeaconEffect::isDraw)
             .toList();
         if (upgrades.contains(upgrade)) {
@@ -344,15 +346,15 @@ public final class AdvancedBeaconGui extends SimpleGui {
         }
 
         // Check if the beacon is at the required level.
-        if (this.vanillaBeacon.level < upgrade.getMinLevel().ordinal()) {
+        if (this.beacon.getLevel() < upgrade.getMinLevel().ordinal()) {
             this.player.sendMessage(Text.literal("Beacon is not at the required level!")
                 .formatted(Formatting.RED));
             return;
         }
 
         // Add the upgrade to the beacon.
-        this.beacon.mwhrd$addEffect(upgrade);
-        this.beacon.mwhrd$save();
+        this.beacon.addEffect(upgrade);
+        this.beacon.save();
 
         // Decrement the stack.
         cursorItem.decrement(1);
@@ -366,7 +368,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
     private void inputFuel(ItemStack fuel) {
         if (fuel.getItem() != Items.BLAZE_POWDER) return;
 
-        var fuelLevel = this.beacon.mwhrd$getFuel();
+        var fuelLevel = this.beacon.getFuel();
         var maxFuel = BeaconFuel.HIGH.getHighBound();
 
         if (fuelLevel >= maxFuel) {
@@ -381,7 +383,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
             fuel.decrement(1);
 
             // Add the fuel to the beacon.
-            var multiplier = switch (this.vanillaBeacon.level) {
+            var multiplier = switch (this.beacon.getLevel()) {
                 case 2 -> 2;
                 case 3 -> 4;
                 case 4 -> 8;
@@ -389,7 +391,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
             };
 
             added += multiplier;
-            this.beacon.mwhrd$setFuel(Math.min(maxFuel,
+            this.beacon.setFuel(Math.min(maxFuel,
                 fuelLevel = fuelLevel + multiplier));
 
             if (fuelLevel >= maxFuel) {
@@ -397,7 +399,7 @@ public final class AdvancedBeaconGui extends SimpleGui {
             }
         }
 
-        this.beacon.mwhrd$save();
+        this.beacon.save();
         this.drawFuel();
 
         this.getPlayer().sendMessage(Text.literal("Added %s fuel to the beacon!"
@@ -410,31 +412,23 @@ public final class AdvancedBeaconGui extends SimpleGui {
      */
     private void removeBeacon() {
         // Check if the block exists.
-        var world = this.vanillaBeacon.getWorld();
+        var world = this.beacon.getWorld();
         if (world == null) {
             this.close();
             return;
         }
 
-        var block = world.getBlockEntity(this.vanillaBeacon.getPos());
-        if (!(block instanceof IAdvancedBeacon)) {
-            this.close();
-            return;
-        }
-
         // Write the beacon's data to the item.
-        var item = CustomItems.ADVANCED_BEACON.copy();
-        item.set(DataComponentTypes.CUSTOM_DATA,
-            this.beacon.mwhrd$serializeComponent());
+        var item = this.beacon.createItem();
 
         // Drop the item and remove the block.
-        var pos = this.vanillaBeacon.getPos();
+        var pos = this.beacon.getPos();
         var itemEntity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, item);
         itemEntity.setToDefaultPickupDelay();
         world.spawnEntity(itemEntity);
 
         world.setBlockState(pos, Blocks.AIR.getDefaultState());
-        this.beacon.mwhrd$destroy();
+        this.beacon.destroy();
 
         // Close the menu.
         this.close();

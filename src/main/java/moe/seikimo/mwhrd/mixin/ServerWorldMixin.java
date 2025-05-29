@@ -53,13 +53,12 @@ public abstract class ServerWorldMixin extends World {
         BeaconManager.getAllBeacons()
             .values().stream()
             .filter(beacon -> {
-                var power = beacon.mwhrd$getPower(SpawnControlPower.class);
+                var power = beacon.getPower(SpawnControlPower.class);
                 return power != null && power.isEnabled();
             })
             .filter(beacon -> {
-                var handle = (BeaconBlockEntity) beacon;
-                var pos = handle.getPos();
-                var level = BeaconLevel.of(handle.level);
+                var pos = beacon.getPos();
+                var level = BeaconLevel.of(beacon.getLevel());
                 return level != null && entityPos.isWithinDistance(pos, level.getRange());
             })
             .findAny()

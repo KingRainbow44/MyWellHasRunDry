@@ -49,7 +49,7 @@ public final class PixelPrinterPower extends BeaconPower {
      * @return The percentage of beacon fuel to copy.
      */
     private int getPercentage() {
-        return switch (this.handle.mwhrd$getBeacon().level) {
+        return switch (this.handle.getLevel()) {
             case 2 -> 15;
             case 3 -> 20;
             case 4 -> 25;
@@ -84,7 +84,7 @@ public final class PixelPrinterPower extends BeaconPower {
 
     @Override
     public SimpleGui getGui(World world, PlayerEntity player) {
-        if (!this.minimumFuel().compare(this.handle.mwhrd$fuel())) {
+        if (!this.minimumFuel().compare(this.handle.getFuelLevel())) {
             player.sendMessage(Text.literal("Not enough beacon fuel!")
                 .formatted(Formatting.RED), false);
             return null;
@@ -145,11 +145,11 @@ public final class PixelPrinterPower extends BeaconPower {
 
             if (type == ClickType.MOUSE_RIGHT) {
                 // Burn all the beacon's fuel.
-                var beaconFuel = handle.mwhrd$getFuel();
+                var beaconFuel = handle.getFuel();
                 var percentage = this.self.getPercentage() / 100.0;
                 var itemFuel = (int) Math.floor(beaconFuel * percentage);
                 this.self.itemFuel += Math.min(MAX_FUEL, itemFuel);
-                handle.mwhrd$setFuel(0);
+                handle.setFuel(0);
 
                 this.getPlayer().sendMessage(Text.literal("Converted beacon fuel into %s item fuel!"
                     .formatted(itemFuel))

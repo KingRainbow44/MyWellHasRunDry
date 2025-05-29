@@ -197,10 +197,9 @@ public final class PlotPurgePower extends BeaconPower {
             var pos2 = this.select.mwhrd$getPos2();
 
             // Check if the rectangle falls out of the beacon's range.
-            var advBeacon = this.handle.handle;
-            var blockEntity = (BeaconBlockEntity) advBeacon;
+            var blockEntity = this.handle.handle;
 
-            var level = BeaconLevel.of(blockEntity.level);
+            var level = BeaconLevel.of(blockEntity.getLevel());
             if (level == null) return;
             var range = level.getRange();
 
@@ -222,12 +221,12 @@ public final class PlotPurgePower extends BeaconPower {
             // Round the fuel cost to the nearest integer.
             fuelCost = Math.min(fuelCost, 640);
 
-            if (advBeacon.mwhrd$getFuel() < fuelCost) {
+            if (blockEntity.getFuel() < fuelCost) {
                 this.player.sendMessage(Text.literal("The beacon does not have enough fuel!")
                     .formatted(Formatting.RED));
                 return;
             }
-            advBeacon.mwhrd$setFuel(advBeacon.mwhrd$getFuel() - fuelCost);
+            blockEntity.setFuel(blockEntity.getFuel() - fuelCost);
 
             this.handle.removeBlocks(this.player, pos1, pos2);
         }

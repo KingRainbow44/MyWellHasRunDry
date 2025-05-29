@@ -2,6 +2,7 @@ package moe.seikimo.mwhrd.gui.beacon;
 
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.screen.ScreenHandlerType;
@@ -16,13 +17,13 @@ public final class BeaconSettingsGui extends SimpleGui {
      * @param beacon The beacon to open the settings for
      * @param player The player to open the GUI for
      */
-    public static void open(IAdvancedBeacon beacon, ServerPlayerEntity player) {
+    public static void open(AdvancedBeaconBlockEntity beacon, ServerPlayerEntity player) {
         new BeaconSettingsGui(beacon, player).open();
     }
 
-    private final IAdvancedBeacon beacon;
+    private final AdvancedBeaconBlockEntity beacon;
 
-    public BeaconSettingsGui(IAdvancedBeacon beacon, ServerPlayerEntity player) {
+    public BeaconSettingsGui(AdvancedBeaconBlockEntity beacon, ServerPlayerEntity player) {
         super(ScreenHandlerType.GENERIC_9X6, player, false);
 
         this.beacon = beacon;
@@ -34,8 +35,8 @@ public final class BeaconSettingsGui extends SimpleGui {
     }
 
     private void drawButtons() {
-        var map = this.beacon.mwhrd$getEffectMap();
-        var upgrades = this.beacon.mwhrd$getEffectList().stream()
+        var map = this.beacon.getPowers();
+        var upgrades = this.beacon.getEffectList().stream()
             .filter(e -> !e.isDraw())
             .toList();
 

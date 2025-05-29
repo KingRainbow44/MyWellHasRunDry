@@ -196,13 +196,6 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
             var item = player.getStackInHand(hand);
             var itemType = item.getItem();
 
-            if (
-                itemType == Items.BEACON ||
-                    itemType == CustomItems.ADVANCED_BEACON
-            ) {
-                return BeaconManager.handleBeacon(item, world, hitResult);
-            }
-
             return ActionResult.PASS;
         });
 

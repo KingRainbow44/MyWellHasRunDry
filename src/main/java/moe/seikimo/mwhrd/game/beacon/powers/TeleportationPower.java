@@ -6,6 +6,7 @@ import eu.pb4.sgui.api.gui.SignGui;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import lombok.Getter;
 import lombok.Setter;
+import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
 import moe.seikimo.mwhrd.game.beacon.BeaconEntry;
 import moe.seikimo.mwhrd.game.beacon.BeaconFuel;
 import moe.seikimo.mwhrd.game.beacon.BeaconManager;
@@ -38,7 +39,7 @@ public final class TeleportationPower extends BeaconPower {
     }
 
     @Override
-    public void init(IAdvancedBeacon beacon, World world) {
+    public void init(AdvancedBeaconBlockEntity beacon, World world) {
         super.init(beacon, world);
 
         this.update(world);
@@ -104,31 +105,29 @@ public final class TeleportationPower extends BeaconPower {
     private void update(World world) {
         if (!(world instanceof ServerWorld serverWorld)) return;
 
-        if (this.handle instanceof BeaconBlockEntity beacon) {
-            var blockPos = beacon.getPos();
+        var blockPos = this.handle.getPos();
 
-            var target = this.getTarget();
-            if (!(target instanceof BlockPos.Mutable) ||
-                target.getSquaredDistance(blockPos) > 15) {
-                this.setTarget(blockPos.up().mutableCopy());
-            }
+        var target = this.getTarget();
+        if (!(target instanceof BlockPos.Mutable) ||
+            target.getSquaredDistance(blockPos) > 15) {
+            this.setTarget(blockPos.up().mutableCopy());
+        }
 
-            // Force-load the chunk.
-            var chunkX = blockPos.getX() >> 4;
-            var chunkZ = blockPos.getZ() >> 4;
-            if (serverWorld.isChunkLoaded(chunkX, chunkZ) &&
-                !this.isForceDisabled()) {
-                serverWorld.setChunkForced(chunkX, chunkZ, this.isEnabled());
-            }
+        // Force-load the chunk.
+        var chunkX = blockPos.getX() >> 4;
+        var chunkZ = blockPos.getZ() >> 4;
+        if (serverWorld.isChunkLoaded(chunkX, chunkZ) &&
+            !this.isForceDisabled()) {
+            serverWorld.setChunkForced(chunkX, chunkZ, this.isEnabled());
+        }
 
-            // Register the beacon.
-            if (!this.isEnabled()) {
-                BeaconManager.getTpBeacons().remove(blockPos);
-            } else if (!this.isForceDisabled()) {
-                BeaconManager.register(beacon, new BeaconEntry(
-                    this.getName(), world, this.getTarget()
-                ));
-            }
+        // Register the beacon.
+        if (!this.isEnabled()) {
+            BeaconManager.getTpBeacons().remove(blockPos);
+        } else if (!this.isForceDisabled()) {
+            BeaconManager.register(this.handle, new BeaconEntry(
+                this.getName(), world, this.getTarget()
+            ));
         }
     }
 
@@ -182,7 +181,7 @@ public final class TeleportationPower extends BeaconPower {
                     this.self.setEnabled(!this.self.isEnabled());
                     this.self.update(this.world);
 
-                    this.self.handle.mwhrd$save();
+                    this.self.handle.save();
 
                     this.getPlayer().sendMessage(Text.literal("Teleportation %s!"
                         .formatted(this.self.isEnabled() ? "enabled" : "disabled"))
@@ -227,7 +226,7 @@ public final class TeleportationPower extends BeaconPower {
                             self.setName(input);
                             self.update(world);
 
-                            self.handle.mwhrd$save();
+                            self.handle.save();
 
                             this.getPlayer().sendMessage(Text.literal("Waypoint name changed to: %s"
                                     .formatted(self.getName()))
@@ -259,7 +258,7 @@ public final class TeleportationPower extends BeaconPower {
                     this.self.setTarget(this.player.getBlockPos().mutableCopy());
                     this.self.update(this.world);
 
-                    this.self.handle.mwhrd$save();
+                    this.self.handle.save();
 
                     this.getPlayer().sendMessage(Text.literal("Teleportation position set!")
                         .formatted(Formatting.GREEN));

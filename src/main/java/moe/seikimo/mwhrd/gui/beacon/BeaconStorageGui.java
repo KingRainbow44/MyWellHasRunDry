@@ -4,6 +4,7 @@ import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
 import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.item.BlockItem;
@@ -29,11 +30,11 @@ public final class BeaconStorageGui extends SimpleGui {
      *
      * @param player The player instance.
      */
-    public static void open(IAdvancedBeacon beacon, ServerPlayerEntity player) {
+    public static void open(AdvancedBeaconBlockEntity beacon, ServerPlayerEntity player) {
         new BeaconStorageGui(beacon, player).open();
     }
 
-    private IAdvancedBeacon beacon;
+    private AdvancedBeaconBlockEntity beacon;
 
     private final GuiElement CLEAR_STORAGE =
         new GuiElementBuilder(Items.BARRIER)
@@ -49,20 +50,20 @@ public final class BeaconStorageGui extends SimpleGui {
             .setCallback(clickType -> {
                 if (clickType != ClickType.MOUSE_RIGHT_SHIFT) return;
 
-                this.beacon.mwhrd$getStorage().clear();
+                this.beacon.getStorage().clear();
                 this.getPlayer().sendMessage(Text.literal("Storage cleared!")
                     .formatted(Formatting.GREEN));
 
                 this.drawPages();
                 this.drawItems();
 
-                this.beacon.mwhrd$save();
+                this.beacon.save();
             })
             .build();
 
     private int currentPage = 0;
 
-    public BeaconStorageGui(IAdvancedBeacon beacon, ServerPlayerEntity player) {
+    public BeaconStorageGui(AdvancedBeaconBlockEntity beacon, ServerPlayerEntity player) {
         super(ScreenHandlerType.GENERIC_9X6, player, false);
 
         this.beacon = beacon;
@@ -93,7 +94,7 @@ public final class BeaconStorageGui extends SimpleGui {
             return false;
         }
 
-        var storage = this.beacon.mwhrd$getStorage();
+        var storage = this.beacon.getStorage();
         storage.offer(stack.copy());
 
         this.getPlayer().sendMessage(Text.literal("Deposited ")
@@ -109,7 +110,7 @@ public final class BeaconStorageGui extends SimpleGui {
         this.drawPages();
         this.drawItems();
 
-        this.beacon.mwhrd$save();
+        this.beacon.save();
 
         return false;
     }
@@ -141,7 +142,7 @@ public final class BeaconStorageGui extends SimpleGui {
     }
 
     private void drawItems() {
-        var storage = this.beacon.mwhrd$getStorage();
+        var storage = this.beacon.getStorage();
 
         // We have space from 9-53 to draw item stacks.
         var start = this.currentPage * 45;
@@ -180,7 +181,7 @@ public final class BeaconStorageGui extends SimpleGui {
                     this.drawPages();
                     this.drawItems();
 
-                    this.beacon.mwhrd$save();
+                    this.beacon.save();
                 }));
         }
 
@@ -199,7 +200,7 @@ public final class BeaconStorageGui extends SimpleGui {
     }
 
     private int countPages() {
-        return (int) Math.ceil(this.beacon.mwhrd$getStorage().size() / 45f);
+        return (int) Math.ceil(this.beacon.getStorage().size() / 45f);
     }
 
     /**

@@ -3,8 +3,8 @@ package moe.seikimo.mwhrd.gui.beacon;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
 import moe.seikimo.mwhrd.game.beacon.powers.EffectsPower;
-import moe.seikimo.mwhrd.interfaces.IAdvancedBeacon;
 import moe.seikimo.mwhrd.utils.GUI;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.PotionContentsComponent;
@@ -35,7 +35,7 @@ public final class BeaconEffectsGui extends SimpleGui {
      * @param beacon The beacon to open the GUI for.
      * @param player The player to open the GUI for.
      */
-    public static void open(IAdvancedBeacon beacon, ServerPlayerEntity player) {
+    public static void open(AdvancedBeaconBlockEntity beacon, ServerPlayerEntity player) {
         new BeaconEffectsGui(beacon, player).open();
     }
 
@@ -53,14 +53,14 @@ public final class BeaconEffectsGui extends SimpleGui {
             "No Effect");
     }
 
-    private final IAdvancedBeacon beacon;
+    private final AdvancedBeaconBlockEntity beacon;
     private final EffectsPower effects;
 
-    public BeaconEffectsGui(IAdvancedBeacon beacon, ServerPlayerEntity player) {
+    public BeaconEffectsGui(AdvancedBeaconBlockEntity beacon, ServerPlayerEntity player) {
         super(ScreenHandlerType.GENERIC_9X6, player, false);
 
         this.beacon = beacon;
-        this.effects = beacon.mwhrd$getPower(EffectsPower.class);
+        this.effects = beacon.getPower(EffectsPower.class);
 
         this.setTitle(Text.literal("Beacon Effects"));
 
@@ -103,7 +103,7 @@ public final class BeaconEffectsGui extends SimpleGui {
 
         this.drawEffects();
 
-        this.beacon.mwhrd$save();
+        this.beacon.save();
 
         return false;
     }
@@ -162,7 +162,7 @@ public final class BeaconEffectsGui extends SimpleGui {
 
                     this.drawEffects();
 
-                    this.beacon.mwhrd$save();
+                    this.beacon.save();
                 });
             } else {
                 builder.addLoreLine(Text.empty());
@@ -183,7 +183,7 @@ public final class BeaconEffectsGui extends SimpleGui {
 
                             this.drawEffects();
 
-                            this.beacon.mwhrd$save();
+                            this.beacon.save();
                         });
                 }
             }
