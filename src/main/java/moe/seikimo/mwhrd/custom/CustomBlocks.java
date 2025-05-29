@@ -4,13 +4,9 @@ import moe.seikimo.mwhrd.custom.blocks.AdvancedBeaconBlock;
 import moe.seikimo.mwhrd.custom.blocks.BlossomSaplingBlock;
 import moe.seikimo.mwhrd.custom.blocks.LightPortalBlock;
 import moe.seikimo.mwhrd.utils.Utils;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
 
 public interface CustomBlocks {
     Block LIGHT_PORTAL = Blocks.register(Utils.blockKey("light_portal"), LightPortalBlock::new, Settings.create());
