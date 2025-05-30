@@ -119,7 +119,7 @@ public abstract class PlayerManagerMixin {
                         Time.toString(rolTicks).copy()
                             .formatted(Formatting.WHITE),
                         Text.empty(),
-                        Text.literal("TPS (1m): ")
+                        Text.literal("TPS (10s): ")
                             .formatted(Formatting.GRAY)
                             .append(Text.literal(
                                 "%.2f".formatted(tps.poll(StatisticWindow.TicksPerSecond.SECONDS_10))
@@ -131,7 +131,7 @@ public abstract class PlayerManagerMixin {
                                         .percentile95th())
                                 ).formatted(Formatting.GREEN))
                             )
-                            .append(Text.literal(" | CPU (1m): ")
+                            .append(Text.literal(" | CPU (10s): ")
                                 .formatted(Formatting.GRAY)
                                 .append(Text.literal(
                                     "%.2f%%".formatted(cpu.poll(StatisticWindow.CpuUsage.SECONDS_10) * 100)
