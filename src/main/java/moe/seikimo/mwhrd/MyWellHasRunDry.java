@@ -132,12 +132,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
         // Register custom content.
-        CustomStats.register();
-        CustomBlocks.register();
-        CustomComponents.register();
-        CustomItems.register();
-        CustomEntities.register();
-        CustomProviders.register();
+        Custom.register();
 
         // Mark mod as resource provider.
         PolymerResourcePackUtils.addModAssets(MyWellHasRunDry.MOD_ID);
