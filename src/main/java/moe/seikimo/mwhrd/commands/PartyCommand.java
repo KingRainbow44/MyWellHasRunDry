@@ -3,8 +3,10 @@ package moe.seikimo.mwhrd.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.extern.slf4j.Slf4j;
 import moe.seikimo.mwhrd.managers.PartyManager;
+import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
@@ -28,7 +30,7 @@ public final class PartyCommand {
             .then(literal("leave")
                 .executes(PartyCommand::leaveParty))
             .then(literal("kick")
-                .then(argument("username", StringArgumentType.word())
+                .then(argument("username", EntityArgumentType.player())
                     .executes(PartyCommand::kickPlayer))
                 .executes(PartyCommand::usage))
             .then(literal("decline")
@@ -40,9 +42,9 @@ public final class PartyCommand {
             .then(literal("return")
                 .executes(PartyCommand::returnPlayer))
             .then(literal("invite")
-                .then(argument("username", StringArgumentType.word())
+                .then(argument("username", EntityArgumentType.player())
                     .executes(PartyCommand::invitePlayer)))
-            .then(argument("username", StringArgumentType.word())
+            .then(argument("username", EntityArgumentType.player())
                 .executes(PartyCommand::invitePlayer))
             .executes(PartyCommand::usage));
         dispatcher.register(literal("p").redirect(party));
@@ -94,7 +96,7 @@ public final class PartyCommand {
         return 1;
     }
 
-    private static int invitePlayer(CommandContext<ServerCommandSource> context) {
+    private static int invitePlayer(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         var leader = context.getSource().getPlayer();
         if (leader == null) return 1;
 
@@ -105,16 +107,8 @@ public final class PartyCommand {
             PartyManager.createParty(leader);
         }
 
-        var username = StringArgumentType.getString(context, "username");
-
-        // Check if the player is online.
-        var target = context.getSource().getServer()
-            .getPlayerManager()
-            .getPlayer(username);
-        if (target == null) {
-            context.getSource().sendError(Text.literal("The player is not online."));
-            return 1;
-        }
+        // Get the target player.
+        var target = EntityArgumentType.getPlayer(context, "username");
 
         // Invite the player.
         if (!PartyManager.invitePlayer(leader, target)) {
@@ -155,20 +149,12 @@ public final class PartyCommand {
         return 1;
     }
 
-    private static int kickPlayer(CommandContext<ServerCommandSource> context) {
+    private static int kickPlayer(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         var leader = context.getSource().getPlayer();
         if (leader == null) return -1;
 
-        var username = StringArgumentType.getString(context, "username");
-
-        // Check if the player is online.
-        var target = context.getSource().getServer()
-            .getPlayerManager()
-            .getPlayer(username);
-        if (target == null) {
-            context.getSource().sendError(Text.literal("The player is not online."));
-            return 1;
-        }
+        // Get the target player.
+        var target = EntityArgumentType.getPlayer(context, "username");
 
         var party = PartyManager.findParty(leader);
         if (party == null) {
