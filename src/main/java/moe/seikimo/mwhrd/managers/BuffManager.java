@@ -50,7 +50,10 @@ public final class BuffManager {
         // Check if the player is hardcore.
         var condPlayer = (IPlayerConditions) player;
         if (condPlayer.mwhrd$isHardcore()) {
-            maxHealth.removeModifier(DEBUFF);
+            // Remove all debuffs.
+            if (maxHealth.removeModifier(DEBUFF)) {
+                BuffManager.healthModification(player, false);
+            }
             return;
         }
 
@@ -58,7 +61,9 @@ public final class BuffManager {
         var nearbyPlayers = Utils.getNearbyPlayers(player, 15);
         if (nearbyPlayers.size() <= 1) {
             // Remove all debuffs.
-            maxHealth.removeModifier(DEBUFF);
+            if (maxHealth.removeModifier(DEBUFF)) {
+                BuffManager.healthModification(player, false);
+            }
             return;
         }
 
@@ -69,14 +74,16 @@ public final class BuffManager {
         var playerArmor = ArmorEnum.identify(Utils.iterate(player.equipment));
         if (playerArmor == ArmorEnum.NONE) {
             // Remove all debuffs.
-            maxHealth.removeModifier(DEBUFF);
+            if (maxHealth.removeModifier(DEBUFF)) {
+                BuffManager.healthModification(player, false);
+            }
             return;
         }
 
         for (var nearby : nearbyPlayers) {
-            if (nearby.equals(player)) continue;
+            if (nearby.getUuid().equals(player.getUuid())) continue;
 
-            var nearbyArmor = ArmorEnum.identify(Utils.iterate(player.equipment));
+            var nearbyArmor = ArmorEnum.identify(Utils.iterate(nearby.equipment));
             if (nearbyArmor == ArmorEnum.NONE) continue;
 
             debuffId = DEBUFF;
@@ -84,7 +91,9 @@ public final class BuffManager {
         }
 
         if (debuffId == null) {
-            maxHealth.removeModifier(DEBUFF);
+            if (maxHealth.removeModifier(DEBUFF)) {
+                BuffManager.healthModification(player, false);
+            }
             return;
         }
 
@@ -94,9 +103,31 @@ public final class BuffManager {
         }
         maxHealth.removeModifier(DEBUFF);
 
+        BuffManager.healthModification(player, true);
         maxHealth.addTemporaryModifier(new EntityAttributeModifier(
             debuffId, debuffValue, EntityAttributeModifier.Operation.ADD_VALUE
         ));
+    }
+
+    /**
+     * Logic for preventing annoying health modification changes.
+     *
+     * @param player The player to modify health for.
+     * @param add Whether to add or remove the health modification.
+     */
+    private static void healthModification(PlayerEntity player, boolean add) {
+        var min = player.getMaxHealth() - 2f;
+
+        if (add) {
+            // The player's health should be modified to -2f if they are at full.
+            // Otherwise, they can keep the same health.
+            player.setHealth(Math.min(player.getHealth(), min));
+        } else {
+            // The player's health should be updated if they are at 18f or more.
+            if (player.getHealth() >= (min - 0.5f)) {
+                player.setHealth(player.getMaxHealth());
+            }
+        }
     }
 
     /**
