@@ -5,7 +5,10 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public interface Maths {
-    float LOOK_CONSTANT = 57.2957763671875f;
+    /**
+     * Constant for converting radians to degrees.
+     */
+    float RAD_TO_DEG = 57.2957763671875f;
 
     /**
      * Computes the pitch and yaw angles to look at a target.
@@ -20,8 +23,8 @@ public interface Maths {
         var f = target.z - src.z;
         var g = Math.sqrt(d * d + f * f);
 
-        var pitch = (float) MathHelper.wrapDegrees(MathHelper.atan2(e, g) * LOOK_CONSTANT);
-        var yaw = (float) MathHelper.wrapDegrees(MathHelper.atan2(f, d) * LOOK_CONSTANT - 90.0f);
+        var pitch = (float) MathHelper.wrapDegrees(MathHelper.atan2(e, g) * RAD_TO_DEG);
+        var yaw = (float) MathHelper.wrapDegrees(MathHelper.atan2(f, d) * RAD_TO_DEG - 90.0f);
 
         return new Vec2f(pitch, yaw);
     }

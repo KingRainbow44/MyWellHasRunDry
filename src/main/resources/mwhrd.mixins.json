@@ -22,6 +22,7 @@
     "event.ItemStackMixin",
     "event.LivingEntityMixin",
     "event.PlayerManagerMixin",
+    "game.deep.DeepPlayerMixin",
     "game.hardcore.HardcoreEntityMixin",
     "game.hardcore.HardcorePlayerMixin",
     "game.rol.LightRealmEnderChestBlockMixin",

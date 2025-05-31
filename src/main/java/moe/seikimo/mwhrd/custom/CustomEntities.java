@@ -4,6 +4,7 @@ import eu.pb4.polymer.core.api.block.PolymerBlockUtils;
 import eu.pb4.polymer.core.api.entity.PolymerEntityUtils;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.custom.entities.AdvancedBeaconBlockEntity;
+import moe.seikimo.mwhrd.custom.entities.CelestialFishingBobberEntity;
 import moe.seikimo.mwhrd.custom.entities.GuardianOfLight;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -25,6 +26,19 @@ public interface CustomEntities {
             .build(Utils.entityKey("guardian_of_light"))
     );
 
+    EntityType<CelestialFishingBobberEntity> CELESTIAL_FISHING_BOBBER = Registry.register(
+        Registries.ENTITY_TYPE,
+        Identifier.of(MyWellHasRunDry.MOD_ID, "celestial_fishing_bobber"),
+        EntityType.Builder.<CelestialFishingBobberEntity>create(CelestialFishingBobberEntity::new, SpawnGroup.MISC)
+            .dropsNothing()
+            .disableSaving()
+            .disableSummon()
+            .dimensions(0.25f, 0.25f)
+            .maxTrackingRange(4)
+            .trackingTickInterval(5)
+            .build(Utils.entityKey("celestial_fishing_bobber"))
+    );
+
     BlockEntityType<AdvancedBeaconBlockEntity> ADVANCED_BEACON = Registry.register(
         Registries.BLOCK_ENTITY_TYPE,
         Identifier.of(MyWellHasRunDry.MOD_ID, "advanced_beacon"),
@@ -38,7 +52,7 @@ public interface CustomEntities {
      * No-op method to trigger the static block.
      */
     static void register() {
-        PolymerEntityUtils.registerType(GUARDIAN_OF_LIGHT);
+        PolymerEntityUtils.registerType(GUARDIAN_OF_LIGHT, CELESTIAL_FISHING_BOBBER);
         FabricDefaultAttributeRegistry.register(GUARDIAN_OF_LIGHT, GuardianOfLight.createAttributes());
 
         PolymerBlockUtils.registerBlockEntity(ADVANCED_BEACON);

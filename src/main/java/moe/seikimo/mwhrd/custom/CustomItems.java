@@ -3,6 +3,7 @@ package moe.seikimo.mwhrd.custom;
 import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import eu.pb4.polymer.core.api.item.PolymerItemGroupUtils;
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
+import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.custom.items.SoulOfLight;
 import moe.seikimo.mwhrd.custom.items.TheAtlas;
 import moe.seikimo.mwhrd.custom.items.WorldEditWand;
@@ -11,6 +12,7 @@ import moe.seikimo.mwhrd.custom.items.guns.*;
 import moe.seikimo.mwhrd.custom.items.tools.axe.EnlightenedDiamondAxe;
 import moe.seikimo.mwhrd.custom.items.tools.hoe.EnlightenedDiamondHoe;
 import moe.seikimo.mwhrd.custom.items.tools.pickaxe.EnlightenedDiamondPickaxe;
+import moe.seikimo.mwhrd.custom.items.tools.rod.CelestialLineItem;
 import moe.seikimo.mwhrd.custom.items.tools.shovel.EnlightenedDiamondShovel;
 import moe.seikimo.mwhrd.custom.items.tools.sword.EnlightenedDiamondSword;
 import moe.seikimo.mwhrd.utils.items.LoreBuilder;
@@ -168,6 +170,8 @@ public interface CustomItems {
     Item HEAVY_CRYSTAL = Items.register(itemKey("heavy_crystal"), settings -> new SimplePolymerItem(settings, Items.GHAST_TEAR));
     Item EXPLOSIVE_CRYSTAL = Items.register(itemKey("explosive_crystal"), settings -> new SimplePolymerItem(settings, Items.FIREWORK_STAR));
 
+    Item CELESTIAL_LINE = Items.register(itemKey("celestial_line"), CelestialLineItem::new);
+
     ItemGroup MY_WELL_HAS_RUN_DRY = PolymerItemGroupUtils.builder()
         .displayName(Text.translatable("itemGroup.mwhrd"))
         .icon(Items.BUCKET::getDefaultStack)
@@ -224,13 +228,22 @@ public interface CustomItems {
         })
         .build();
 
+    ItemGroup DEEP_AWAKENS = PolymerItemGroupUtils.builder()
+        .displayName(Text.translatable("itemGroup.mwhrd.deep_awakens"))
+        .icon(Items.FISHING_ROD::getDefaultStack)
+        .entries((context, entries) -> {
+            entries.add(CELESTIAL_LINE);
+        })
+        .build();
+
     /**
      * Registers all custom content.
      */
     static void register() {
-        registerPolymerItemGroup(Identifier.of("mwhrd", "my_well_has_run_dry"), CustomItems.MY_WELL_HAS_RUN_DRY);
-        registerPolymerItemGroup(Identifier.of("mwhrd", "luck_and_luxury"), CustomItems.LUCK_AND_LUXURY);
-        registerPolymerItemGroup(Identifier.of("mwhrd", "the_realm_of_light"), CustomItems.THE_REALM_OF_LIGHT);
-        registerPolymerItemGroup(Identifier.of("mwhrd", "allied_nations"), CustomItems.ALLIED_NATIONS);
+        registerPolymerItemGroup(Identifier.of(MyWellHasRunDry.MOD_ID, "my_well_has_run_dry"), CustomItems.MY_WELL_HAS_RUN_DRY);
+        registerPolymerItemGroup(Identifier.of(MyWellHasRunDry.MOD_ID, "luck_and_luxury"), CustomItems.LUCK_AND_LUXURY);
+        registerPolymerItemGroup(Identifier.of(MyWellHasRunDry.MOD_ID, "the_realm_of_light"), CustomItems.THE_REALM_OF_LIGHT);
+        registerPolymerItemGroup(Identifier.of(MyWellHasRunDry.MOD_ID, "allied_nations"), CustomItems.ALLIED_NATIONS);
+        registerPolymerItemGroup(Identifier.of(MyWellHasRunDry.MOD_ID, "deep_awakens"), CustomItems.DEEP_AWAKENS);
     }
 }

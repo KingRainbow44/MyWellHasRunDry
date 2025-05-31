@@ -5,6 +5,7 @@
     "itemGroup.mwhrd.the_realm_of_light": "The Realm of Light",
     "itemGroup.mwhrd.luck_and_luxury": "Luck and Luxury",
     "itemGroup.mwhrd.allied_nations": "Allied Nations Align",
+    "itemGroup.mwhrd.deep_awakens": "The Deep Awakens",
 
     "item.mwhrd.beacon_base": "Beacon Base",
     "item.mwhrd.advanced_beacon": "Beacon",
@@ -43,6 +44,8 @@
     "item.mwhrd.medium_crystal": "Medium Crystal",
     "item.mwhrd.heavy_crystal": "Heavy Crystal",
     "item.mwhrd.explosive_crystal": "Explosive Crystal",
+
+    "item.mwhrd.celestial_line": "The Celestial Line",
 
     "entity.mwhrd.guardian_of_light": "Guardian of Light",
 
