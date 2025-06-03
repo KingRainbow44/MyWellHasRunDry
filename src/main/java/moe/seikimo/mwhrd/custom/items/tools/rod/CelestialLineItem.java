@@ -1,6 +1,8 @@
 package moe.seikimo.mwhrd.custom.items.tools.rod;
 
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
+import moe.seikimo.mwhrd.custom.CustomComponents;
+import moe.seikimo.mwhrd.custom.components.RodComponent;
 import moe.seikimo.mwhrd.custom.entities.CelestialFishingBobberEntity;
 import moe.seikimo.mwhrd.interfaces.player.IDeepPlayer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,6 +24,10 @@ public final class CelestialLineItem extends SimplePolymerItem {
             settings
                 .rarity(Rarity.UNCOMMON)
                 .maxDamage(128)
+                .component(
+                    CustomComponents.ROD,
+                    new RodComponent(0, 0, 1)
+                )
                 .enchantable(1)
                 .fireproof(),
             Items.FISHING_ROD
@@ -31,6 +37,8 @@ public final class CelestialLineItem extends SimplePolymerItem {
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         var itemStack = user.getStackInHand(hand);
+        var component = itemStack.getOrDefault(
+            CustomComponents.ROD, RodComponent.EMPTY);
 
         var deepPlayer = (IDeepPlayer) user;
         var fishHook = deepPlayer.mwhrd$getFishHook();
@@ -44,7 +52,7 @@ public final class CelestialLineItem extends SimplePolymerItem {
             // Spawn the fishing bobber.
             if (world instanceof ServerWorld serverWorld) {
                 ProjectileEntity.spawn(
-                    new CelestialFishingBobberEntity(user, world),
+                    new CelestialFishingBobberEntity(user, component, world),
                     serverWorld, itemStack
                 );
             }

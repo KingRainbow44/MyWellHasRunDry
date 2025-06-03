@@ -3,9 +3,11 @@ package moe.seikimo.mwhrd.custom.entities;
 import eu.pb4.polymer.core.api.entity.PolymerEntity;
 import moe.seikimo.mwhrd.custom.CustomEntities;
 import moe.seikimo.mwhrd.custom.CustomItems;
+import moe.seikimo.mwhrd.custom.components.RodComponent;
 import moe.seikimo.mwhrd.interfaces.player.IDeepPlayer;
 import moe.seikimo.mwhrd.utils.Maths;
 import moe.seikimo.mwhrd.utils.Utils;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
@@ -17,7 +19,11 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -43,19 +49,49 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
     /** Random number generator used for velocity ONLY. */
     private final Random velocityRandom = Random.create();
 
+    private final float durability, strength, quantity;
+
     /** Fishing bobber position state. */
     private State state = State.FLYING;
     /** The entity the bobber is hooked to. */
     private Entity hookedTo = null;
+
     /** The entity will be discarded after this time. */
     private long discardTimer = 0;
+    /** The amount of ticks that the bobber has been out of open water. */
+    private int waterTicks = 0;
+    /** The amount of ticks before the 'caught' fish expires. */
+    private int hookCountdown = 0;
+    /** The amount of ticks before the fish is 'caught'. */
+    private int travelCountdown = 0;
+    /** The amount of ticks before a fish is placed into the ocean. */
+    private int waitCountdown = 0;
+
+    /** The fish angle is used for displaying particles in the world. */
+    private float fishAngle = 0f;
+
+    /** Whether the bobber is in open water or not. */
+    private boolean inOpenWater = true;
+    /** Whether the bobber has a fish or not. */
+    private boolean caughtFish = false;
 
     public CelestialFishingBobberEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
+
+        // Set default component values.
+        // These are unused in this constructor.
+        this.durability = 0;
+        this.strength = 0;
+        this.quantity = 1;
     }
 
-    public CelestialFishingBobberEntity(PlayerEntity caster, World world) {
-        this(CustomEntities.CELESTIAL_FISHING_BOBBER, world);
+    public CelestialFishingBobberEntity(PlayerEntity caster, RodComponent component, World world) {
+        super(CustomEntities.CELESTIAL_FISHING_BOBBER, world);
+
+        // Set the component values.
+        this.durability = component.durability();
+        this.strength = component.strength();
+        this.quantity = component.quantity();
 
         this.setOwner(caster);
         this.initPosVelocity(caster);
@@ -180,6 +216,231 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
         this.getDataTracker().set(HOOK_ENTITY_ID, entity == null ? 0 : entity.getId() + 1);
     }
 
+    /**
+     * Checks between the start and end positions and
+     * determines the position type of the bobber.
+     *
+     * @param start The start block.
+     * @param end The end block.
+     * @return The position type of the bobber.
+     */
+    private PositionType getPositionType(BlockPos start, BlockPos end) {
+        return BlockPos.stream(start, end)
+            .map(this::getPositionType)
+            .reduce((t1, t2) -> t1 == t2 ? t1 : PositionType.INVALID)
+            .orElse(PositionType.INVALID);
+    }
+
+    /**
+     * Determines the position type from a single block.
+     *
+     * @param target The target block position to check.
+     * @return The position type of the target block.
+     */
+    private PositionType getPositionType(BlockPos target) {
+        // Check if the block is air or a lily pad.
+        var state = this.getWorld().getBlockState(target);
+        if (state.isAir() || state.isOf(Blocks.LILY_PAD)) {
+            return PositionType.ABOVE_WATER;
+        }
+
+        // Check if the block is still water.
+        var fluid = state.getFluidState();
+        if (fluid.isIn(FluidTags.WATER) && fluid.isStill() &&
+            state.getCollisionShape(this.getWorld(), target).isEmpty()) {
+            return PositionType.INSIDE_WATER;
+        }
+
+        return PositionType.INVALID;
+    }
+
+    /**
+     * Checks if the block has nearby open water.
+     *
+     * @param blockPos The position of the block to check.
+     * @return True if there is open water nearby, false otherwise.
+     */
+    private boolean hasOpenWater(BlockPos blockPos) {
+        var type = PositionType.INVALID;
+
+        // Resolve the position type.
+        for (var i = -1; i < 3; i++) {
+            var target = this.getPositionType(
+                blockPos.add(-2, i, -2),
+                blockPos.add(2, i, 2)
+            );
+
+            switch (target) {
+                case ABOVE_WATER -> {
+                    if (type != PositionType.INVALID) break;
+                    return false;
+                }
+                case INSIDE_WATER -> {
+                    if (type != PositionType.ABOVE_WATER) break;
+                    return false;
+                }
+                case INVALID -> {
+                    return false;
+                }
+            }
+            type = target;
+        }
+
+        return true;
+    }
+
+    /**
+     * Contains all the logic required for fishing.
+     */
+    private void fishingTick(BlockPos blockPos) {
+        var world = (ServerWorld) this.getWorld();
+        var nextBlock = blockPos.up();
+
+        // Determine the speed of the bobber.
+        // This is determined by a few things:
+        // 1. If the bobber is exposed to rain.
+        // 2. If the bobber is exposed to skylight.
+        // 3. If the bobber has attributes.
+        var speed = 1;
+        if (this.random.nextFloat() < 0.25f && world.hasRain(nextBlock)) {
+            speed++; // Increase speed if there is rain at the block.
+        }
+        if (this.random.nextFloat() < 0.5f && !world.isSkyVisible(nextBlock)) {
+            speed--; // Decrease speed if there is no visible skylight at the block.
+        }
+        if (this.random.nextFloat() < 0.75f && this.strength > 0) {
+            speed += (int) Math.floor(Math.min(2, this.strength)); // Increase speed based on the strength of the fishing rod.
+        }
+
+        // Check if the catch is going to expire.
+        if (this.hookCountdown > 0) {
+            this.hookCountdown--;
+
+            // If the timer has expired...
+            if (this.hookCountdown <= 0) {
+                // ...remove the fish from the bobber.
+                this.waitCountdown = 0;
+                this.travelCountdown = 0;
+
+                this.getDataTracker().set(CAUGHT_FISH, false);
+            }
+        }
+        // else, if the bobber is traveling to the bobber...
+        else if (this.travelCountdown > 0) {
+            this.travelCountdown -= speed;
+
+            // If the timer is above 0, show the travel path.
+            if (this.travelCountdown > 0) {
+                this.fishAngle += this.random.nextTriangular(0f, 9.188f);
+
+                var angle = (float) (this.fishAngle * (Math.PI / 180f));
+                var sin = MathHelper.sin(angle);
+                var cos = MathHelper.cos(angle);
+
+                // Calculate the position.
+                var x = this.getX() + (double) (sin * this.travelCountdown * .1f);
+                var y = MathHelper.floor(this.getY()) + 1f;
+                var z = this.getZ() + (double) (cos * this.travelCountdown * .1f);
+
+                // Spawn the particles.
+                var state = world.getBlockState(BlockPos.ofFloored(x, y - 1, z));
+                if (!state.isOf(Blocks.WATER)) return;
+
+                world.spawnParticles(
+                    ParticleTypes.FISHING,
+                    x, y, z, 0,
+                    cos * 0.04f, 0.01, -sin * 0.04f,
+                    1.0f
+                );
+                world.spawnParticles(
+                    ParticleTypes.FISHING,
+                    x, y, z, 0,
+                    -cos * 0.04f, 0.01, sin * 0.04f,
+                    1.0f
+                );
+            }
+            // Otherwise, mark the bobber with a fish.
+            else {
+                // Play the catch sound.
+                this.playSound(
+                    SoundEvents.ENTITY_FISHING_BOBBER_SPLASH,
+                    0.25f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f
+                );
+
+                // Spawn the particles to indicate the fish catch.
+                var y = this.getY() + 0.5d;
+                world.spawnParticles(
+                    ParticleTypes.BUBBLE,
+                    this.getX(), y, this.getZ(),
+                    (int) (1.0f + this.getWidth() * 20.0f),
+                    this.getWidth(), 0.0, this.getWidth(),
+                    0.2f
+                );
+                world.spawnParticles(
+                    ParticleTypes.FISHING,
+                    this.getX(), y, this.getZ(),
+                    (int) (1.0f + this.getWidth() * 20.0f),
+                    this.getWidth(), 0.0, this.getWidth(),
+                    0.2f
+                );
+
+                // This gives the player between 1-2s to reel in the fish.
+                this.hookCountdown = MathHelper.nextInt(this.random, 20, 40);
+
+                this.getDataTracker().set(CAUGHT_FISH, true);
+            }
+        }
+        // else, if we are waiting to catch a fish...
+        else if (this.waitCountdown > 0) {
+            this.waitCountdown -= speed;
+
+            // Check if we should spawn particles.
+            // It depends on the wait countdown.
+            var chance = 0.15f;
+            if (this.waitCountdown < 20) {
+                chance += (float) (20 - this.waitCountdown) * 0.05f;
+            } else if (this.waitCountdown < 40) {
+                chance += (float) (40 - this.waitCountdown) * 0.02f;
+            } else if (this.waitCountdown < 60) {
+                chance += (float) (60 - this.waitCountdown) * 0.01f;
+            }
+
+            // Try spawning the particles.
+            if (this.random.nextFloat() < chance) {
+                var rad = MathHelper.nextFloat(this.random, 0f, 360f) * ((float) Math.PI / 180);
+                var deg = MathHelper.nextFloat(this.random, 25f, 60f);
+
+                var x = this.getX() + (double) (MathHelper.sin(rad) * deg) * 0.1;
+                var y = MathHelper.floor(this.getY()) + 1f;
+                var z = this.getZ() + (double) (MathHelper.cos(rad) * deg) * 0.1;
+
+                // Spawn the particles.
+                var state = world.getBlockState(BlockPos.ofFloored(x, y - 1, z));
+                if (state.isOf(Blocks.WATER)) {
+                    world.spawnParticles(
+                        ParticleTypes.FISHING,
+                        x, y, z,
+                        2 + this.random.nextInt(2),
+                        0.1f, 0.0, 0.1f, 0
+                    );
+                }
+            }
+
+            // If the wait countdown has expired, we can start the travel countdown.
+            if (this.waitCountdown <= 0) {
+                // Update the angle.
+                this.fishAngle = MathHelper.nextFloat(this.random, 0f, 360f);
+                // Set the travel countdown to a random value between 20 and 40 ticks.
+                this.travelCountdown = MathHelper.nextInt(this.random, 20, 80);
+            }
+        }
+        // Otherwise, decrease the wait timer.
+        else {
+            this.waitCountdown = MathHelper.nextInt(this.random, 100, 600);
+            // TODO: Do we need reduction countdowns?
+        }
+    }
+
     @Override
     public void tick() {
         // Use the velocity of the client to ensure no de-sync.
@@ -284,10 +545,27 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
                 );
 
                 // Update open water status.
-                // TODO: Check if in open water.
+                this.inOpenWater = this.hookCountdown <= 0 && this.travelCountdown <= 0 ||
+                    this.inOpenWater && this.waterTicks < 10 && this.hasOpenWater(blockPos);
 
                 if (inWater) {
-                    // TODO: Update water ticks.
+                    // Decrease the needs in water.
+                    this.waterTicks = Math.max(0, this.waterTicks - 1);
+
+                    // Check if the bobber has caught something.
+                    if (this.caughtFish) {
+                        // Show the pull 'animation'.
+                        this.setVelocity(this.getVelocity().add(
+                            0.0,
+                            -0.1d * this.velocityRandom.nextFloat() * this.velocityRandom.nextFloat(),
+                            0.0
+                        ));
+                    }
+
+                    // Run the fishing logic.
+                    this.fishingTick(blockPos);
+                } else {
+                    this.waterTicks = Math.min(10, this.waterTicks + 1);
                 }
             }
         }
@@ -340,6 +618,29 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
     protected void initDataTracker(DataTracker.Builder builder) {
         builder.add(HOOK_ENTITY_ID, 0);
         builder.add(CAUGHT_FISH, false);
+    }
+
+    @Override
+    public void onTrackedDataSet(TrackedData<?> data) {
+        if (HOOK_ENTITY_ID.equals(data)) {
+            var entityId = this.getDataTracker().get(HOOK_ENTITY_ID);
+            this.setHookedEntity(entityId > 0 ?
+                this.getWorld().getEntityById(entityId - 1) :
+                null);
+        }
+
+        if (CAUGHT_FISH.equals(data)) {
+            this.caughtFish = this.getDataTracker().get(CAUGHT_FISH);
+            if (this.caughtFish) {
+                this.setVelocity(
+                    this.getVelocity().x,
+                    -0.4f * MathHelper.nextFloat(this.velocityRandom, 0.6f, 1.0f),
+                    this.getVelocity().z
+                );
+            }
+        }
+
+        super.onTrackedDataSet(data);
     }
 
     @Override
