@@ -29,6 +29,12 @@ public final class BreathOfTheWild extends RuntimeWorld {
      * @return The handle to the opened world.
      */
     public static RuntimeWorldHandle open(MinecraftServer server, Fantasy fantasy) {
+        // Check if the download is specified.
+        if (BuildConfig.BOTW_DOWNLOAD.isEmpty()) {
+            log.debug("No download URL specified for the 'overworld expanse' world.");
+            return fantasy.openTemporaryWorld(new RuntimeWorldConfig());
+        }
+
         // Resolve the world path.
         var worldFolderName = Objects.requireNonNull(server.getWorld(World.OVERWORLD))
             .getChunkManager()
