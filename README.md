@@ -2,11 +2,15 @@
 
 another content mod for Minecraft: Java Edition (and Minecraft: Bedrock Edition!)
 
+## Features
+
+See [the wiki](https://docs.seikimo.moe/mwhrd/features) for a full list of features.
+
 ## Cool Features
 
 - [ ] World patching
   - `.patch` binary implementation for modifying worlds on the client
-- [ ] Quest system
+- [x] Quest system
   - Fully scriptable/data-driven quests with persistent state
 - [ ] Economy & factions
   - A full implementation of microeconomics in Minecraft
