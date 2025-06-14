@@ -32,7 +32,8 @@ public final class BreathOfTheWild extends RuntimeWorld {
         // Check if the download is specified.
         if (BuildConfig.BOTW_DOWNLOAD.isEmpty()) {
             log.debug("No download URL specified for the 'overworld expanse' world.");
-            return fantasy.openTemporaryWorld(new RuntimeWorldConfig());
+            return fantasy.openTemporaryWorld(new RuntimeWorldConfig()
+                .setGenerator(CustomWorlds.VOID_GENERATOR));
         }
 
         // Resolve the world path.
