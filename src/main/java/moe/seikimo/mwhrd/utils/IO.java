@@ -130,7 +130,7 @@ public interface IO {
             return null;
         }
 
-        return new File(url.toURI());
+        return new File(url.toExternalForm());
     }
 
     /**
