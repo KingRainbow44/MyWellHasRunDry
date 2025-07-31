@@ -57,7 +57,7 @@ public final class PlotPurgePower extends BeaconPower {
      */
     private void removeBlocks(ServerPlayerEntity player, BlockPos pos1, BlockPos pos2) {
         var future = AsyncPool.getInstance().clear(
-            player, player.getServerWorld(), pos1, pos2);
+            player, player.getWorld(), pos1, pos2);
         player.sendMessage(Text.literal("Operation is underway...")
             .formatted(Formatting.LIGHT_PURPLE));
 

@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.utils.NBT;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
@@ -12,6 +13,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
+import net.minecraft.storage.NbtReadView;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -188,7 +190,8 @@ public final class Sample implements BlockView, ModifiableWorld {
 
             tag.put("Pos", pos);
 
-            var entity = EntityType.getEntityFromNbt(tag, world, SpawnReason.LOAD);
+            var view = NBT.read(tag);
+            var entity = EntityType.getEntityFromData(view, world, SpawnReason.LOAD);
             entity.ifPresent(world::spawnEntity);
         }
     }

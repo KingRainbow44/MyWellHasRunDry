@@ -49,8 +49,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
     @Unique private PlayerModel model;
     @Unique private boolean unbreakable = false;
 
-    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
-        super(world, pos, yaw, gameProfile);
+    public ServerPlayerEntityMixin(World world, GameProfile gameProfile) {
+        super(world, gameProfile);
     }
 
     /// <editor-fold desc="Mixin" defaultstate="collapsed">

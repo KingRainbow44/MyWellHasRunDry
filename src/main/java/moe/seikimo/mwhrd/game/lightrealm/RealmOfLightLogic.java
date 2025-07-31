@@ -226,7 +226,7 @@ public final class RealmOfLightLogic {
             // Check what the mob has died to.
             if (source.getAttacker() instanceof PlayerEntity) {
                 // Drop the mob's gear.
-                var world = mob.getEntityWorld();
+                var world = mob.getWorld();
 
                 Utils.iterate(mob.equipment).forEach(item -> {
                     if (item.isEmpty()) return;

@@ -21,26 +21,26 @@ public final class ModItemTagProvider extends FabricTagProvider.ItemTagProvider 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
         var enlightenedArmor = CustomItems.ENLIGHTENED_DIAMOND_ARMOR.toArray(new Item[0]);
-        this.getOrCreateTagBuilder(CustomTags.ENLIGHTENED_ARMOR).add(enlightenedArmor);
+        this.valueLookupBuilder(CustomTags.ENLIGHTENED_ARMOR).add(enlightenedArmor);
 
-        this.getOrCreateTagBuilder(ItemTags.HEAD_ARMOR)
+        this.valueLookupBuilder(ItemTags.HEAD_ARMOR)
             .add(CustomItems.ENLIGHTENED_DIAMOND_HELMET);
-        this.getOrCreateTagBuilder(ItemTags.CHEST_ARMOR)
+        this.valueLookupBuilder(ItemTags.CHEST_ARMOR)
             .add(CustomItems.ENLIGHTENED_DIAMOND_CHESTPLATE);
-        this.getOrCreateTagBuilder(ItemTags.LEG_ARMOR)
+        this.valueLookupBuilder(ItemTags.LEG_ARMOR)
             .add(CustomItems.ENLIGHTENED_DIAMOND_LEGGINGS);
-        this.getOrCreateTagBuilder(ItemTags.FOOT_ARMOR)
+        this.valueLookupBuilder(ItemTags.FOOT_ARMOR)
             .add(CustomItems.ENLIGHTENED_DIAMOND_BOOTS);
 
-        this.getOrCreateTagBuilder(ItemTags.SWORDS)
+        this.valueLookupBuilder(ItemTags.SWORDS)
             .add(CustomItems.ENLIGHTENED_DIAMOND_SWORD);
-        this.getOrCreateTagBuilder(ItemTags.AXES)
+        this.valueLookupBuilder(ItemTags.AXES)
             .add(CustomItems.ENLIGHTENED_DIAMOND_AXE);
-        this.getOrCreateTagBuilder(ItemTags.PICKAXES)
+        this.valueLookupBuilder(ItemTags.PICKAXES)
             .add(CustomItems.ENLIGHTENED_DIAMOND_PICKAXE);
-        this.getOrCreateTagBuilder(ItemTags.SHOVELS)
+        this.valueLookupBuilder(ItemTags.SHOVELS)
             .add(CustomItems.ENLIGHTENED_DIAMOND_SHOVEL);
-        this.getOrCreateTagBuilder(ItemTags.HOES)
+        this.valueLookupBuilder(ItemTags.HOES)
             .add(CustomItems.ENLIGHTENED_DIAMOND_HOE);
     }
 }

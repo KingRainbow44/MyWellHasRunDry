@@ -230,7 +230,7 @@ public final class Players {
 
             var itemStack = optional.get().stack();
 
-            int newDamage = EnchantmentHelper.getRepairWithExperience(player.getServerWorld(), itemStack, amount);
+            int newDamage = EnchantmentHelper.getRepairWithExperience(player.getWorld(), itemStack, amount);
             int damage = Math.min(newDamage, itemStack.getDamage());
 
             itemStack.setDamage(itemStack.getDamage() - damage);

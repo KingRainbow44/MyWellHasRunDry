@@ -207,7 +207,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
                     return true; // Continue executing.
                 }
 
-                var world = this.handle.getServerWorld();
+                var world = this.handle.getWorld();
                 var pos = world.getSpawnPos();
                 this.handle.teleport(world, pos.getX(), pos.getY(), pos.getZ(), Collections.emptySet(), 0.0F, 0.0F, true);
 

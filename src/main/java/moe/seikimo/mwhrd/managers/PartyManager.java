@@ -286,7 +286,7 @@ public final class PartyManager {
             }
 
             lastLocations.put(member.getUuid(), new Position(
-                member.getServerWorld(),
+                member.getWorld(),
                 member.getBlockPos()
             ));
         }
@@ -311,7 +311,7 @@ public final class PartyManager {
             }
 
             member.teleport(
-                leader.getServerWorld(),
+                leader.getWorld(),
                 leader.getX(), leader.getY(), leader.getZ(),
                 Collections.emptySet(), leader.getYaw(), leader.getPitch(), true
             );

@@ -321,7 +321,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         }
 
         var passed = MyWellHasRunDry.trialChamberPredicate.test(
-            player.getServerWorld(), player.getX(),
+            player.getWorld(), player.getX(),
             player.getY(), player.getZ());
 
         condPlayer.mwhrd$setInTrialChamber(passed);

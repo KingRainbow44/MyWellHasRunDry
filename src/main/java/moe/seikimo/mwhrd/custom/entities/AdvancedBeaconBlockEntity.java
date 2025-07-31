@@ -11,6 +11,7 @@ import moe.seikimo.mwhrd.game.beacon.powers.EffectsPower;
 import moe.seikimo.mwhrd.gui.beacon.AdvancedBeaconGui;
 import moe.seikimo.mwhrd.interfaces.IDBObject;
 import moe.seikimo.mwhrd.models.BeaconModel;
+import moe.seikimo.mwhrd.utils.NBT;
 import moe.seikimo.mwhrd.utils.Utils;
 import moe.seikimo.mwhrd.utils.items.ItemStorage;
 import net.minecraft.advancement.criterion.Criteria;
@@ -36,6 +37,8 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -123,7 +126,7 @@ public final class AdvancedBeaconBlockEntity
                 if (lastSegment != null && (target.getOpacity() < 15 || target.isOf(Blocks.BEDROCK))) {
                     lastSegment.increaseHeight();
                 } else {
-                    blockEntity.$beamSegments.clear();;
+                    blockEntity.$beamSegments.clear();
                     blockEntity.minY = maxY;
                     break;
                 }
@@ -415,8 +418,11 @@ public final class AdvancedBeaconBlockEntity
             return ItemStack.EMPTY;
         }
 
+        var view = NBT.write();
+        this.writeComponentlessData(view);
+
         var item = new ItemStack(CustomItems.ADVANCED_BEACON);
-        BlockItem.setBlockEntityData(item, CustomEntities.ADVANCED_BEACON, this.serialize());
+        BlockItem.setBlockEntityData(item, CustomEntities.ADVANCED_BEACON, view);
 
         return item;
     }
@@ -436,12 +442,13 @@ public final class AdvancedBeaconBlockEntity
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
-        super.readNbt(nbt, registries);
-        this.fuel = nbt.getInt("fuel", 0);
+    protected void readData(ReadView view) {
+        super.readData(view);
+        this.fuel = view.getInt("fuel", 0);
 
         // Read beacon powers.
-        var powers = nbt.getCompoundOrEmpty("powers");
+        var powers = view.read("powers", NbtCompound.CODEC)
+            .orElseThrow();
         for (var key : powers.getKeys()) {
             var effect = BeaconEffect.getById(key);
             if (effect == null) {
@@ -457,26 +464,13 @@ public final class AdvancedBeaconBlockEntity
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
-        super.writeNbt(nbt, registries);
+    protected void writeData(WriteView view) {
+        super.writeData(view);
 
-        var data = this.serialize();
-        for (var key : data.getKeys()) {
-            nbt.put(key, data.get(key));
-        }
-    }
-
-    /**
-     * Serializes the beacon data into a compound tag.
-     *
-     * @return The serialized beacon data.
-     */
-    public NbtCompound serialize() {
-        var serialized = new NbtCompound();
-        serialized.putInt("fuel", this.fuel);
+        view.putInt("fuel", this.fuel);
 
         // Write legacy NBT tags.
-        serialized.putInt("Levels", this.level);
+        view.putInt("Levels", this.level);
 
         // Serialize powers.
         var powers = new NbtCompound();
@@ -491,9 +485,7 @@ public final class AdvancedBeaconBlockEntity
             // Write it using the power enum.
             powers.put(id, compound);
         }
-        serialized.put("powers", powers);
-
-        return serialized;
+        view.put("powers", NbtCompound.CODEC, powers);
     }
 
     @Override

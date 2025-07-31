@@ -7,11 +7,13 @@ import dev.morphia.annotations.Transient;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.utils.NBT;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.entity.EntityEquipment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -51,7 +53,7 @@ public final class MappedItemStorage implements Iterable<ItemStack> {
             }
 
             // Serialize the stack.
-            var serialized = stack.toNbt(registry);
+            var serialized = NBT.writeItemStack(stack);
             // Write the stack.
             this.backing$1.put(index, Utils.base64Encode(serialized));
         }
@@ -76,7 +78,7 @@ public final class MappedItemStorage implements Iterable<ItemStack> {
 
             // Deserialize the stack.
             var deserialized = Utils.base64Decode(stack);
-            var decoded = ItemStack.fromNbt(registry, deserialized);
+            var decoded = NBT.readItemStack(deserialized);
 
             // Write the stack.
             decoded.ifPresent(itemStack -> this.backing.put((int) index, itemStack));

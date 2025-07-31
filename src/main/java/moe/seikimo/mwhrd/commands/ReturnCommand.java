@@ -30,7 +30,7 @@ public final class ReturnCommand {
         if (player == null) return Command.SINGLE_SUCCESS;
 
         if (!MyWellHasRunDry.getTrialChamberPredicate().test(
-            player.getServerWorld(), player.getX(),
+            player.getWorld(), player.getX(),
             player.getY(), player.getZ())) {
             context.getSource().sendError(Text.literal("You cannot return to spawn here."));
         } else {
@@ -47,7 +47,7 @@ public final class ReturnCommand {
             }
 
             player.teleport(
-                player.getServerWorld(),
+                player.getWorld(),
                 spawnPoint.getX(),
                 spawnPoint.getY(),
                 spawnPoint.getZ(),

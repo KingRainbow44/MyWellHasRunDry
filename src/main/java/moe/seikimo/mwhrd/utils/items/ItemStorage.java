@@ -8,6 +8,7 @@ import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtOps;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -186,15 +187,15 @@ public final class ItemStorage implements Iterable<ItemStack> {
      * @return A JSON & Base64 serialized version of this item storage.
      */
     public List<String> serialize() {
-        var registry = MyWellHasRunDry.getServer()
-            .getRegistryManager();
         var items = new ArrayList<String>();
 
         for (var stack : this.backing) {
             if (stack.isEmpty()) continue;
 
-            var nbt = stack.toNbt(registry);
-            var base64 = Utils.base64Encode(nbt);
+            var serialized = ItemStack.CODEC
+                .encodeStart(NbtOps.INSTANCE, stack)
+                .getOrThrow();
+            var base64 = Utils.base64Encode(serialized);
             items.add(base64);
         }
 
@@ -209,14 +210,15 @@ public final class ItemStorage implements Iterable<ItemStack> {
             return;
         }
 
-        var registry = MyWellHasRunDry.getServer()
-            .getRegistryManager();
-
         for (var item : serialized) try {
             var nbt = Utils.base64Decode(item);
-            var data = ItemStack.fromNbt(registry, nbt);
-
-            data.ifPresent(this.backing::add);
+            ItemStack.CODEC
+                .decode(NbtOps.INSTANCE, nbt)
+                .result()
+                .ifPresent(pair -> {
+                    var stack = pair.getFirst();
+                    this.backing.add(stack);
+                });
         } catch (Exception ignored) {
             // This will only throw if the data is legacy JSON.
             var json = JsonParser.parseString(

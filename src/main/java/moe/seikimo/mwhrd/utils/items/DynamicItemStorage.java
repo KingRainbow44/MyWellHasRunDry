@@ -2,10 +2,12 @@ package moe.seikimo.mwhrd.utils.items;
 
 import dev.morphia.annotations.*;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
+import moe.seikimo.mwhrd.utils.NBT;
 import moe.seikimo.mwhrd.utils.Triple;
 import moe.seikimo.mwhrd.utils.Utils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtOps;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Range;
 
@@ -101,7 +103,7 @@ public final class DynamicItemStorage {
                 }
 
                 // Serialize the item stack into NBT -> Base64.
-                var nbt = stack.toNbt(registry);
+                var nbt = NBT.writeItemStack(stack);
                 var base64 = Utils.base64Encode(nbt);
 
                 // Write the item to the list.
@@ -160,11 +162,12 @@ public final class DynamicItemStorage {
 
                 // Deserialize the item stack from Base64 -> NBT.
                 var nbt = Utils.base64Decode(base64);
-                var data = ItemStack.fromNbt(registry, nbt);
+                var data = ItemStack.CODEC.decode(NbtOps.INSTANCE, nbt)
+                    .result();
 
                 // Write the item to the list.
                 if (data.isPresent()) {
-                    page.set(j, data.get());
+                    page.set(j, data.get().getFirst());
                 }
             }
 
