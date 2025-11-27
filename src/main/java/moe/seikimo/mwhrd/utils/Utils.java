@@ -58,7 +58,7 @@ public interface Utils {
     static List<PlayerEntity> getNearbyPlayers(
         PlayerEntity player, double radius
     ) {
-        return getNearbyPlayers(player.getWorld(), player.getBlockPos(), radius);
+        return getNearbyPlayers(player.getEntityWorld(), player.getBlockPos(), radius);
     }
 
     /**
@@ -255,7 +255,7 @@ public interface Utils {
      * @return Whether the entity is in the world.
      */
     static boolean inWorld(LivingEntity entity, RegistryKey<World> registryKey) {
-        return entity.getWorld().getRegistryKey().equals(registryKey);
+        return entity.getEntityWorld().getRegistryKey().equals(registryKey);
     }
 
     /**
@@ -266,7 +266,7 @@ public interface Utils {
      * @return Whether the entity is in the world.
      */
     static boolean inWorld(LivingEntity entity, RuntimeWorldHandle world) {
-        return entity.getWorld().getRegistryKey().equals(world.getRegistryKey());
+        return entity.getEntityWorld().getRegistryKey().equals(world.getRegistryKey());
     }
 
     /**

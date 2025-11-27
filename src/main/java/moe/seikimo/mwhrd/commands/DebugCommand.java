@@ -10,6 +10,7 @@ import eu.pb4.polymer.virtualentity.api.attachment.EntityAttachment;
 import eu.pb4.polymer.virtualentity.api.elements.TextDisplayElement;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.game.beacon.BeaconManager;
 import moe.seikimo.mwhrd.game.mca.GuildProgress;
 import moe.seikimo.mwhrd.impl.PlayerNpcElement;
@@ -198,7 +199,7 @@ public final class DebugCommand {
         }
 
         var target = getString(context, "player");
-        var targetPlayer = Objects.requireNonNull(player.getServer())
+        var targetPlayer = MyWellHasRunDry.getServer()
             .getPlayerManager()
             .getPlayer(target);
         if (targetPlayer == null) {
@@ -329,12 +330,12 @@ public final class DebugCommand {
 
             var placement = schematic.sample();
             placement.place(
-                player.getWorld(),
+                player.getEntityWorld(),
                 player.getBlockPos().add(0, -1, 0)
             );
 
             placement.place(
-                player.getWorld(),
+                player.getEntityWorld(),
                 player.getBlockPos().add(0, 15, 0),
                 BlockRotation.CLOCKWISE_90
             );

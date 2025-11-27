@@ -72,7 +72,7 @@ public interface PlayerList {
         // If a head texture was specified, add it.
         if (headTexture != null) {
             var property = new Property("textures", headTexture, headSignature);
-            gameProfile.getProperties().put("textures", property);
+            gameProfile.properties().put("textures", property);
         }
 
         return new PlayerListS2CPacket.Entry(
@@ -104,7 +104,7 @@ public interface PlayerList {
             player.networkHandler.getLatency(),
             player.interactionManager.getGameMode(),
             displayName,
-            player.isPartVisible(PlayerModelPart.HAT),
+            player.isModelPartVisible(PlayerModelPart.HAT),
             order,
             Nullables.map(player.getSession(), PublicPlayerSession::toSerialized)
         );

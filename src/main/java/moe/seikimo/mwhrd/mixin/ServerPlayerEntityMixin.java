@@ -67,7 +67,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
         super.move(movementType, movement);
 
         PlayerMoveEvent.EVENT.invoker()
-            .onMove(this.getWorld(), this.getBlockPos(), this);
+            .onMove(this.getEntityWorld(), this.getBlockPos(), this);
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
@@ -105,7 +105,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements IP
     public void onTeleport(TeleportTarget teleportTarget, CallbackInfoReturnable<Entity> cir) {
         // Remove all beacon effects when a player teleports.
         Arrays.stream(BeaconEffect.values())
-            .forEach(e -> e.remove(this.getWorld(), this));
+            .forEach(e -> e.remove(this.getEntityWorld(), this));
     }
 
     @Redirect(method = "damage", at = @At(

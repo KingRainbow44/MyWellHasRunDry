@@ -319,9 +319,12 @@ public final class AdvancedBeaconGui extends SimpleGui {
 
         // Check if the item is an upgrade.
         var data = cursorItem.get(DataComponentTypes.CUSTOM_DATA);
-        if (data == null || !data.contains("beacon_upgrade")) return;
+        if (data == null) return;
 
-        var upgradeId = data.copyNbt().getString("beacon_upgrade", "");
+        var compound = data.copyNbt();
+        if (!compound.contains("beacon_upgrade")) return;
+
+        var upgradeId = compound.getString("beacon_upgrade", "");
         var upgrade = BeaconEffect.getById(upgradeId);
         if (upgrade == null) {
             this.player.sendMessage(Text.literal("Invalid upgrade!"), true);

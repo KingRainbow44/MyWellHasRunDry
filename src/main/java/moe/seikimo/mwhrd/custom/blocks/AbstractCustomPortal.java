@@ -94,7 +94,7 @@ public abstract class AbstractCustomPortal extends SimplePolymerBlock implements
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler, boolean moving) {
         this.transportEntity(entity, pos);
     }
 

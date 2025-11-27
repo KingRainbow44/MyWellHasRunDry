@@ -1,7 +1,7 @@
 plugins {
     id 'com.gradleup.shadow' version '8.3.3'
 
-    id 'fabric-loom' version '1.10.2'
+    id 'fabric-loom' version '1.13-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -24,6 +24,14 @@ repositories {
 
     maven { url "https://maven.nucleoid.xyz" }
     maven { url "https://repo.opencollab.dev/main" }
+
+    maven {
+        name "luck-repo"
+        url "https://repo.lucko.me/"
+        content {
+            includeModule "me.lucko", "spark-api"
+        }
+    }
 }
 
 dependencies {

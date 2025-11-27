@@ -239,7 +239,7 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
      */
     private PositionType getPositionType(BlockPos target) {
         // Check if the block is air or a lily pad.
-        var state = this.getWorld().getBlockState(target);
+        var state = this.getEntityWorld().getBlockState(target);
         if (state.isAir() || state.isOf(Blocks.LILY_PAD)) {
             return PositionType.ABOVE_WATER;
         }
@@ -247,7 +247,7 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
         // Check if the block is still water.
         var fluid = state.getFluidState();
         if (fluid.isIn(FluidTags.WATER) && fluid.isStill() &&
-            state.getCollisionShape(this.getWorld(), target).isEmpty()) {
+            state.getCollisionShape(this.getEntityWorld(), target).isEmpty()) {
             return PositionType.INSIDE_WATER;
         }
 
@@ -293,7 +293,7 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
      * Contains all the logic required for fishing.
      */
     private void fishingTick(BlockPos blockPos) {
-        var world = (ServerWorld) this.getWorld();
+        var world = (ServerWorld) this.getEntityWorld();
         var nextBlock = blockPos.up();
 
         // Determine the speed of the bobber.
@@ -444,7 +444,7 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
     @Override
     public void tick() {
         // Use the velocity of the client to ensure no de-sync.
-        var seed = this.getUuid().getLeastSignificantBits() ^ this.getWorld().getTime();
+        var seed = this.getUuid().getLeastSignificantBits() ^ this.getEntityWorld().getTime();
         this.velocityRandom.setSeed(seed);
 
         super.tick();
@@ -473,12 +473,12 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
         }
 
         var blockPos = this.getBlockPos();
-        var fluid = this.getWorld().getFluidState(blockPos);
+        var fluid = this.getEntityWorld().getFluidState(blockPos);
 
         // Check if the bobber is in water.
         var waterHeight = 0f;
         if (fluid.isIn(FluidTags.WATER)) {
-            waterHeight = fluid.getHeight(this.getWorld(), blockPos);
+            waterHeight = fluid.getHeight(this.getEntityWorld(), blockPos);
         }
         var inWater = waterHeight > 0f;
 
@@ -513,7 +513,7 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
 
                 // Validate the hooked entity.
                 // We check if they are valid & if they are in the same world as the bobber.
-                if (entity.isRemoved() || !Utils.compare(this.getWorld(), entity.getWorld())) {
+                if (entity.isRemoved() || !Utils.compare(this.getEntityWorld(), entity.getEntityWorld())) {
                     this.state = State.FLYING;
                     this.setHookedEntity(null);
                 } else {
@@ -625,7 +625,7 @@ public final class CelestialFishingBobberEntity extends ProjectileEntity impleme
         if (HOOK_ENTITY_ID.equals(data)) {
             var entityId = this.getDataTracker().get(HOOK_ENTITY_ID);
             this.setHookedEntity(entityId > 0 ?
-                this.getWorld().getEntityById(entityId - 1) :
+                this.getEntityWorld().getEntityById(entityId - 1) :
                 null);
         }
 

@@ -63,7 +63,7 @@ public final class LightPortalBlock extends AbstractCustomPortal {
             if (dimension == null) throw new IllegalStateException("Overworld is not loaded.");
 
             // Teleport the entity to the overworld's spawn point.
-            targetPos = dimension.getSpawnPos().toCenterPos();
+            targetPos = dimension.getSpawnPoint().getPos().toCenterPos();
 
             // If the entity is a player, teleport them to their spawn point.
             if (entity instanceof ServerPlayerEntity player) {

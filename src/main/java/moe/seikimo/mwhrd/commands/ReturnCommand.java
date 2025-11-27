@@ -7,7 +7,7 @@ import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldProperties;
 
 import java.util.Collections;
 
@@ -30,7 +30,7 @@ public final class ReturnCommand {
         if (player == null) return Command.SINGLE_SUCCESS;
 
         if (!MyWellHasRunDry.getTrialChamberPredicate().test(
-            player.getWorld(), player.getX(),
+            player.getEntityWorld(), player.getX(),
             player.getY(), player.getZ())) {
             context.getSource().sendError(Text.literal("You cannot return to spawn here."));
         } else {
@@ -39,18 +39,22 @@ public final class ReturnCommand {
                 return 1;
             }
 
-            BlockPos spawnPoint;
+            WorldProperties.SpawnPoint spawnPoint;
             if (player.getRespawn() instanceof ServerPlayerEntity.Respawn respawn) {
-                spawnPoint = respawn.pos();
+                spawnPoint = respawn.respawnData();
             } else {
-                spawnPoint = player.getWorld().getSpawnPos();
+                spawnPoint = player.getEntityWorld().getSpawnPoint();
             }
 
+            var spawnWorld = MyWellHasRunDry.getServer()
+                .getWorld(spawnPoint.getDimension());
+
+            var spawnPos = spawnPoint.getPos();
             player.teleport(
-                player.getWorld(),
-                spawnPoint.getX(),
-                spawnPoint.getY(),
-                spawnPoint.getZ(),
+                spawnWorld,
+                spawnPos.getX(),
+                spawnPos.getY(),
+                spawnPos.getZ(),
                 Collections.emptySet(),
                 player.getYaw(),
                 player.getPitch(),

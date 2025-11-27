@@ -27,7 +27,7 @@ public final class StarePlayerHolder extends ElementHolder {
                 var batch = new HashSet<Packet<? super ClientPlayPacketListener>>();
 
                 // Compute rotation.
-                var playerPos = player.getPos();
+                var playerPos = player.getEntityPos();
                 var elementPos = element.getCurrentPos();
                 var rotation = Maths.lookAt(playerPos, elementPos);
 

@@ -38,7 +38,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.predicate.LightPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.LocationPredicate;
@@ -56,8 +55,8 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProperties;
 import net.minecraft.world.gen.structure.StructureKeys;
 import org.geysermc.geyser.api.GeyserApi;
 import xyz.nucleoid.fantasy.Fantasy;
@@ -96,7 +95,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
     @Getter private static MongoServer mongoServer;
     @Getter private static Datastore datastore;
 
-    @Getter private static BlockPos defaultSpawn;
+    @Getter private static WorldProperties.SpawnPoint defaultSpawn;
     @Getter private static ServerWorld defaultWorld;
     @Getter private static LocationPredicate trialChamberPredicate;
 
@@ -188,12 +187,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         PlayerBlockBreakEvents.BEFORE.register(BuffManager::blockBreakCheck);
 
         // Prevent certain blacklisted items from being used.
-        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-            var item = player.getStackInHand(hand);
-            var itemType = item.getItem();
-
-            return ActionResult.PASS;
-        });
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> ActionResult.PASS);
 
         // Wait for players to join.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
@@ -218,7 +212,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
             // Remove all beacon effects on join.
             Arrays.stream(BeaconEffect.values())
-                .forEach(e -> e.remove(player.getWorld(), player));
+                .forEach(e -> e.remove(player.getEntityWorld(), player));
 
             // Give players all recipes.
             player.unlockRecipes(server.getRecipeManager().values());
@@ -238,7 +232,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
 
             // Remove all beacon effects on disconnect.
             Arrays.stream(BeaconEffect.values())
-                .forEach(e -> e.remove(player.getWorld(), player));
+                .forEach(e -> e.remove(player.getEntityWorld(), player));
         });
     }
 
@@ -278,7 +272,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         if (overworld == null) {
             throw new IllegalStateException("Overworld is null.");
         }
-        MyWellHasRunDry.defaultSpawn = overworld.getSpawnPos();
+        MyWellHasRunDry.defaultSpawn = overworld.getSpawnPoint();
 
         // Register the health scoreboard.
         var scoreboard = server.getScoreboard();
@@ -321,7 +315,7 @@ public final class MyWellHasRunDry implements DedicatedServerModInitializer {
         }
 
         var passed = MyWellHasRunDry.trialChamberPredicate.test(
-            player.getWorld(), player.getX(),
+            player.getEntityWorld(), player.getX(),
             player.getY(), player.getZ());
 
         condPlayer.mwhrd$setInTrialChamber(passed);

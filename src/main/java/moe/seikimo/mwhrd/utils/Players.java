@@ -106,7 +106,7 @@ public final class Players {
      * @return Whether the player is in the world.
      */
     public static boolean inWorld(RegistryKey<World> world, PlayerEntity player) {
-        return world.equals(player.getWorld().getRegistryKey());
+        return world.equals(player.getEntityWorld().getRegistryKey());
     }
 
     /**
@@ -230,7 +230,7 @@ public final class Players {
 
             var itemStack = optional.get().stack();
 
-            int newDamage = EnchantmentHelper.getRepairWithExperience(player.getWorld(), itemStack, amount);
+            int newDamage = EnchantmentHelper.getRepairWithExperience(player.getEntityWorld(), itemStack, amount);
             int damage = Math.min(newDamage, itemStack.getDamage());
 
             itemStack.setDamage(itemStack.getDamage() - damage);
@@ -279,7 +279,7 @@ public final class Players {
      * @return Whether the player is in an allowed world.
      */
     public static boolean inAllowedWorld(ServerPlayerEntity player) {
-        var world = player.getWorld().getRegistryKey();
+        var world = player.getEntityWorld().getRegistryKey();
         return Utils.ALLOWED_WORLDS.contains(world);
     }
 
@@ -290,18 +290,10 @@ public final class Players {
      * @return The head item stack.
      */
     public static ItemStack headOf(UUID uuid) {
-        var result = MyWellHasRunDry.getServer()
-            .getSessionService()
-            .fetchProfile(uuid, false);
-
-        if (result == null) {
-            return Items.PLAYER_HEAD.getDefaultStack();
-        }
-
         return ItemBuilder.of(Items.PLAYER_HEAD)
             .component(
                 DataComponentTypes.PROFILE,
-                new ProfileComponent(result.profile())
+                ProfileComponent.ofDynamic(uuid)
             )
             .build();
     }

@@ -108,7 +108,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
         if (itemType == Items.ENDER_CHEST) {
             // If the player is in the realm of light, ignore this check.
-            if (Utils.compare(this.player.getWorld(), MyWellHasRunDry.getRealmOfLight())) {
+            if (Utils.compare(this.player.getEntityWorld(), MyWellHasRunDry.getRealmOfLight())) {
                 return;
             }
 
@@ -198,7 +198,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
         var item = stack.getItem();
 
         if (item instanceof SwingHandListener listener) {
-            listener.onSwingHand(stack, player.getWorld(), player, hand);
+            listener.onSwingHand(stack, player.getEntityWorld(), player, hand);
         }
     }
 }

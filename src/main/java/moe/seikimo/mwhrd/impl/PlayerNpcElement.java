@@ -6,7 +6,6 @@ import eu.pb4.polymer.virtualentity.api.elements.GenericEntityElement;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.impl.script.ScriptActor;
 import moe.seikimo.mwhrd.impl.script.ScriptContext;
-import moe.seikimo.mwhrd.script.ScriptLoader;
 import moe.seikimo.mwhrd.script.ScriptManager;
 import moe.seikimo.mwhrd.script.ScriptObject;
 import moe.seikimo.mwhrd.script.Scriptable;
@@ -60,7 +59,7 @@ public final class PlayerNpcElement extends GenericEntityElement implements Scri
     public PlayerNpcElement(String username) {
         this.profile = new GameProfile(this.getUuid(), username);
 
-        this.dataTracker.set(PlayerEntity.PLAYER_MODEL_PARTS, (byte) 127);
+        this.dataTracker.set(PlayerEntity.PLAYER_MODE_CUSTOMIZATION_ID, (byte) 127);
     }
 
     @Override
@@ -103,13 +102,13 @@ public final class PlayerNpcElement extends GenericEntityElement implements Scri
      * @param existing The existing game profile to copy the skin from.
      */
     public void setSkin(GameProfile existing) {
-        var collection = existing.getProperties().get("textures");
+        var collection = existing.properties().get("textures");
         if (collection.isEmpty()) {
             throw new IllegalArgumentException("The existing profile does not have a skin");
         }
 
         var textures = collection.iterator().next();
-        this.profile.getProperties().put("textures", textures);
+        this.profile.properties().put("textures", textures);
 
         this.refresh();
     }
@@ -120,22 +119,18 @@ public final class PlayerNpcElement extends GenericEntityElement implements Scri
      * @param username The username of the player to copy the skin from.
      */
     public void setSkin(String username) {
-        var cache = MyWellHasRunDry.getServer().getUserCache();
+        var cache = MyWellHasRunDry.getServer()
+            .getApiServices()
+            .profileResolver();
         Objects.requireNonNull(cache, "User cache is not available");
 
-        try {
-            var request = cache.findByNameAsync(username);
-            var profile = request.get();
-
-            if (profile.isEmpty()) {
-                throw new IllegalArgumentException("Invalid username");
-            }
-
-            // Set the skin of the NPC.
-            this.setSkin(profile.get());
-        } catch (InterruptedException | ExecutionException ignored) {
-            throw new RuntimeException("Failed to retrieve the player profile");
+        var request = cache.getProfileByName(username);
+        if (request.isEmpty()) {
+            throw new IllegalArgumentException("Invalid username");
         }
+
+        // Set the skin of the NPC.
+        this.setSkin(request.get());
     }
 
     /**
@@ -146,7 +141,7 @@ public final class PlayerNpcElement extends GenericEntityElement implements Scri
      */
     public void setSkin(String texture, String signature) {
         var property = new Property("textures", texture, signature);
-        this.profile.getProperties().put("textures", property);
+        this.profile.properties().put("textures", property);
 
         this.refresh();
     }

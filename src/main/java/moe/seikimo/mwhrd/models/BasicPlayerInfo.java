@@ -52,7 +52,7 @@ public record BasicPlayerInfo(
     public static BasicPlayerInfo from(PlayerEntity player) {
         return new BasicPlayerInfo(
             player.getUuidAsString(),
-            player.getGameProfile().getName()
+            player.getGameProfile().name()
         );
     }
 

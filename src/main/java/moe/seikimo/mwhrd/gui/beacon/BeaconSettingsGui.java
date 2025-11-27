@@ -49,7 +49,7 @@ public final class BeaconSettingsGui extends SimpleGui {
                 .hideDefaultTooltip()
                 .addLoreLine(Text.empty())
                 .addLoreLine(GUI.lore("Click to open the settings!", Formatting.YELLOW))
-                .setCallback(() -> power.showGui(this.getPlayer().getWorld(), this.getPlayer()))
+                .setCallback(() -> power.showGui(this.getPlayer().getEntityWorld(), this.getPlayer()))
                 .build();
         });
     }

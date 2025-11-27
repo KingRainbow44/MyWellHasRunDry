@@ -78,7 +78,7 @@ public final class SmithingCraftingGui extends SimpleGui {
             .addLoreLine(Text.literal("Click to open!")
                 .formatted(Formatting.YELLOW))
             .setCallback(() -> {
-                var world = player.getWorld();
+                var world = player.getEntityWorld();
 
                 player.openHandledScreen(this.state.createScreenHandlerFactory(world, this.position));
                 player.incrementStat(Stats.INTERACT_WITH_SMITHING_TABLE);

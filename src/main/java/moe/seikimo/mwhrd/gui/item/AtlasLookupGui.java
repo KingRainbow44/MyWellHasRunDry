@@ -136,7 +136,7 @@ public final class AtlasLookupGui extends SimpleGui {
                     var structure = structureRegistry.get(structureKey);
                     var structureEntry = structureRegistry.getEntry(structure);
 
-                    if (!(this.getPlayer().getWorld() instanceof ServerWorld world)) {
+                    if (!(this.getPlayer().getEntityWorld() instanceof ServerWorld world)) {
                         return;
                     }
 

@@ -109,7 +109,7 @@ public final class PartyManager {
 
         invites.put(player.getUuid(), leader.getUuid());
         player.sendMessage(Text.literal("You have received a party invite from ")
-            .append(Text.literal(leader.getGameProfile().getName())
+            .append(Text.literal(leader.getGameProfile().name())
                 .withColor(Color.YELLOW.getRGB()))
             .append(Text.literal(". Click to accept!")
                 .withColor(Color.CYAN.getRGB()))
@@ -128,7 +128,7 @@ public final class PartyManager {
      */
     public static boolean acceptInvite(ServerPlayerEntity player) {
         // Check if the player is in a valid dimension.
-        var world = player.getWorld().getRegistryKey();
+        var world = player.getEntityWorld().getRegistryKey();
         if (!Utils.ALLOWED_WORLDS.contains(world)) {
             return false;
         }
@@ -147,14 +147,14 @@ public final class PartyManager {
         for (var member : party) {
             member.sendMessage(Text.literal("Player ")
                 .withColor(Color.GREEN.getRGB())
-                .append(Text.literal(player.getGameProfile().getName()))
+                .append(Text.literal(player.getGameProfile().name()))
                 .withColor(Color.YELLOW.getRGB())
                 .append(Text.literal(" has joined the party."))
                 .withColor(Color.GREEN.getRGB()));
             member.sendMessage(Text.literal("Party members: ")
                 .withColor(Color.GREEN.getRGB())
                 .append(Text.literal(party.stream()
-                    .map(p -> p.getGameProfile().getName())
+                    .map(p -> p.getGameProfile().name())
                     .reduce((a, b) -> a + ", " + b)
                     .orElse("")))
                 .withColor(Color.YELLOW.getRGB()));
@@ -192,14 +192,14 @@ public final class PartyManager {
             for (var member : party) {
                 member.sendMessage(Text.literal("Player ")
                     .withColor(Color.RED.getRGB())
-                    .append(Text.literal(player.getGameProfile().getName()))
+                    .append(Text.literal(player.getGameProfile().name()))
                     .withColor(Color.YELLOW.getRGB())
                     .append(Text.literal(" has left the party."))
                     .withColor(Color.RED.getRGB()));
                 member.sendMessage(Text.literal("Party members: ")
                     .withColor(Color.GREEN.getRGB())
                     .append(Text.literal(party.stream()
-                        .map(p -> p.getGameProfile().getName())
+                        .map(p -> p.getGameProfile().name())
                         .reduce((a, b) -> a + ", " + b)
                         .orElse("")))
                     .withColor(Color.YELLOW.getRGB()));
@@ -228,14 +228,14 @@ public final class PartyManager {
         for (var member : party) {
             member.sendMessage(Text.literal("Player ")
                 .withColor(Color.RED.getRGB())
-                .append(Text.literal(target.getGameProfile().getName()))
+                .append(Text.literal(target.getGameProfile().name()))
                 .withColor(Color.YELLOW.getRGB())
                 .append(Text.literal(" has been kicked from the party."))
                 .withColor(Color.RED.getRGB()));
             member.sendMessage(Text.literal("Party members: ")
                 .withColor(Color.GREEN.getRGB())
                 .append(Text.literal(party.stream()
-                    .map(p -> p.getGameProfile().getName())
+                    .map(p -> p.getGameProfile().name())
                     .reduce((a, b) -> a + ", " + b)
                     .orElse("")))
                 .withColor(Color.YELLOW.getRGB()));
@@ -259,7 +259,7 @@ public final class PartyManager {
      */
     public static boolean warpParty(ServerPlayerEntity player) {
         // Check if the player is in a valid dimension.
-        var world = player.getWorld().getRegistryKey();
+        var world = player.getEntityWorld().getRegistryKey();
         if (!Utils.ALLOWED_WORLDS.contains(world)) {
             return false;
         }
@@ -277,7 +277,7 @@ public final class PartyManager {
 
         // Store the last location of each player.
         for (var member : party) {
-            if (!Utils.ALLOWED_WORLDS.contains(member.getWorld().getRegistryKey())) {
+            if (!Utils.ALLOWED_WORLDS.contains(member.getEntityWorld().getRegistryKey())) {
                 continue;
             }
 
@@ -286,7 +286,7 @@ public final class PartyManager {
             }
 
             lastLocations.put(member.getUuid(), new Position(
-                member.getWorld(),
+                member.getEntityWorld(),
                 member.getBlockPos()
             ));
         }
@@ -296,7 +296,7 @@ public final class PartyManager {
         var server = MyWellHasRunDry.getServer();
 
         for (var member : party) {
-            if (!Utils.ALLOWED_WORLDS.contains(member.getWorld().getRegistryKey())) {
+            if (!Utils.ALLOWED_WORLDS.contains(member.getEntityWorld().getRegistryKey())) {
                 continue;
             }
 
@@ -311,14 +311,14 @@ public final class PartyManager {
             }
 
             member.teleport(
-                leader.getWorld(),
+                leader.getEntityWorld(),
                 leader.getX(), leader.getY(), leader.getZ(),
                 Collections.emptySet(), leader.getYaw(), leader.getPitch(), true
             );
 
             // Create a scoreboard team for the player.
             // This is used to change the player's glow color.
-            var memberName = member.getGameProfile().getName();
+            var memberName = member.getGameProfile().name();
             var scoreboard = server.getScoreboard();
             if (scoreboard.getTeam(memberName) != null) {
                 scoreboard.removeTeam(scoreboard.getTeam(memberName));
@@ -350,7 +350,7 @@ public final class PartyManager {
      */
     public static boolean returnPlayer(ServerPlayerEntity player) {
         // Check if the player is in a valid dimension.
-        var world = player.getWorld().getRegistryKey();
+        var world = player.getEntityWorld().getRegistryKey();
         if (!Utils.ALLOWED_WORLDS.contains(world)) {
             return false;
         }
@@ -377,7 +377,7 @@ public final class PartyManager {
      */
     public static void removePlayer(ServerPlayerEntity player) {
         var scoreboard = MyWellHasRunDry.getServer().getScoreboard();
-        var team = scoreboard.getTeam(player.getGameProfile().getName());
+        var team = scoreboard.getTeam(player.getGameProfile().name());
         if (team != null) {
             scoreboard.removeTeam(team);
         }

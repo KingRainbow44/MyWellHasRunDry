@@ -30,7 +30,7 @@ public final class BeaconManager {
      */
     public static void openBeaconMenu(ServerPlayerEntity player) {
         // Check if the player is standing on a beacon.
-        var world = player.getWorld();
+        var world = player.getEntityWorld();
         var pos = player.getBlockPos();
         var blockEntity = world.getBlockEntity(pos.down());
 

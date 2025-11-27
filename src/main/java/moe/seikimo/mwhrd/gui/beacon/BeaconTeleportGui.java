@@ -107,7 +107,7 @@ public final class BeaconTeleportGui extends SimpleGui {
         var keys = new ArrayList<>(waypoints.keySet());
         // Sort the keys by distance from the player.
         // The closest to playerPos should show up first.
-        var playerPos = this.getPlayer().getPos();
+        var playerPos = this.getPlayer().getEntityPos();
         keys.sort((a, b) -> {
             var posA = waypoints.get(a).teleportTo();
             var posB = waypoints.get(b).teleportTo();

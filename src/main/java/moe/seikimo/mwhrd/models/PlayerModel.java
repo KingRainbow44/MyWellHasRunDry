@@ -207,8 +207,8 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
                     return true; // Continue executing.
                 }
 
-                var world = this.handle.getWorld();
-                var pos = world.getSpawnPos();
+                var world = this.handle.getEntityWorld();
+                var pos = world.getSpawnPoint().getPos();
                 this.handle.teleport(world, pos.getX(), pos.getY(), pos.getZ(), Collections.emptySet(), 0.0F, 0.0F, true);
 
                 this.handle.interactionManager.changeGameMode(GameMode.SURVIVAL);
@@ -227,9 +227,7 @@ public final class PlayerModel implements DatabaseObject<PlayerModel> {
 
         this.handle.setSpawnPoint(
             new ServerPlayerEntity.Respawn(
-                World.OVERWORLD,
-                MyWellHasRunDry.getDefaultSpawn(),
-                0.0F, false
+                MyWellHasRunDry.getDefaultSpawn(), false
             ),
             false
         );

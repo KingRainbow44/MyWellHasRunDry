@@ -87,7 +87,7 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
         super.tick();
 
         // Move the entity if it falls off.
-        if (this.getPos().getY() < 390) {
+        if (this.getBlockPos().getY() < 390) {
             this.teleport(0, 405, 0, false);
         }
     }
@@ -104,10 +104,10 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
      * @param block The position of the block to break.
      */
     private void tryToBreak(BlockPos block) {
-        var blockState = this.getWorld().getBlockState(block);
+        var blockState = this.getEntityWorld().getBlockState(block);
         if (blockState.getBlock().getHardness() <= -1f) return;
 
-        this.getWorld().breakBlock(block, false, this); // Break the block.
+        this.getEntityWorld().breakBlock(block, false, this); // Break the block.
     }
 
     /**
@@ -116,10 +116,10 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
      * @param block The block to place.
      */
     private void tryToPlace(BlockPos target, BlockState block) {
-        var blockState = this.getWorld().getBlockState(target);
+        var blockState = this.getEntityWorld().getBlockState(target);
         if (blockState.getBlock().getHardness() <= -1f) return;
 
-        this.getWorld().setBlockState(target, block); // Place the block.
+        this.getEntityWorld().setBlockState(target, block); // Place the block.
     }
 
     /**
@@ -166,7 +166,7 @@ public final class GuardianOfLight extends HostileEntity implements PolymerEntit
         var target = this.getTarget();
         if (target == null) return;
 
-        var world = this.getWorld();
+        var world = this.getEntityWorld();
 
         // Check if the mob should tower up.
         if (this.toweringUp && this.ticksAlive % 10 == 0) {
