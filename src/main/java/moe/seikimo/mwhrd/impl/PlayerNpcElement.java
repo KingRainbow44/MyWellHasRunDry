@@ -1,7 +1,9 @@
 package moe.seikimo.mwhrd.impl;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import eu.pb4.polymer.virtualentity.api.elements.GenericEntityElement;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import moe.seikimo.mwhrd.impl.script.ScriptActor;
@@ -22,7 +24,6 @@ import net.minecraft.world.GameMode;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 public final class PlayerNpcElement extends GenericEntityElement implements Scriptable {
@@ -42,7 +43,7 @@ public final class PlayerNpcElement extends GenericEntityElement implements Scri
         }
     };
 
-    private final GameProfile profile;
+    private GameProfile profile;
 
     /**
      * Creates a player NPC with the default username 'NPC'.
@@ -108,7 +109,17 @@ public final class PlayerNpcElement extends GenericEntityElement implements Scri
         }
 
         var textures = collection.iterator().next();
-        this.profile.properties().put("textures", textures);
+        if (textures == null) {
+            throw new IllegalArgumentException("The existing profile does not have a skin");
+        }
+
+        this.profile = new GameProfile(
+            this.profile.id(),
+            this.profile.name(),
+            new PropertyMap(ImmutableMultimap.of(
+                "textures", textures
+            ))
+        );
 
         this.refresh();
     }
@@ -141,7 +152,13 @@ public final class PlayerNpcElement extends GenericEntityElement implements Scri
      */
     public void setSkin(String texture, String signature) {
         var property = new Property("textures", texture, signature);
-        this.profile.properties().put("textures", property);
+        this.profile = new GameProfile(
+            this.profile.id(),
+            this.profile.name(),
+            new PropertyMap(ImmutableMultimap.of(
+                "textures", property
+            ))
+        );
 
         this.refresh();
     }

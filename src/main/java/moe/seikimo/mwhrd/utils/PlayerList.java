@@ -1,7 +1,9 @@
 package moe.seikimo.mwhrd.utils;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import lombok.SneakyThrows;
 import moe.seikimo.mwhrd.MyWellHasRunDry;
 import net.minecraft.entity.player.PlayerModelPart;
@@ -16,10 +18,7 @@ import net.minecraft.util.Nullables;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Use <a href="https://mineskin.org">MineSkin</a> to get textures and signatures.
@@ -72,7 +71,12 @@ public interface PlayerList {
         // If a head texture was specified, add it.
         if (headTexture != null) {
             var property = new Property("textures", headTexture, headSignature);
-            gameProfile.properties().put("textures", property);
+            gameProfile = new GameProfile(
+                uuid, name,
+                new PropertyMap(ImmutableMultimap.of(
+                    "textures", property
+                ))
+            );
         }
 
         return new PlayerListS2CPacket.Entry(
